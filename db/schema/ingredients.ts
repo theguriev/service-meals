@@ -11,7 +11,7 @@ const schema = new Schema(
       type: Number,
       default: Date.now,
     },
-    type: {
+    name: {
       type: String,
       required: true,
     },
