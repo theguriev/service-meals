@@ -1,6 +1,6 @@
 const baseURL = "http://localhost:4000";
 
-const measurementBody = {
+const mealBody = {
   timestamp: Date.now(),
   type: "temperature",
   meta: {
@@ -9,17 +9,17 @@ const measurementBody = {
   },
 };
 
-let measurementId = undefined;
+let mealId = undefined;
 
-describe.sequential("Measurement", () => {
+describe.sequential("meal", () => {
   const validAccessToken = issueAccessToken(
     { userId: 123 },
     { secret: process.env.SECRET }
   );
 
-  describe("POST /measurement", () => {
+  describe("POST /meal", () => {
     it("gets 400 on validation errors", async () => {
-      await $fetch("/measurement", {
+      await $fetch("/meal", {
         baseURL,
         method: "POST",
         ignoreResponseError: true,
@@ -34,27 +34,27 @@ describe.sequential("Measurement", () => {
       });
     });
 
-    it("gets 200 on valid measurement data", async () => {
-      await $fetch("/measurement", {
+    it("gets 200 on valid meal data", async () => {
+      await $fetch("/meal", {
         baseURL,
         method: "POST",
         headers: {
           Accept: "application/json",
           Cookie: `accessToken=${validAccessToken};`,
         },
-        body: measurementBody,
+        body: mealBody,
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
-          expect(response._data.measurement).toMatchObject(measurementBody);
-          measurementId = response._data.measurement._id;
+          expect(response._data.meal).toMatchObject(mealBody);
+          mealId = response._data.meal._id;
         },
       });
     });
   });
 
-  describe("GET /measurement", () => {
+  describe("GET /meal", () => {
     it("gets 400 on validation errors", async () => {
-      await $fetch("/measurement", {
+      await $fetch("/meal", {
         baseURL,
         method: "GET",
         ignoreResponseError: true,
@@ -70,7 +70,7 @@ describe.sequential("Measurement", () => {
     });
 
     it("gets 200 on valid query parameters", async () => {
-      await $fetch("/measurement", {
+      await $fetch("/meal", {
         baseURL,
         method: "GET",
         headers: {
@@ -85,16 +85,16 @@ describe.sequential("Measurement", () => {
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
-          expect(response._data).toHaveProperty("measurements");
-          expect(Array.isArray(response._data.measurements)).toBe(true);
+          expect(response._data).toHaveProperty("meals");
+          expect(Array.isArray(response._data.meals)).toBe(true);
         },
       });
     });
   });
 
-  describe("PUT /measurement/:id", () => {
+  describe("PUT /meal/:id", () => {
     it("gets 400 on validation errors", async () => {
-      await $fetch(`/measurement/${measurementId}`, {
+      await $fetch(`/meal/${mealId}`, {
         baseURL,
         method: "PUT",
         ignoreResponseError: true,
@@ -110,7 +110,7 @@ describe.sequential("Measurement", () => {
     });
 
     it("gets 200 on valid update data", async () => {
-      await $fetch(`/measurement/${measurementId}`, {
+      await $fetch(`/meal/${mealId}`, {
         baseURL,
         method: "PUT",
         headers: {
@@ -126,15 +126,15 @@ describe.sequential("Measurement", () => {
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
-          expect(response._data).toHaveProperty("measurement");
-          expect(response._data.measurement.type).toBe("humidity");
-          expect(response._data.measurement.meta.unit).toBe("Percentage");
+          expect(response._data).toHaveProperty("meal");
+          expect(response._data.meal.type).toBe("humidity");
+          expect(response._data.meal.meta.unit).toBe("Percentage");
         },
       });
     });
 
-    it("gets 404 if measurement not found or not authorized", async () => {
-      await $fetch(`/measurement/invalidMeasurementId`, {
+    it("gets 404 if meal not found or not authorized", async () => {
+      await $fetch(`/meal/invalidmealId`, {
         baseURL,
         method: "PUT",
         ignoreResponseError: true,
