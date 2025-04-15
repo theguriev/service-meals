@@ -24,4 +24,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: therealguriev/service-measurements:${{ github.sha }}
+          tags: therealguriev/service-meals:${{ github.sha }}
