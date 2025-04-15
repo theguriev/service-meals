@@ -15,6 +15,10 @@ const schema = new Schema(
       type: String,
       required: true,
     },
+    calories: {
+      type: Number,
+      required: true,
+    },
     meta: {
       type: Object,
       default: {},
