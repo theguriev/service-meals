@@ -9,7 +9,7 @@ const mealBody = {
   },
 };
 
-let mealId = undefined;
+let ingredientId;
 
 const validAccessToken = issueAccessToken(
   { userId: 123 },
@@ -51,6 +51,57 @@ describe.sequential("meal", () => {
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
           expect(response._data.ingredient).toMatchObject(ingredientBody);
+          ingredientId = response._data.ingredient._id;
+        },
+      });
+    });
+  });
+
+  describe("DELETE /ingredients/{id}", () => {
+    it("gets 404 for non-existent ingredient", async () => {
+      await $fetch(`/ingredients/67fe0d2e5fd2cdf0e2014dd6`, {
+        baseURL,
+        method: "DELETE",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(404);
+        },
+      });
+    });
+
+    it("gets 400 for invalid ingredient ID", async () => {
+      await $fetch(`/ingredients/invalid-id`, {
+        baseURL,
+        method: "DELETE",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+          expect(response._data.message).toBe("Invalid ingredient ID");
+        },
+      });
+    });
+
+    it("gets 200 for successful deletion", async () => {
+      await $fetch(`/ingredients/${ingredientId}`, {
+        baseURL,
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.message).toBe(
+            "Ingredient deleted successfully"
+          );
         },
       });
     });

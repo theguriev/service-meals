@@ -32,6 +32,47 @@
           }
         }
       }
+    },
+    "/ingredients/{id}": {
+      "delete": {
+        "summary": "Delete an ingredient",
+        "description": "Deletes an ingredient by its ID for the authenticated user.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the ingredient to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ingredient deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Response message"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ingredient ID"
+          },
+          "404": {
+            "description": "Ingredient not found"
+          }
+        }
+      }
     }
   },
   "components": {

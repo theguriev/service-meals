@@ -4,7 +4,7 @@ const ingredientSchema = z.object({
   meta: z.record(z.any()).default({}),
 });
 
-export default eventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
   const _id = await getUserId(event);
 
   // Validate the request body
