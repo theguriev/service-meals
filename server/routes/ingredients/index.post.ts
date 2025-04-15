@@ -6,7 +6,6 @@ const ingredientSchema = z.object({
 
 export default eventHandler(async (event) => {
   const _id = await getUserId(event);
-  const body = await readBody(event);
 
   // Validate the request body
   const validatedBody = await zodValidateBody(event, ingredientSchema.parse);
