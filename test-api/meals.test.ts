@@ -57,6 +57,59 @@ describe.sequential("meal", () => {
     });
   });
 
+  describe("PUT /ingredients/{id}", () => {
+    it("gets 404 for non-existent ingredient", async () => {
+      await $fetch(`/ingredients/67fe0d2e5fd2cdf0e2014dd6`, {
+        baseURL,
+        method: "PUT",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        body: { name: "Updated Tomato" },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(404);
+        },
+      });
+    });
+
+    it("gets 400 for invalid ingredient ID", async () => {
+      await $fetch(`/ingredients/invalid-id`, {
+        baseURL,
+        method: "PUT",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        body: { name: "Updated Tomato" },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+          expect(response._data.message).toBe("Invalid ingredient ID");
+        },
+      });
+    });
+
+    it("gets 200 for successful update", async () => {
+      const updatedData = { name: "Updated Tomato", calories: 150 };
+
+      await $fetch(`/ingredients/${ingredientId}`, {
+        baseURL,
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        body: updatedData,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.ingredient).toMatchObject(updatedData);
+        },
+      });
+    });
+  });
+
   describe("DELETE /ingredients/{id}", () => {
     it("gets 404 for non-existent ingredient", async () => {
       await $fetch(`/ingredients/67fe0d2e5fd2cdf0e2014dd6`, {

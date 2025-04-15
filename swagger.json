@@ -72,6 +72,49 @@
             "description": "Ingredient not found"
           }
         }
+      },
+      "put": {
+        "summary": "Update an ingredient",
+        "description": "Updates an ingredient by its ID for the authenticated user.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the ingredient to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ingredient"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ingredient updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngredientResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ingredient ID or data"
+          },
+          "404": {
+            "description": "Ingredient not found"
+          }
+        }
       }
     }
   },
