@@ -1,14 +1,5 @@
 const baseURL = "http://localhost:4000";
 
-const mealBody = {
-  timestamp: Date.now(),
-  type: "temperature",
-  meta: {
-    unit: "Celsius",
-    location: "office",
-  },
-};
-
 let ingredientId;
 
 const validAccessToken = issueAccessToken(
@@ -105,6 +96,40 @@ describe.sequential("meal", () => {
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
           expect(response._data.ingredient).toMatchObject(updatedData);
+        },
+      });
+    });
+  });
+
+  describe("GET /ingredients", () => {
+    it("gets 200 with a list of ingredients", async () => {
+      await $fetch("/ingredients", {
+        baseURL,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        query: { limit: 5, offset: 0 },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response._data)).toBe(true);
+        },
+      });
+    });
+
+    it("gets 500 for invalid query parameters", async () => {
+      await $fetch("/ingredients", {
+        baseURL,
+        method: "GET",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        query: { limit: -1, offset: -5 },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(500);
         },
       });
     });

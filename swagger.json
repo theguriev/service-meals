@@ -31,6 +31,50 @@
             }
           }
         }
+      },
+      "get": {
+        "summary": "Get a list of ingredients",
+        "description": "Retrieves a paginated list of ingredients for the authenticated user.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of ingredients to retrieve",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Number of ingredients to skip",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of ingredients retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ingredient"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid query parameters"
+          }
+        }
       }
     },
     "/ingredients/{id}": {
