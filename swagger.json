@@ -258,6 +258,104 @@
           }
         }
       }
+    },
+    "/sets": {
+      "post": {
+        "summary": "Create a new set",
+        "description": "Adds a new set with userId, timestamp, name, and categories.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Set created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "template": {
+                      "type": "object",
+                      "properties": {
+                        "userId": { "type": "string" },
+                        "timestamp": { "type": "number" },
+                        "name": { "type": "string" },
+                        "categories": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": { "type": "string" },
+                              "timestamp": { "type": "number" },
+                              "id": { "type": "string" },
+                              "ingredients": {
+                                "type": "array",
+                                "items": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a list of sets",
+        "description": "Retrieves a paginated list of sets.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of sets to retrieve",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Number of sets to skip",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of sets retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SetResponse"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to retrieve sets"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -317,6 +415,53 @@
         "required": ["userId", "name", "categories"]
       },
       "TemplateResponse": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "timestamp": { "type": "number" },
+          "name": { "type": "string" },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "timestamp": { "type": "number" },
+                "id": { "type": "string" },
+                "ingredients": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "required": ["userId", "name", "categories"]
+      },
+      "SetRequest": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "number" },
+          "name": { "type": "string" },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "timestamp": { "type": "number" },
+                "id": { "type": "string" },
+                "ingredients": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "required": ["userId", "name", "categories"]
+      },
+      "SetResponse": {
         "type": "object",
         "properties": {
           "userId": { "type": "string" },
