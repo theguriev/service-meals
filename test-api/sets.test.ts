@@ -1,0 +1,92 @@
+const baseURL = "http://localhost:4000";
+
+let id;
+
+const validAccessToken = issueAccessToken(
+  { userId: 123 },
+  { secret: process.env.SECRET }
+);
+
+describe.sequential("template", () => {
+  describe("POST /sets", () => {
+    it("should create a new template", async () => {
+      const newSet = {
+        userId: "123",
+        name: "Weekly Plan",
+        categories: [
+          {
+            name: "Breakfast",
+            id: "cat1",
+            ingredients: ["ing1", "ing2"],
+          },
+        ],
+      };
+
+      await $fetch("/sets", {
+        baseURL,
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        body: newSet,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.message).toBe("Added successfully");
+          expect(response._data.template).toMatchObject(newSet);
+          id = response._data.template._id;
+        },
+      });
+    });
+
+    it("gets 400 on validation errors", async () => {
+      await $fetch("/sets", {
+        baseURL,
+        method: "POST",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        body: {},
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+  });
+
+  describe("GET /sets", () => {
+    it("gets 200 with a list of templates", async () => {
+      await $fetch("/sets", {
+        baseURL,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        query: { limit: 5, offset: 0 },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response._data)).toBe(true);
+        },
+      });
+    });
+
+    it("gets 500 for invalid query parameters", async () => {
+      await $fetch("/sets", {
+        baseURL,
+        method: "GET",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${validAccessToken};`,
+        },
+        query: { limit: -1, offset: -5 },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(500);
+        },
+      });
+    });
+  });
+});
