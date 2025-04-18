@@ -46,6 +46,7 @@ const ctx: Context = {
   env: {
     SECRET: "gurievcreative",
     PORT: "4000",
+    API_URL: "http://localhost:4000",
   },
   fetch: (url, opts): Promise<Response> =>
     $fetch(joinURL(ctx.server!.url, url.slice(1)), {

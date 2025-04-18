@@ -1,5 +1,3 @@
-const baseURL = "http://localhost:4000";
-
 let id;
 
 const validAccessToken = issueAccessToken(
@@ -23,7 +21,7 @@ describe.sequential("template", () => {
       };
 
       await $fetch("/sets", {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -41,7 +39,7 @@ describe.sequential("template", () => {
 
     it("gets 400 on validation errors", async () => {
       await $fetch("/sets", {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "POST",
         ignoreResponseError: true,
         headers: {
@@ -59,7 +57,7 @@ describe.sequential("template", () => {
   describe("GET /sets", () => {
     it("gets 200 with a list of templates", async () => {
       await $fetch("/sets", {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -75,7 +73,7 @@ describe.sequential("template", () => {
 
     it("gets 500 for invalid query parameters", async () => {
       await $fetch("/sets", {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "GET",
         ignoreResponseError: true,
         headers: {

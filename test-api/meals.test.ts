@@ -1,5 +1,3 @@
-const baseURL = "http://localhost:4000";
-
 let ingredientId;
 
 const validAccessToken = issueAccessToken(
@@ -11,7 +9,7 @@ describe.sequential("meal", () => {
   describe("POST /ingredients", () => {
     it("gets 400 on validation errors", async () => {
       await $fetch("/ingredients", {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "POST",
         ignoreResponseError: true,
         headers: {
@@ -32,7 +30,7 @@ describe.sequential("meal", () => {
       };
 
       await $fetch("/ingredients", {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -51,7 +49,7 @@ describe.sequential("meal", () => {
   describe("PUT /ingredients/{id}", () => {
     it("gets 404 for non-existent ingredient", async () => {
       await $fetch(`/ingredients/67fe0d2e5fd2cdf0e2014dd6`, {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "PUT",
         ignoreResponseError: true,
         headers: {
@@ -67,7 +65,7 @@ describe.sequential("meal", () => {
 
     it("gets 400 for invalid ingredient ID", async () => {
       await $fetch(`/ingredients/invalid-id`, {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "PUT",
         ignoreResponseError: true,
         headers: {
@@ -86,7 +84,7 @@ describe.sequential("meal", () => {
       const updatedData = { name: "Updated Tomato", calories: 150 };
 
       await $fetch(`/ingredients/${ingredientId}`, {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "PUT",
         headers: {
           Accept: "application/json",
@@ -104,7 +102,7 @@ describe.sequential("meal", () => {
   describe("GET /ingredients", () => {
     it("gets 200 with a list of ingredients", async () => {
       await $fetch("/ingredients", {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -120,7 +118,7 @@ describe.sequential("meal", () => {
 
     it("gets 500 for invalid query parameters", async () => {
       await $fetch("/ingredients", {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "GET",
         ignoreResponseError: true,
         headers: {
@@ -138,7 +136,7 @@ describe.sequential("meal", () => {
   describe("DELETE /ingredients/{id}", () => {
     it("gets 404 for non-existent ingredient", async () => {
       await $fetch(`/ingredients/67fe0d2e5fd2cdf0e2014dd6`, {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "DELETE",
         ignoreResponseError: true,
         headers: {
@@ -153,7 +151,7 @@ describe.sequential("meal", () => {
 
     it("gets 400 for invalid ingredient ID", async () => {
       await $fetch(`/ingredients/invalid-id`, {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "DELETE",
         ignoreResponseError: true,
         headers: {
@@ -169,7 +167,7 @@ describe.sequential("meal", () => {
 
     it("gets 200 for successful deletion", async () => {
       await $fetch(`/ingredients/${ingredientId}`, {
-        baseURL,
+        baseURL: process.env.API_URL,
         method: "DELETE",
         headers: {
           Accept: "application/json",
