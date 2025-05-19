@@ -1,20 +1,34 @@
-let ingredientId;
+let id;
 
-const validAccessToken = issueAccessToken(
-  { userId: 123 },
-  { secret: process.env.SECRET }
-);
+describe("Meals API", () => {
+  describe("POST /meals", () => {
+    it("should create a new meal", async () => {
+      const newMeal = { name: "Test Meal" };
+      await $fetch("/meals", {
+        baseURL: process.env.API_URL,
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+        },
+        body: newMeal,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.message).toBe("Item added successfully");
+          expect(response._data.data).toMatchObject(newMeal);
+          id = response._data._id;
+        },
+      });
+    });
 
-describe.sequential("meal", () => {
-  describe("POST /ingredients", () => {
-    it("gets 400 on validation errors", async () => {
-      await $fetch("/ingredients", {
+    it("should return a validation error if name is missing", async () => {
+      await $fetch("/meals", {
         baseURL: process.env.API_URL,
         method: "POST",
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
         body: {},
         onResponse: ({ response }) => {
@@ -22,93 +36,38 @@ describe.sequential("meal", () => {
         },
       });
     });
+  });
 
-    it("gets 200 on valid ingredient data", async () => {
-      const ingredientBody = {
-        name: "Tomato",
-        calories: 100,
-      };
-
-      await $fetch("/ingredients", {
+  describe("GET /meals", () => {
+    it("should retrieve a list of meals", async () => {
+      // Optionally, create some meals first to ensure there's data
+      await $fetch("/meals", {
         baseURL: process.env.API_URL,
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
-        body: ingredientBody,
-        onResponse: ({ response }) => {
-          expect(response.status).toBe(200);
-          expect(response._data.ingredient).toMatchObject(ingredientBody);
-          ingredientId = response._data.ingredient._id;
-        },
+        body: { name: "Meal 1" },
       });
-    });
-  });
 
-  describe("PUT /ingredients/{id}", () => {
-    it("gets 404 for non-existent ingredient", async () => {
-      await $fetch(`/ingredients/67fe0d2e5fd2cdf0e2014dd6`, {
+      await $fetch("/meals", {
         baseURL: process.env.API_URL,
-        method: "PUT",
-        ignoreResponseError: true,
+        method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
-        body: { name: "Updated Tomato" },
-        onResponse: ({ response }) => {
-          expect(response.status).toBe(404);
-        },
+        body: { name: "Meal 2" },
       });
-    });
 
-    it("gets 400 for invalid ingredient ID", async () => {
-      await $fetch(`/ingredients/invalid-id`, {
-        baseURL: process.env.API_URL,
-        method: "PUT",
-        ignoreResponseError: true,
-        headers: {
-          Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
-        },
-        body: { name: "Updated Tomato" },
-        onResponse: ({ response }) => {
-          expect(response.status).toBe(400);
-          expect(response._data.message).toBe("Invalid ingredient ID");
-        },
-      });
-    });
-
-    it("gets 200 for successful update", async () => {
-      const updatedData = { name: "Updated Tomato", calories: 150 };
-
-      await $fetch(`/ingredients/${ingredientId}`, {
-        baseURL: process.env.API_URL,
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
-        },
-        body: updatedData,
-        onResponse: ({ response }) => {
-          expect(response.status).toBe(200);
-          expect(response._data.ingredient).toMatchObject(updatedData);
-        },
-      });
-    });
-  });
-
-  describe("GET /ingredients", () => {
-    it("gets 200 with a list of ingredients", async () => {
-      await $fetch("/ingredients", {
+      await $fetch("/meals", {
         baseURL: process.env.API_URL,
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
-        query: { limit: 5, offset: 0 },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
           expect(Array.isArray(response._data)).toBe(true);
@@ -116,68 +75,51 @@ describe.sequential("meal", () => {
       });
     });
 
-    it("gets 500 for invalid query parameters", async () => {
-      await $fetch("/ingredients", {
+    it("should retrieve meals with pagination (offset and limit)", async () => {
+      // Create a few meals for pagination testing
+      for (let i = 0; i < 15; i++) {
+        await $fetch("/meals", {
+          baseURL: process.env.API_URL,
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          },
+          body: { name: `[loop] Meal ${i}` },
+        });
+      }
+
+      const limit = 5;
+      const offset = 5;
+
+      await $fetch("/meals", {
         baseURL: process.env.API_URL,
         method: "GET",
-        ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
-        query: { limit: -1, offset: -5 },
+        query: { offset, limit },
         onResponse: ({ response }) => {
-          expect(response.status).toBe(500);
-        },
-      });
-    });
-  });
-
-  describe("DELETE /ingredients/{id}", () => {
-    it("gets 404 for non-existent ingredient", async () => {
-      await $fetch(`/ingredients/67fe0d2e5fd2cdf0e2014dd6`, {
-        baseURL: process.env.API_URL,
-        method: "DELETE",
-        ignoreResponseError: true,
-        headers: {
-          Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
-        },
-        onResponse: ({ response }) => {
-          expect(response.status).toBe(404);
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response._data)).toBe(true);
+          expect(response._data.length).toBe(limit);
         },
       });
     });
 
-    it("gets 400 for invalid ingredient ID", async () => {
-      await $fetch(`/ingredients/invalid-id`, {
+    it("should use default pagination if not provided", async () => {
+      await $fetch("/meals", {
         baseURL: process.env.API_URL,
-        method: "DELETE",
-        ignoreResponseError: true,
+        method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
-        },
-        onResponse: ({ response }) => {
-          expect(response.status).toBe(400);
-          expect(response._data.message).toBe("Invalid ingredient ID");
-        },
-      });
-    });
-
-    it("gets 200 for successful deletion", async () => {
-      await $fetch(`/ingredients/${ingredientId}`, {
-        baseURL: process.env.API_URL,
-        method: "DELETE",
-        headers: {
-          Accept: "application/json",
-          Cookie: `accessToken=${validAccessToken};`,
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
-          expect(response._data.message).toBe(
-            "Ingredient deleted successfully"
-          );
+          expect(Array.isArray(response._data)).toBe(true);
+          expect(response._data.length).toBeLessThanOrEqual(10);
         },
       });
     });

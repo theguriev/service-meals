@@ -49,7 +49,7 @@ const ctx: Context = {
     API_URL: "http://localhost:4000",
     VALID_ACCESS_TOKEN: issueAccessToken(
       { userId: 123 },
-      { secret: process.env.SECRET }
+      { secret: "gurievcreative" }
     ),
   },
   fetch: (url, opts): Promise<Response> =>

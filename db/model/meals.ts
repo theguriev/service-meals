@@ -1,5 +1,5 @@
 import { model } from "mongoose";
 
-const Model = model("meals", schemaMeal);
+const Model = model("meals", schemaMeals);
 
 export default Model;
