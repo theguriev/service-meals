@@ -1,489 +1,347 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Telegram Authorization Service",
-    "version": "1.0.0"
+    "title": "Meals Service API",
+    "version": "1.0.0",
+    "description": "API for managing meals."
   },
-  "paths": {
-    "/ingredients": {
-      "post": {
-        "summary": "Add a new ingredient",
-        "description": "Creates a new ingredient for the authenticated user.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Ingredient"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Ingredient added successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IngredientResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "Get a list of ingredients",
-        "description": "Retrieves a paginated list of ingredients for the authenticated user.",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "description": "Number of ingredients to retrieve",
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "description": "Number of ingredients to skip",
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of ingredients retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Ingredient"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Invalid query parameters"
-          }
-        }
-      }
-    },
-    "/ingredients/{id}": {
-      "delete": {
-        "summary": "Delete an ingredient",
-        "description": "Deletes an ingredient by its ID for the authenticated user.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the ingredient to delete",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Ingredient deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Response message"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ingredient ID"
-          },
-          "404": {
-            "description": "Ingredient not found"
-          }
-        }
-      },
-      "put": {
-        "summary": "Update an ingredient",
-        "description": "Updates an ingredient by its ID for the authenticated user.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the ingredient to update",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Ingredient"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Ingredient updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IngredientResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ingredient ID or data"
-          },
-          "404": {
-            "description": "Ingredient not found"
-          }
-        }
-      }
-    },
-    "/templates": {
-      "post": {
-        "summary": "Create a new template",
-        "description": "Adds a new template with userId, timestamp, name, and categories.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TemplateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Template created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "template": {
-                      "type": "object",
-                      "properties": {
-                        "userId": { "type": "string" },
-                        "timestamp": { "type": "number" },
-                        "name": { "type": "string" },
-                        "categories": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "name": { "type": "string" },
-                              "timestamp": { "type": "number" },
-                              "id": { "type": "string" },
-                              "ingredients": {
-                                "type": "array",
-                                "items": { "type": "string" }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "Get a list of templates",
-        "description": "Retrieves a paginated list of templates.",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "description": "Number of templates to retrieve",
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "description": "Number of templates to skip",
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of templates retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TemplateResponse"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to retrieve templates"
-          }
-        }
-      }
-    },
-    "/sets": {
-      "post": {
-        "summary": "Create a new set",
-        "description": "Adds a new set with userId, timestamp, name, and categories.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Set created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "template": {
-                      "type": "object",
-                      "properties": {
-                        "userId": { "type": "string" },
-                        "timestamp": { "type": "number" },
-                        "name": { "type": "string" },
-                        "categories": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "name": { "type": "string" },
-                              "timestamp": { "type": "number" },
-                              "id": { "type": "string" },
-                              "ingredients": {
-                                "type": "array",
-                                "items": { "type": "string" }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "Get a list of sets",
-        "description": "Retrieves a paginated list of sets.",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "description": "Number of sets to retrieve",
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "description": "Number of sets to skip",
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of sets retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SetResponse"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to retrieve sets"
-          }
-        }
-      }
+  "servers": [
+    {
+      "url": "/api",
+      "description": "Main API server"
     }
-  },
+  ],
   "components": {
     "schemas": {
-      "Ingredient": {
+      "Meal": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the meal (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000000"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifier of the user who owns the meal",
+            "example": "user123"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the meal",
+            "example": "Spaghetti Carbonara"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the meal was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the meal was last updated",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "userId",
+          "name"
+        ]
+      },
+      "MealInput": {
         "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "description": "Name of the ingredient"
-          },
-          "calories": {
-            "type": "number",
-            "description": "Calories in the ingredient"
-          },
-          "meta": {
-            "type": "object",
-            "additionalProperties": true,
-            "description": "Additional metadata for the ingredient"
+            "description": "Name of the meal",
+            "minLength": 1,
+            "example": "Chicken Salad"
           }
         },
-        "required": ["name", "calories"]
+        "required": [
+          "name"
+        ]
       },
-      "IngredientResponse": {
+      "MealUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the meal (optional for update)",
+            "minLength": 1,
+            "example": "Deluxe Chicken Salad"
+          }
+        }
+      },
+      "SuccessMessage": {
         "type": "object",
         "properties": {
           "message": {
             "type": "string",
-            "description": "Response message"
-          },
-          "ingredient": {
-            "$ref": "#/components/schemas/Ingredient"
+            "example": "Operation successful"
           }
         }
       },
-      "TemplateRequest": {
+      "MealCreationResponse": {
         "type": "object",
         "properties": {
-          "timestamp": { "type": "number" },
-          "name": { "type": "string" },
-          "categories": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": { "type": "string" },
-                "timestamp": { "type": "number" },
-                "id": { "type": "string" },
-                "ingredients": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                }
-              }
-            }
+          "message": {
+            "type": "string",
+            "example": "Item added successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Meal"
           }
-        },
-        "required": ["userId", "name", "categories"]
+        }
       },
-      "TemplateResponse": {
+      "MealUpdateResponse": {
         "type": "object",
         "properties": {
-          "userId": { "type": "string" },
-          "timestamp": { "type": "number" },
-          "name": { "type": "string" },
-          "categories": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": { "type": "string" },
-                "timestamp": { "type": "number" },
-                "id": { "type": "string" },
-                "ingredients": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                }
-              }
-            }
+          "message": {
+            "type": "string",
+            "example": "Item updated successfully"
+          },
+          "ingredient": {
+            "$ref": "#/components/schemas/Meal"
           }
-        },
-        "required": ["userId", "name", "categories"]
+        }
       },
-      "SetRequest": {
+      "ErrorResponse": {
         "type": "object",
         "properties": {
-          "timestamp": { "type": "number" },
-          "name": { "type": "string" },
-          "categories": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": { "type": "string" },
-                "timestamp": { "type": "number" },
-                "id": { "type": "string" },
-                "ingredients": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                }
+          "message": {
+            "type": "string",
+            "description": "Error message detailing what went wrong",
+            "example": "Invalid input"
+          },
+          "statusCode": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 400
+          },
+          "statusMessage": {
+            "type": "string",
+            "description": "HTTP status message",
+            "example": "Bad Request"
+          },
+          "data": {
+            "type": "object",
+            "description": "Additional error data, often contains validation issues"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "accessToken"
+      }
+    }
+  },
+  "security": [
+    {
+      "cookieAuth": []
+    }
+  ],
+  "paths": {
+    "/meals": {
+      "post": {
+        "summary": "Create a new meal",
+        "tags": ["Meals"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MealInput"
               }
             }
           }
         },
-        "required": ["userId", "name", "categories"]
+        "responses": {
+          "200": {
+            "description": "Meal created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MealCreationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
       },
-      "SetResponse": {
-        "type": "object",
-        "properties": {
-          "userId": { "type": "string" },
-          "timestamp": { "type": "number" },
-          "name": { "type": "string" },
-          "categories": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": { "type": "string" },
-                "timestamp": { "type": "number" },
-                "id": { "type": "string" },
-                "ingredients": {
+      "get": {
+        "summary": "Get a list of meals",
+        "tags": ["Meals"],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of meals to skip for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of meals to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of meals",
+            "content": {
+              "application/json": {
+                "schema": {
                   "type": "array",
-                  "items": { "type": "string" }
+                  "items": {
+                    "$ref": "#/components/schemas/Meal"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           }
+        }
+      }
+    },
+    "/meals/{id}": {
+      "put": {
+        "summary": "Update an existing meal",
+        "tags": ["Meals"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the meal to update",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000000"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MealUpdateInput"
+              }
+            }
+          }
         },
-        "required": ["userId", "name", "categories"]
+        "responses": {
+          "200": {
+            "description": "Meal updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MealUpdateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a meal",
+        "tags": ["Meals"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the meal to delete",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000000"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meal deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
