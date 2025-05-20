@@ -212,6 +212,148 @@
             "$ref": "#/components/schemas/Category"
           }
         }
+      },
+      "Ingredient": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the ingredient (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000002"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifier of the user who owns the ingredient",
+            "example": "user123"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "Identifier of the category this ingredient belongs to",
+            "example": "605c72ef29592b001c000001"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the ingredient",
+            "example": "Chicken Breast"
+          },
+          "calories": {
+            "type": "number",
+            "format": "float",
+            "description": "Calories per 100g or per serving",
+            "example": 165
+          },
+          "proteins": {
+            "type": "number",
+            "format": "float",
+            "description": "Proteins per 100g or per serving",
+            "example": 31
+          },
+          "grams": {
+            "type": "number",
+            "format": "float",
+            "description": "Grams of the ingredient",
+            "example": 100
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the ingredient was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the ingredient was last updated",
+            "readOnly": true
+          }
+        },
+        "required": ["userId", "categoryId", "name", "calories", "proteins", "grams"]
+      },
+      "IngredientInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the ingredient",
+            "minLength": 1,
+            "example": "Raw Salmon"
+          },
+          "calories": {
+            "type": "number",
+            "format": "float",
+            "description": "Calories",
+            "minimum": 0,
+            "example": 208
+          },
+          "proteins": {
+            "type": "number",
+            "format": "float",
+            "description": "Proteins in grams",
+            "minimum": 0,
+            "example": 20
+          },
+          "grams": {
+            "type": "number",
+            "format": "float",
+            "description": "Weight in grams",
+            "minimum": 0,
+            "example": 100
+          }
+        },
+        "required": ["name", "calories", "proteins", "grams"]
+      },
+      "IngredientUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the ingredient (optional for update)",
+            "minLength": 1,
+            "example": "Cooked Salmon"
+          },
+          "calories": {
+            "type": "number",
+            "format": "float",
+            "description": "Calories (optional for update)",
+            "minimum": 0,
+            "example": 220
+          },
+          "proteins": {
+            "type": "number",
+            "format": "float",
+            "description": "Proteins in grams (optional for update)",
+            "minimum": 0,
+            "example": 22
+          },
+          "grams": {
+            "type": "number",
+            "format": "float",
+            "description": "Weight in grams (optional for update)",
+            "minimum": 0,
+            "example": 120
+          }
+        }
+      },
+      "IngredientCreationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Item added successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Ingredient"
+          }
+        }
+      },
+      "IngredientUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "ingredient": {
+            "$ref": "#/components/schemas/Ingredient"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -706,6 +848,368 @@
           },
           "404": {
             "description": "Category not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ingredients": {
+      "get": {
+        "summary": "Get a list of all ingredients for the authenticated user",
+        "tags": ["Ingredients"],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of ingredients to skip for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of ingredients to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of ingredients for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ingredient"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ingredients/{categoryId}": {
+      "post": {
+        "summary": "Create a new ingredient for a specific category",
+        "tags": ["Ingredients"],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the category to associate the ingredient with",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000001"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngredientInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ingredient created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngredientCreationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error, invalid input, or invalid category ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found or access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a list of ingredients for a specific category",
+        "tags": ["Ingredients"],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the category to retrieve ingredients for",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000001"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of ingredients to skip for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of ingredients to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of ingredients for the specified category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ingredient"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid category ID or query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found or access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ingredients/{categoryId}/{id}": {
+      "put": {
+        "summary": "Update an existing ingredient",
+        "tags": ["Ingredients"],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the category the ingredient belongs to",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000001"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the ingredient to update",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000002"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngredientUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ingredient updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngredientUpdateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ingredient or Category not found, or access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an ingredient",
+        "tags": ["Ingredients"],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the category the ingredient belongs to",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000001"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the ingredient to delete",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000002"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ingredient deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ingredient or Category not found, or access denied",
             "content": {
               "application/json": {
                 "schema": {
