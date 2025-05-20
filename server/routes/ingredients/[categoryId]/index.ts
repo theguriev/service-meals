@@ -5,9 +5,11 @@ const querySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const { offset = 0, limit = 10 } = getQuery(event);
+  const categoryId = getRouterParam(event, "categoryId");
+  const userId = await getUserId(event);
+
   const convertedOffset = Number(offset);
   const convertedLimit = Number(limit);
-  const userId = await getUserId(event);
 
   await zodValidateData(
     {
@@ -16,7 +18,8 @@ export default defineEventHandler(async (event) => {
     },
     querySchema.parse
   );
-  return ModelCategories.find({ userId })
+
+  return ModelIngredients.find({ categoryId, userId })
     .limit(convertedLimit)
     .skip(convertedOffset);
 });

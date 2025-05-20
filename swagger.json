@@ -45,10 +45,7 @@
             "readOnly": true
           }
         },
-        "required": [
-          "userId",
-          "name"
-        ]
+        "required": ["userId", "name"]
       },
       "MealInput": {
         "type": "object",
@@ -60,9 +57,7 @@
             "example": "Chicken Salad"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "MealUpdateInput": {
         "type": "object",
@@ -169,11 +164,7 @@
             "readOnly": true
           }
         },
-        "required": [
-          "userId",
-          "mealId",
-          "name"
-        ]
+        "required": ["userId", "mealId", "name"]
       },
       "CategoryInput": {
         "type": "object",
@@ -185,9 +176,7 @@
             "example": "Lunch"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "CategoryUpdateInput": {
         "type": "object",

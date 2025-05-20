@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
   const mealId = getRouterParam(event, "mealId");
   const convertedOffset = Number(offset);
   const convertedLimit = Number(limit);
+  const userId = await getUserId(event);
 
   await zodValidateData(
     {
@@ -16,7 +17,7 @@ export default defineEventHandler(async (event) => {
     },
     querySchema.parse
   );
-  return ModelCategories.find({ mealId })
+  return ModelCategories.find({ mealId, userId })
     .limit(convertedLimit)
     .skip(convertedOffset);
 });

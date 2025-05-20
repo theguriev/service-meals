@@ -7,6 +7,8 @@ export default defineEventHandler(async (event) => {
   const { offset = 0, limit = 10 } = getQuery(event);
   const convertedOffset = Number(offset);
   const convertedLimit = Number(limit);
+
+  // Assuming getUserId is a utility function to get the current user's ID
   const userId = await getUserId(event);
 
   await zodValidateData(
@@ -16,7 +18,8 @@ export default defineEventHandler(async (event) => {
     },
     querySchema.parse
   );
-  return ModelCategories.find({ userId })
+  // Fetch ingredients only for the current user
+  return ModelIngredients.find({ userId })
     .limit(convertedLimit)
     .skip(convertedOffset);
 });
