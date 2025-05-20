@@ -246,7 +246,7 @@ describe.sequential("Meals API", () => {
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);
-          expect(response._data.message).toBe("Invalid ingredient ID");
+          expect(response._data.message).toBe("Invalid item ID");
         },
       });
     });
