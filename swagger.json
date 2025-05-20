@@ -131,6 +131,98 @@
             "description": "Additional error data, often contains validation issues"
           }
         }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the category (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000001"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifier of the user who owns the category",
+            "example": "user123"
+          },
+          "mealId": {
+            "type": "string",
+            "description": "Identifier of the meal this category belongs to",
+            "example": "605c72ef29592b001c000000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the category",
+            "example": "Breakfast"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the category was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the category was last updated",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "userId",
+          "mealId",
+          "name"
+        ]
+      },
+      "CategoryInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the category",
+            "minLength": 1,
+            "example": "Lunch"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CategoryUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the category (optional for update)",
+            "minLength": 1,
+            "example": "Quick Lunch"
+          }
+        }
+      },
+      "CategoryCreationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Item added successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Category"
+          }
+        }
+      },
+      "CategoryUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Item updated successfully"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -333,6 +425,298 @@
           },
           "404": {
             "description": "Meal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "summary": "Get a list of all categories",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of categories to skip for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of categories to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of all categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{mealId}": {
+      "post": {
+        "summary": "Create a new category for a specific meal",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "mealId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the meal to associate the category with",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000000"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Category created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryCreationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a list of categories for a specific meal",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "mealId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the meal to retrieve categories for",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000000"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of categories to skip for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of categories to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of categories for the specified meal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid meal ID or query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{mealId}/{id}": {
+      "put": {
+        "summary": "Update an existing category",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "mealId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the meal the category belongs to",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000000"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the category to update",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000001"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Category updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryUpdateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a category",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "mealId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the meal the category belongs to",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000000"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the category to delete",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000001"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found",
             "content": {
               "application/json": {
                 "schema": {
