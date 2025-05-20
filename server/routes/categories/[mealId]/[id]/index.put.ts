@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   const validatedBody = await zodValidateBody(event, updateSchema.parse);
 
   // Update the ingredient in the database
-  const updated = await ModelMeals.findOneAndUpdate(
+  const updated = await ModelCategories.findOneAndUpdate(
     { _id: id, userId, mealId },
     { $set: validatedBody },
     { new: true }

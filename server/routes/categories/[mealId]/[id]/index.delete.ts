@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
 
-  const result = await ModelMeals.deleteOne({
+  const result = await ModelCategories.deleteOne({
     _id: new ObjectId(id),
     userId: _id,
     mealId,

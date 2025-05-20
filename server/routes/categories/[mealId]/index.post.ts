@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   const _id = await getUserId(event);
   const mealId = getRouterParam(event, "mealId");
   const validatedBody = await zodValidateBody(event, validationSchema.parse);
-  const doc = new ModelMeals({
+  const doc = new ModelCategories({
     userId: _id,
     mealId,
     ...validatedBody,
