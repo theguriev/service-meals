@@ -125,6 +125,117 @@ describe.sequential("Meals API", () => {
     });
   });
 
+  describe("GET /meals/:id", () => {
+    it("should retrieve a specific meal with categories and ingredients", async () => {
+      // Assume 'id' is available from a previously created meal or create one
+      // For example, using the 'id' from the POST /meals test
+      if (!id) {
+        // Create a meal to ensure 'id' is defined
+        const newMeal = { name: "Test Meal for GET by ID" };
+        await $fetch("/meals", {
+          baseURL: process.env.API_URL,
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          },
+          body: newMeal,
+          onResponse: ({ response }) => {
+            id = response._data.data._id;
+          },
+        });
+      }
+      let testCategoryId;
+      for (let i = 0; i < 5; i++) {
+        await $fetch(`/categories/${id}`, {
+          baseURL: process.env.API_URL,
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          },
+          body: { name: `Paginated Category ${i + 1} for ${id}` },
+          onResponse: ({ response }) => {
+            testCategoryId = response._data.data._id;
+          },
+        });
+        for (let j = 0; j < 2; j++) {
+          await $fetch(`/ingredients/${testCategoryId}`, {
+            baseURL: process.env.API_URL,
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+            },
+            body: {
+              name: `Paginated Ingredient ${j + 1}`,
+              calories: 10 * j,
+              proteins: j,
+              grams: 5 * j,
+            },
+          });
+        }
+      }
+
+      await $fetch(`/meals/${id}`, {
+        baseURL: process.env.API_URL,
+        method: "GET" as any, // Add type assertion here
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data).toHaveProperty("_id", id);
+          expect(response._data).toHaveProperty("name");
+          expect(response._data).toHaveProperty("categories");
+          expect(Array.isArray(response._data.categories)).toBe(true);
+          // Further checks can be added if categories and ingredients are seeded
+          if (response._data.categories.length > 0) {
+            const category = response._data.categories[0];
+            expect(category).toHaveProperty("name");
+            expect(category).toHaveProperty("ingredients");
+            expect(Array.isArray(category.ingredients)).toBe(true);
+          }
+        },
+      });
+    });
+
+    it("should return 404 if meal is not found", async () => {
+      const nonExistentId = "605c72ef29592b001c000000"; // Example of a valid but non-existent ObjectId
+      await $fetch(`/meals/${nonExistentId}`, {
+        baseURL: process.env.API_URL,
+        method: "GET" as any, // Add type assertion here
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(404);
+          expect(response._data.statusMessage).toBe("Meal not found");
+        },
+      });
+    });
+
+    it("should return 400 if meal ID is invalid", async () => {
+      const invalidId = "invalid-id-format";
+      await $fetch(`/meals/${invalidId}`, {
+        baseURL: process.env.API_URL,
+        method: "GET" as any, // Add type assertion here
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+          expect(response._data.message).toBe("Invalid item ID");
+        },
+      });
+    });
+  });
+
   describe("PUT /meals/:id", () => {
     it("should update an existing meal", async () => {
       const updatedMealData = { name: "Updated Meal Name" };

@@ -103,6 +103,91 @@
           }
         }
       },
+      "MealWithCategoriesAndIngredients": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the meal (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000000"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifier of the user who owns the meal",
+            "example": "user123"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the meal",
+            "example": "Spaghetti Carbonara"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the meal was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the meal was last updated",
+            "readOnly": true
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryWithIngredients"
+            }
+          }
+        },
+        "required": ["userId", "name", "categories"]
+      },
+      "CategoryWithIngredients": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the category (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000001"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifier of the user who owns the category",
+            "example": "user123"
+          },
+          "mealId": {
+            "type": "string",
+            "description": "Identifier of the meal this category belongs to",
+            "example": "605c72ef29592b001c000000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the category",
+            "example": "Breakfast"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the category was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the category was last updated",
+            "readOnly": true
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ingredient"
+            }
+          }
+        },
+        "required": ["userId", "mealId", "name", "ingredients"]
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -460,6 +545,54 @@
       }
     },
     "/meals/{id}": {
+      "get": {
+        "summary": "Get a specific meal with its categories and ingredients",
+        "tags": ["Meals"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the meal to retrieve",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000000"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested meal with categories and ingredients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MealWithCategoriesAndIngredients"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid meal ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "summary": "Update an existing meal",
         "tags": ["Meals"],
