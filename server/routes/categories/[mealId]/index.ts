@@ -17,7 +17,16 @@ export default defineEventHandler(async (event) => {
     },
     querySchema.parse
   );
-  return ModelCategories.find({ mealId, userId })
+  const categoriesRaw = await ModelCategories.find({ mealId, userId })
     .limit(convertedLimit)
     .skip(convertedOffset);
+  return await Promise.all(
+    categoriesRaw.map(async (category: any) => {
+      const ingredients = await ModelIngredients.find({
+        categoryId: category._id,
+        userId,
+      });
+      return { ...category.toObject(), ingredients };
+    })
+  );
 });

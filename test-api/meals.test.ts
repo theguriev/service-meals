@@ -326,6 +326,19 @@ describe.sequential("Meals API", () => {
           expect(response._data.message).toBe("Item deleted successfully");
         },
       });
+      await $fetch(`/categories/${id}`, {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response._data)).toBe(true);
+          expect(response._data.length).toBe(0);
+        },
+      });
     });
 
     it("should return 404 if trying to delete a non-existent meal", async () => {

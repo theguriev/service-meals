@@ -353,7 +353,14 @@
             "readOnly": true
           }
         },
-        "required": ["userId", "categoryId", "name", "calories", "proteins", "grams"]
+        "required": [
+          "userId",
+          "categoryId",
+          "name",
+          "calories",
+          "proteins",
+          "grams"
+        ]
       },
       "IngredientInput": {
         "type": "object",
@@ -439,6 +446,44 @@
             "$ref": "#/components/schemas/Ingredient"
           }
         }
+      },
+      "MongoDeleteResult": {
+        "type": "object",
+        "properties": {
+          "acknowledged": {
+            "type": "boolean",
+            "example": true
+          },
+          "deletedCount": {
+            "type": "integer",
+            "example": 1
+          }
+        },
+        "required": ["acknowledged", "deletedCount"]
+      },
+      "MealDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Item deleted successfully"
+          },
+          "deletedMeals": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
+          },
+          "deletedCategories": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
+          },
+          "deletedIngredients": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
+          }
+        },
+        "required": [
+          "message",
+          "deletedMeals",
+          "deletedCategories",
+          "deletedIngredients"
+        ]
       }
     },
     "securitySchemes": {
@@ -672,7 +717,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessMessage"
+                  "$ref": "#/components/schemas/MealDeleteResponse"
                 }
               }
             }
@@ -934,7 +979,7 @@
         }
       },
       "delete": {
-        "summary": "Delete a category",
+        "summary": "Delete a category and its associated ingredients",
         "tags": ["Categories"],
         "parameters": [
           {

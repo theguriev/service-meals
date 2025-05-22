@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   try {
     const categoriesRaw = await ModelCategories.find({ mealId: id, userId });
     const categories = await Promise.all(
-      categoriesRaw.map(async (category: any) => {
+      categoriesRaw.map(async (category) => {
         const ingredients = await ModelIngredients.find({
           categoryId: category._id,
           userId,
