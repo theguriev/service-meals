@@ -68,6 +68,9 @@ describe.sequential("Categories API", () => {
             (cat) => cat.mealId === testMealId
           );
           expect(categoryForMeal).toBeDefined();
+          // Check for ingredients array
+          expect(categoryForMeal).toHaveProperty("ingredients");
+          expect(Array.isArray(categoryForMeal.ingredients)).toBe(true);
         },
       });
     });
@@ -101,6 +104,12 @@ describe.sequential("Categories API", () => {
             expect(response.status).toBe(200);
             expect(Array.isArray(response._data)).toBe(true);
             expect(response._data.length).toBeLessThanOrEqual(limit);
+            // Check for ingredients array in paginated results
+            if (response._data.length > 0) {
+              const firstCategory = response._data[0];
+              expect(firstCategory).toHaveProperty("ingredients");
+              expect(Array.isArray(firstCategory.ingredients)).toBe(true);
+            }
           },
         }
       );

@@ -884,13 +884,13 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of categories for the specified meal",
+            "description": "A list of categories for the specified meal, including their ingredients",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Category"
+                    "$ref": "#/components/schemas/CategoryWithIngredients"
                   }
                 }
               }
