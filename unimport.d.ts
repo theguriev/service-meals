@@ -3,6 +3,7 @@ declare global {
   const $fetch: typeof import('ofetch')['$fetch']
   const afterAll: typeof import('vitest')['afterAll']
   const beforeAll: typeof import('vitest')['beforeAll']
+  const buildDateFilter: typeof import('/Users/gurieveugen/work/service-meals/server/utils/buildDateFilter')['default']
   const describe: typeof import('vitest')['describe']
   const expect: typeof import('vitest')['expect']
   const getUserId: typeof import('/Users/gurieveugen/work/service-meals/server/utils/getUserId')['default']

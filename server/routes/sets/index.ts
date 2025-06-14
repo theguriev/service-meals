@@ -20,7 +20,12 @@ export default defineEventHandler(async (event) => {
     querySchema.parse
   );
 
-  return ModelSets.find(buildDateFilter(startDate as string, endDate as string))
+  const userId = await getUserId(event);
+
+  return ModelSets.find({
+    userId,
+    ...buildDateFilter(startDate as string, endDate as string),
+  })
     .limit(convertedLimit)
     .skip(convertedOffset);
 });
