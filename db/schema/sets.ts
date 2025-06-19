@@ -7,10 +7,12 @@ const schema = new Schema(
       required: true,
       ref: "User",
     },
-    ids: {
-      type: String,
-      required: true,
-    },
+    ingredients: [
+      {
+        id: { type: String, required: true },
+        value: { type: Number, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

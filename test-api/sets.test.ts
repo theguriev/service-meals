@@ -3,7 +3,12 @@ let id;
 describe.sequential("Sets API", () => {
   describe("POST /sets", () => {
     it("should create a new set", async () => {
-      const newSet = { ids: "meal1,meal2,meal3" };
+      const newSet = {
+        ingredients: [
+          { id: "ingr1", value: 10 },
+          { id: "ingr2", value: 5 },
+        ],
+      };
       await $fetch("/sets", {
         baseURL: process.env.API_URL,
         method: "POST",
@@ -15,13 +20,15 @@ describe.sequential("Sets API", () => {
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
           expect(response._data.message).toBe("Set added successfully");
-          expect(response._data.data).toMatchObject(newSet);
+          expect(response._data.data.ingredients).toMatchObject(
+            newSet.ingredients
+          );
           id = response._data.data._id;
         },
       });
     });
 
-    it("should return a validation error if ids is missing", async () => {
+    it("should return a validation error if ingredients is missing", async () => {
       await $fetch("/sets", {
         baseURL: process.env.API_URL,
         method: "POST",
@@ -37,7 +44,7 @@ describe.sequential("Sets API", () => {
       });
     });
 
-    it("should return a validation error if ids is empty", async () => {
+    it("should return a validation error if ingredients is empty", async () => {
       await $fetch("/sets", {
         baseURL: process.env.API_URL,
         method: "POST",
@@ -46,7 +53,7 @@ describe.sequential("Sets API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
-        body: { ids: "" },
+        body: { ingredients: [] },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);
         },
@@ -64,7 +71,12 @@ describe.sequential("Sets API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
-        body: { ids: "set1-meal1,set1-meal2" },
+        body: {
+          ingredients: [
+            { id: "set1-ingr1", value: 1 },
+            { id: "set1-ingr2", value: 2 },
+          ],
+        },
       });
 
       await $fetch("/sets", {
@@ -74,7 +86,12 @@ describe.sequential("Sets API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
-        body: { ids: "set2-meal1,set2-meal2,set2-meal3" },
+        body: {
+          ingredients: [
+            { id: "set2-ingr1", value: 3 },
+            { id: "set2-ingr2", value: 4 },
+          ],
+        },
       });
 
       await $fetch("/sets", {
@@ -101,7 +118,12 @@ describe.sequential("Sets API", () => {
             Accept: "application/json",
             Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
           },
-          body: { ids: `loop-set-${i}-meal1,loop-set-${i}-meal2` },
+          body: {
+            ingredients: [
+              { id: `loop-set-${i}-ingr1`, value: i },
+              { id: `loop-set-${i}-ingr2`, value: i + 1 },
+            ],
+          },
         });
       }
 
@@ -152,7 +174,7 @@ describe.sequential("Sets API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
         },
-        body: { ids: "date-test-meal1,date-test-meal2" },
+        body: { ingredients: [{ id: "date-test-ingr1", value: 1 }] },
       });
 
       const endDate = new Date().toISOString();
@@ -177,7 +199,9 @@ describe.sequential("Sets API", () => {
     it("should retrieve a specific set", async () => {
       // Ensure we have an id from previous tests or create one
       if (!id) {
-        const newSet = { ids: "test-set-for-get-meal1,test-set-for-get-meal2" };
+        const newSet = {
+          ingredients: [{ id: "test-set-for-get-ingr1", value: 1 }],
+        };
         await $fetch("/sets", {
           baseURL: process.env.API_URL,
           method: "POST",
@@ -244,7 +268,10 @@ describe.sequential("Sets API", () => {
   describe("PUT /sets/:id", () => {
     it("should update an existing set", async () => {
       const updatedSetData = {
-        ids: "updated-meal1,updated-meal2,updated-meal3",
+        ingredients: [
+          { id: "updated-ingr1", value: 100 },
+          { id: "updated-ingr2", value: 200 },
+        ],
       };
       await $fetch(`/sets/${id}`, {
         baseURL: process.env.API_URL,
@@ -257,14 +284,18 @@ describe.sequential("Sets API", () => {
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
           expect(response._data.message).toBe("Set updated successfully");
-          expect(response._data.data.ids).toBe(updatedSetData.ids);
+          expect(response._data.data.ingredients).toMatchObject(
+            updatedSetData.ingredients
+          );
         },
       });
     });
 
     it("should return 404 if trying to update a non-existent set", async () => {
       const nonExistentId = "605c72ef29592b001c000000";
-      const updatedSetData = { ids: "nonexistent-meal1,nonexistent-meal2" };
+      const updatedSetData = {
+        ingredients: [{ id: "nonexistent-ingr1", value: 1 }],
+      };
       await $fetch(`/sets/${nonExistentId}`, {
         baseURL: process.env.API_URL,
         method: "PUT",
@@ -282,7 +313,9 @@ describe.sequential("Sets API", () => {
 
     it("should return 400 if set ID is invalid", async () => {
       const invalidId = "invalid-id-format";
-      const updatedSetData = { ids: "invalid-meal1,invalid-meal2" };
+      const updatedSetData = {
+        ingredients: [{ id: "invalid-ingr1", value: 1 }],
+      };
       await $fetch(`/sets/${invalidId}`, {
         baseURL: process.env.API_URL,
         method: "PUT",

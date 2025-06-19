@@ -1,7 +1,15 @@
 import { ObjectId } from "mongodb";
 
 const updateSchema = z.object({
-  ids: z.string().min(1, "IDs are required").optional(),
+  ingredients: z
+    .array(
+      z.object({
+        id: z.string().min(1, "Ingredient id is required"),
+        value: z.number(),
+      })
+    )
+    .min(1, "At least one ingredient is required")
+    .optional(),
 });
 
 export default defineEventHandler(async (event) => {

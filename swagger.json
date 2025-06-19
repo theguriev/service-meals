@@ -499,10 +499,25 @@
             "description": "Identifier of the user who owns the set",
             "example": "user123"
           },
-          "ids": {
-            "type": "string",
-            "description": "Comma-separated list of meal IDs in the set",
-            "example": "meal1,meal2,meal3"
+          "ingredients": {
+            "type": "array",
+            "description": "Array of ingredient objects in the set",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Ingredient id",
+                  "example": "ingr1"
+                },
+                "value": {
+                  "type": "number",
+                  "description": "Ingredient value",
+                  "example": 10
+                }
+              },
+              "required": ["id", "value"]
+            }
           },
           "createdAt": {
             "type": "string",
@@ -517,28 +532,56 @@
             "readOnly": true
           }
         },
-        "required": ["userId", "ids"]
+        "required": ["userId", "ingredients"]
       },
       "SetInput": {
         "type": "object",
         "properties": {
-          "ids": {
-            "type": "string",
-            "description": "Comma-separated list of meal IDs in the set",
-            "minLength": 1,
-            "example": "meal1,meal2,meal3"
+          "ingredients": {
+            "type": "array",
+            "description": "Array of ingredient objects in the set",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Ingredient id",
+                  "example": "ingr1"
+                },
+                "value": {
+                  "type": "number",
+                  "description": "Ingredient value",
+                  "example": 10
+                }
+              },
+              "required": ["id", "value"]
+            }
           }
         },
-        "required": ["ids"]
+        "required": ["ingredients"]
       },
       "SetUpdateInput": {
         "type": "object",
         "properties": {
-          "ids": {
-            "type": "string",
-            "description": "Comma-separated list of meal IDs in the set (optional for update)",
-            "minLength": 1,
-            "example": "meal1,meal2,meal3,meal4"
+          "ingredients": {
+            "type": "array",
+            "description": "Array of ingredient objects in the set (optional for update)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Ingredient id",
+                  "example": "ingr1"
+                },
+                "value": {
+                  "type": "number",
+                  "description": "Ingredient value",
+                  "example": 10
+                }
+              },
+              "required": ["id", "value"]
+            }
           }
         }
       },
