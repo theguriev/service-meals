@@ -291,6 +291,28 @@ describe.sequential("Sets API", () => {
       });
     });
 
+    it("should update an existing set with empty ingredients", async () => {
+      const updatedSetData = {
+        ingredients: [],
+      };
+      await $fetch(`/sets/${id}`, {
+        baseURL: process.env.API_URL,
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+        },
+        body: updatedSetData,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.message).toBe("Set updated successfully");
+          expect(response._data.data.ingredients).toMatchObject(
+            updatedSetData.ingredients
+          );
+        },
+      });
+    });
+
     it("should return 404 if trying to update a non-existent set", async () => {
       const nonExistentId = "605c72ef29592b001c000000";
       const updatedSetData = {

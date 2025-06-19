@@ -8,7 +8,6 @@ const updateSchema = z.object({
         value: z.number(),
       })
     )
-    .min(1, "At least one ingredient is required")
     .optional(),
 });
 
