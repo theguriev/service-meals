@@ -2,10 +2,6 @@ import { Schema } from "mongoose";
 
 const schema = new Schema(
   {
-    templateId: {
-      type: String,
-      required: true,
-    },
     name: {
       type: String,
       required: true,
