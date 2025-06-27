@@ -113,4 +113,49 @@ describe.sequential("Templates API", () => {
       });
     });
   });
+
+  describe("DELETE /templates/:id", () => {
+    it("should delete a template by id (200)", async () => {
+      let createdId = "";
+      await $fetch("/templates", {
+        method: "POST",
+        baseURL: process.env.API_URL,
+        body: { name: "Template to Delete" },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          createdId = response._data.data._id;
+        },
+      });
+      await $fetch(`/templates/${createdId}`, {
+        method: "DELETE",
+        baseURL: process.env.API_URL,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.message).toBe("Item deleted successfully");
+        },
+      });
+    });
+
+    it("should return 400 for invalid id", async () => {
+      await $fetch("/templates/invalid_id", {
+        method: "DELETE",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+  });
 });
