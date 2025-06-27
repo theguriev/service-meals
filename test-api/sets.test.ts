@@ -14,7 +14,7 @@ describe.sequential("Sets API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: newSet,
         onResponse: ({ response }) => {
@@ -35,7 +35,7 @@ describe.sequential("Sets API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: {},
         onResponse: ({ response }) => {
@@ -51,7 +51,7 @@ describe.sequential("Sets API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: { ingredients: [] },
         onResponse: ({ response }) => {
@@ -69,7 +69,7 @@ describe.sequential("Sets API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: {
           ingredients: [
@@ -84,7 +84,7 @@ describe.sequential("Sets API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: {
           ingredients: [
@@ -99,7 +99,7 @@ describe.sequential("Sets API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -116,7 +116,7 @@ describe.sequential("Sets API", () => {
           method: "POST",
           headers: {
             Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+            Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
           },
           body: {
             ingredients: [
@@ -135,7 +135,7 @@ describe.sequential("Sets API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         query: { offset, limit },
         onResponse: ({ response }) => {
@@ -152,7 +152,7 @@ describe.sequential("Sets API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -172,7 +172,7 @@ describe.sequential("Sets API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: { ingredients: [{ id: "date-test-ingr1", value: 1 }] },
       });
@@ -184,7 +184,7 @@ describe.sequential("Sets API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         query: { startDate, endDate },
         onResponse: ({ response }) => {
@@ -207,7 +207,7 @@ describe.sequential("Sets API", () => {
           method: "POST",
           headers: {
             Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+            Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
           },
           body: newSet,
           onResponse: ({ response }) => {
@@ -221,7 +221,7 @@ describe.sequential("Sets API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -239,7 +239,7 @@ describe.sequential("Sets API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(404);
@@ -255,7 +255,7 @@ describe.sequential("Sets API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);
@@ -278,7 +278,7 @@ describe.sequential("Sets API", () => {
         method: "PUT",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: updatedSetData,
         onResponse: ({ response }) => {
@@ -300,7 +300,7 @@ describe.sequential("Sets API", () => {
         method: "PUT",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: updatedSetData,
         onResponse: ({ response }) => {
@@ -324,7 +324,7 @@ describe.sequential("Sets API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: updatedSetData,
         onResponse: ({ response }) => {
@@ -344,7 +344,7 @@ describe.sequential("Sets API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: updatedSetData,
         onResponse: ({ response }) => {
@@ -362,7 +362,7 @@ describe.sequential("Sets API", () => {
         method: "DELETE",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -379,7 +379,7 @@ describe.sequential("Sets API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(404);
@@ -395,7 +395,7 @@ describe.sequential("Sets API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);

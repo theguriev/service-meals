@@ -6,6 +6,7 @@ declare global {
   const buildDateFilter: typeof import('/Users/gurieveugen/work/service-meals/server/utils/buildDateFilter')['default']
   const describe: typeof import('vitest')['describe']
   const expect: typeof import('vitest')['expect']
+  const getRole: typeof import('/Users/gurieveugen/work/service-meals/server/utils/getRole')['default']
   const getUserId: typeof import('/Users/gurieveugen/work/service-meals/server/utils/getUserId')['default']
   const issueAccessToken: typeof import('/Users/gurieveugen/work/service-meals/server/utils/issueAccessToken')['default']
   const it: typeof import('vitest')['it']
