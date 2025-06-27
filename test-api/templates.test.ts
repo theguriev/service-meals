@@ -1,3 +1,4 @@
+let templateId: string;
 describe.sequential("Templates API", () => {
   describe("POST /templates", async () => {
     it("should create a new template (200)", async () => {
@@ -16,6 +17,8 @@ describe.sequential("Templates API", () => {
           expect(response.status).toBe(200);
           expect(response._data.data).toHaveProperty("_id");
           expect(response._data.data.name).toBe(newTemplate.name);
+
+          templateId = response._data.data._id; // Store the created template ID for later tests
         },
       });
     });
@@ -53,6 +56,59 @@ describe.sequential("Templates API", () => {
           expect(Array.isArray(response._data)).toBe(true);
           expect(response._data[0]).toHaveProperty("_id");
           expect(response._data[0]).toHaveProperty("name");
+        },
+      });
+    });
+  });
+
+  describe("PUT /templates/:id", () => {
+    it("should update a template by id (200)", async () => {
+      const updatedData = { name: "Updated Template Name" };
+      await $fetch(`/templates/${templateId}`, {
+        method: "PUT",
+        baseURL: process.env.API_URL,
+        body: updatedData,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.data).toHaveProperty("_id");
+          expect(response._data.data.name).toBe(updatedData.name);
+        },
+      });
+    });
+
+    it("should return 400 for invalid id", async () => {
+      await $fetch("/templates/invalid_id", {
+        method: "PUT",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        body: { name: "Should Fail" },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+
+    it("should return 404 for non-existent id", async () => {
+      const nonExistentId = "60d21b4667d0d8992e610c85";
+      await $fetch(`/templates/${nonExistentId}`, {
+        method: "PUT",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        body: { name: "Should Not Exist" },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(404);
         },
       });
     });

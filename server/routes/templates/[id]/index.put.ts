@@ -31,6 +31,6 @@ export default defineEventHandler(async (event) => {
 
   return {
     message: "Item updated successfully",
-    ingredient: updated,
+    data: updated,
   };
 });
