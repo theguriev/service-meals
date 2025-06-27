@@ -11,12 +11,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
 
-  const resultTemplate = await ModelMeals.deleteOne({
+  const resultTemplate = await ModelTemplate.deleteOne({
     _id: new ObjectId(id),
   });
 
   return {
     message: "Item deleted successfully",
-    deletedMeals: resultTemplate,
+    deletedTemplates: resultTemplate,
   };
 });
