@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 
 const updateSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
+  templateId: z.string().optional(),
 });
 
 export default defineEventHandler(async (event) => {

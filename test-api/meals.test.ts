@@ -21,6 +21,27 @@ describe.sequential("Meals API", () => {
       });
     });
 
+    it("should create a new meal with template ID", async () => {
+      const newMeal = {
+        name: "Test Meal",
+        templateId: "605c72ef29592b001c000001",
+      };
+      await $fetch("/meals", {
+        baseURL: process.env.API_URL,
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        body: newMeal,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.message).toBe("Item added successfully");
+          expect(response._data.data).toMatchObject(newMeal);
+        },
+      });
+    });
+
     it("should return a validation error if name is missing", async () => {
       await $fetch("/meals", {
         baseURL: process.env.API_URL,

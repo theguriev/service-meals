@@ -1,5 +1,6 @@
 const validationSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  templateId: z.string().optional(),
 });
 
 export default defineEventHandler(async (event) => {
