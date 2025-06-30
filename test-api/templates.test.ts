@@ -61,6 +61,75 @@ describe.sequential("Templates API", () => {
     });
   });
 
+  describe("GET /templates/:id", () => {
+    it("should return a template by id (200)", async () => {
+      await $fetch(`/templates/${templateId}`, {
+        method: "GET",
+        baseURL: process.env.API_URL,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data).toHaveProperty("_id");
+          expect(response._data).toHaveProperty("name");
+          expect(response._data._id).toBe(templateId);
+          // Проверяем, что meals заполнились через populate (если есть)
+          if (response._data.meals) {
+            expect(Array.isArray(response._data.meals)).toBe(true);
+          }
+        },
+      });
+    });
+
+    it("should return 400 for invalid id", async () => {
+      await $fetch("/templates/invalid_id", {
+        method: "GET",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+
+    it("should return 404 for non-existent id", async () => {
+      const nonExistentId = "60d21b4667d0d8992e610c85";
+      await $fetch(`/templates/${nonExistentId}`, {
+        method: "GET",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(404);
+        },
+      });
+    });
+
+    it("should return 403 for non-admin user", async () => {
+      await $fetch(`/templates/${templateId}`, {
+        method: "GET",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(403);
+        },
+      });
+    });
+  });
+
   describe("PUT /templates/:id", () => {
     it("should update a template by id (200)", async () => {
       const updatedData = { name: "Updated Template Name" };
