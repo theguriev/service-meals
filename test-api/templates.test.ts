@@ -63,6 +63,53 @@ describe.sequential("Templates API", () => {
 
   describe("GET /templates/:id", () => {
     it("should return a template by id (200)", async () => {
+      let mealId = "";
+      await $fetch("/meals", {
+        method: "POST",
+        baseURL: process.env.API_URL,
+        body: { name: "Test Meal for Template", templateId },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          mealId = response._data.data._id;
+        },
+      });
+
+      let categoryId = "";
+      await $fetch(`/categories/${mealId}`, {
+        method: "POST",
+        baseURL: process.env.API_URL,
+        body: { name: "Test Category" },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          categoryId = response._data.data._id;
+        },
+      });
+
+      let ingredientId = "";
+      await $fetch(`/ingredients/${categoryId}`, {
+        method: "POST",
+        baseURL: process.env.API_URL,
+        body: {
+          name: "Test Ingredient",
+          calories: 100,
+          proteins: 10,
+          grams: 50,
+        },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          ingredientId = response._data.data._id;
+        },
+      });
+
       await $fetch(`/templates/${templateId}`, {
         method: "GET",
         baseURL: process.env.API_URL,
@@ -75,10 +122,18 @@ describe.sequential("Templates API", () => {
           expect(response._data).toHaveProperty("_id");
           expect(response._data).toHaveProperty("name");
           expect(response._data._id).toBe(templateId);
-          // Проверяем, что meals заполнились через populate (если есть)
-          if (response._data.meals) {
-            expect(Array.isArray(response._data.meals)).toBe(true);
-          }
+          expect(Array.isArray(response._data.meals)).toBe(true);
+          expect(response._data.meals.length === 1).toBe(true);
+          expect(response._data.meals[0]).toHaveProperty("_id");
+          expect(Array.isArray(response._data.meals[0].categories)).toBe(true);
+          expect(response._data.meals[0].categories.length === 1).toBe(true);
+          expect(response._data.meals[0].categories[0]).toHaveProperty("_id");
+          expect(
+            Array.isArray(response._data.meals[0].categories[0].ingredients)
+          ).toBe(true);
+          expect(
+            response._data.meals[0].categories[0].ingredients.length === 1
+          ).toBe(true);
         },
       });
     });
