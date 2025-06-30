@@ -707,12 +707,28 @@
         "properties": {
           "message": {
             "type": "string",
-            "example": "Item deleted successfully"
+            "example": "Template and all related data deleted successfully"
           },
           "deletedTemplates": {
             "$ref": "#/components/schemas/MongoDeleteResult"
+          },
+          "deletedMeals": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
+          },
+          "deletedCategories": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
+          },
+          "deletedIngredients": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
           }
-        }
+        },
+        "required": [
+          "message",
+          "deletedTemplates",
+          "deletedMeals",
+          "deletedCategories",
+          "deletedIngredients"
+        ]
       }
     },
     "securitySchemes": {
@@ -2132,7 +2148,8 @@
         }
       },
       "delete": {
-        "summary": "Delete a template",
+        "summary": "Delete a template and all related data",
+        "description": "Deletes a template and cascades deletion to all related meals, categories, and ingredients",
         "tags": ["Templates"],
         "parameters": [
           {
@@ -2149,7 +2166,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Template deleted successfully",
+            "description": "Template and all related data deleted successfully",
             "content": {
               "application/json": {
                 "schema": {

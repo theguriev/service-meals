@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     { $match: { _id: new ObjectId(id) } },
     {
       $lookup: {
-        from: "meals", // имя коллекции meals в MongoDB
+        from: "meals",
         localField: "_id",
         foreignField: "templateId",
         as: "meals",
