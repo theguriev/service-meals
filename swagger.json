@@ -729,6 +729,76 @@
           "deletedCategories",
           "deletedIngredients"
         ]
+      },
+      "TemplateApplyInput": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "ID of the user to apply the template to",
+            "minLength": 1,
+            "example": "user123"
+          }
+        },
+        "required": ["userId"]
+      },
+      "TemplateApplyResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Template applied successfully"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "templateId": {
+                "type": "string",
+                "example": "605c72ef29592b001c000000"
+              },
+              "userId": {
+                "type": "string",
+                "example": "user123"
+              },
+              "applied": {
+                "type": "object",
+                "properties": {
+                  "meals": {
+                    "type": "integer",
+                    "example": 2
+                  },
+                  "categories": {
+                    "type": "integer",
+                    "example": 4
+                  },
+                  "ingredients": {
+                    "type": "integer",
+                    "example": 12
+                  }
+                }
+              },
+              "createdMeals": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Meal"
+                }
+              },
+              "summary": {
+                "type": "object",
+                "properties": {
+                  "templateName": {
+                    "type": "string",
+                    "example": "Daily Meal Template"
+                  },
+                  "appliedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -2197,6 +2267,88 @@
           },
           "404": {
             "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates/{id}/apply": {
+      "post": {
+        "summary": "Apply a template to a specific user",
+        "description": "Creates a copy of all template data (meals, categories, ingredients) and assigns it to the specified user",
+        "tags": ["Templates"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the template to apply",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "605c72ef29592b001c000000"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateApplyInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template applied successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateApplyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template ID or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to apply template",
             "content": {
               "application/json": {
                 "schema": {

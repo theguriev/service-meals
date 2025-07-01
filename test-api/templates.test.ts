@@ -236,6 +236,110 @@ describe.sequential("Templates API", () => {
     });
   });
 
+  describe("POST /templates/:id/apply", () => {
+    it("should apply template to user (200)", async () => {
+      const targetUserId = "test_user_123";
+
+      await $fetch(`/templates/${templateId}/apply`, {
+        method: "POST",
+        baseURL: process.env.API_URL,
+        body: { userId: targetUserId },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          console.log("log: response 🚀", response, response._data);
+          expect(response.status).toBe(200);
+          expect(response._data.message).toBe("Template applied successfully");
+          expect(response._data.data).toHaveProperty("templateId");
+          expect(response._data.data).toHaveProperty("userId");
+          expect(response._data.data.userId).toBe(targetUserId);
+          expect(response._data.data.templateId).toBe(templateId);
+          expect(response._data.data.applied).toHaveProperty("meals");
+          expect(response._data.data.applied).toHaveProperty("categories");
+          expect(response._data.data.applied).toHaveProperty("ingredients");
+          expect(response._data.data.applied.meals).toBeGreaterThan(0);
+          expect(Array.isArray(response._data.data.createdMeals)).toBe(true);
+          expect(response._data.data.createdMeals.length).toBe(
+            response._data.data.applied.meals
+          );
+          response._data.data.createdMeals.forEach((meal) => {
+            expect(meal.userId).toBe(targetUserId);
+            expect(meal.templateId).toBe(null);
+          });
+          expect(response._data.data.summary).toHaveProperty("templateName");
+          expect(response._data.data.summary).toHaveProperty("appliedAt");
+        },
+      });
+    });
+
+    it("should return 400 for invalid template id", async () => {
+      await $fetch("/templates/invalid_id/apply", {
+        method: "POST",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        body: { userId: "test_user" },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+
+    it("should return 400 for missing userId", async () => {
+      await $fetch(`/templates/${templateId}/apply`, {
+        method: "POST",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        body: {}, // Missing userId
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+
+    it("should return 404 for non-existent template", async () => {
+      const nonExistentId = "60d21b4667d0d8992e610c85";
+      await $fetch(`/templates/${nonExistentId}/apply`, {
+        method: "POST",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        body: { userId: "test_user" },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(404);
+        },
+      });
+    });
+
+    it("should return 403 for non-admin user", async () => {
+      await $fetch(`/templates/${templateId}/apply`, {
+        method: "POST",
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        body: { userId: "test_user" },
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(403);
+        },
+      });
+    });
+  });
+
   describe("DELETE /templates/:id", () => {
     it("should delete template and all related data (200)", async () => {
       let testTemplateId = "";
