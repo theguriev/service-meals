@@ -7,7 +7,7 @@ describe.sequential("Ingredients API", () => {
     // First, ensure a meal exists to associate the category with
     // For simplicity, we assume a meal might exist or create one if necessary.
     // Here, we'll use a placeholder mealId, assuming it's managed elsewhere or not strictly needed for category creation in this context.
-    const mealIdForCategory = "mealForCategory123";
+    const mealIdForCategory = "685950e525652632670bc23c";
     const newCategory = { name: "Test Category for Ingredients" };
     await $fetch(`/categories/${mealIdForCategory}`, {
       baseURL: process.env.API_URL,

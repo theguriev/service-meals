@@ -1,5 +1,5 @@
 let categoryId;
-let testMealId = "testMeal123"; // Static mealId for testing purposes
+let testMealId = "685950e525652632670bc78c"; // Static mealId for testing purposes
 
 describe.sequential("Categories API", () => {
   describe("POST /categories/{mealId}", () => {
