@@ -8,7 +8,7 @@ const schema = new Schema(
       ref: "User",
     },
     categoryId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "Category",
     },

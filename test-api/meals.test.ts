@@ -9,7 +9,7 @@ describe.sequential("Meals API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: newMeal,
         onResponse: ({ response }) => {
@@ -21,6 +21,27 @@ describe.sequential("Meals API", () => {
       });
     });
 
+    it("should create a new meal with template ID", async () => {
+      const newMeal = {
+        name: "Test Meal",
+        templateId: "605c72ef29592b001c000001",
+      };
+      await $fetch("/meals", {
+        baseURL: process.env.API_URL,
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        body: newMeal,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.message).toBe("Item added successfully");
+          expect(response._data.data).toMatchObject(newMeal);
+        },
+      });
+    });
+
     it("should return a validation error if name is missing", async () => {
       await $fetch("/meals", {
         baseURL: process.env.API_URL,
@@ -28,7 +49,7 @@ describe.sequential("Meals API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: {},
         onResponse: ({ response }) => {
@@ -46,7 +67,7 @@ describe.sequential("Meals API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: { name: "Meal 1" },
       });
@@ -56,7 +77,7 @@ describe.sequential("Meals API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: { name: "Meal 2" },
       });
@@ -66,7 +87,7 @@ describe.sequential("Meals API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -83,7 +104,7 @@ describe.sequential("Meals API", () => {
           method: "POST",
           headers: {
             Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+            Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
           },
           body: { name: `[loop] Meal ${i}` },
         });
@@ -97,7 +118,7 @@ describe.sequential("Meals API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         query: { offset, limit },
         onResponse: ({ response }) => {
@@ -114,7 +135,7 @@ describe.sequential("Meals API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -137,7 +158,7 @@ describe.sequential("Meals API", () => {
           method: "POST",
           headers: {
             Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+            Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
           },
           body: newMeal,
           onResponse: ({ response }) => {
@@ -152,7 +173,7 @@ describe.sequential("Meals API", () => {
           method: "POST",
           headers: {
             Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+            Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
           },
           body: { name: `Paginated Category ${i + 1} for ${id}` },
           onResponse: ({ response }) => {
@@ -165,7 +186,7 @@ describe.sequential("Meals API", () => {
             method: "POST",
             headers: {
               Accept: "application/json",
-              Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+              Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
             },
             body: {
               name: `Paginated Ingredient ${j + 1}`,
@@ -182,7 +203,7 @@ describe.sequential("Meals API", () => {
         method: "GET" as any, // Add type assertion here
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -209,7 +230,7 @@ describe.sequential("Meals API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(404);
@@ -226,7 +247,7 @@ describe.sequential("Meals API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);
@@ -244,7 +265,7 @@ describe.sequential("Meals API", () => {
         method: "PUT",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: updatedMealData,
         onResponse: ({ response }) => {
@@ -264,7 +285,7 @@ describe.sequential("Meals API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: updatedMealData,
         onResponse: ({ response }) => {
@@ -283,7 +304,7 @@ describe.sequential("Meals API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: updatedMealData,
         onResponse: ({ response }) => {
@@ -301,7 +322,7 @@ describe.sequential("Meals API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         body: updatedMealData,
         onResponse: ({ response }) => {
@@ -319,7 +340,7 @@ describe.sequential("Meals API", () => {
         method: "DELETE",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -331,7 +352,7 @@ describe.sequential("Meals API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -349,7 +370,7 @@ describe.sequential("Meals API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(404);
@@ -366,7 +387,7 @@ describe.sequential("Meals API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);

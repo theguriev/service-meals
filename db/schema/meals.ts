@@ -7,6 +7,11 @@ const schema = new Schema(
       required: true,
       ref: "User",
     },
+    templateId: {
+      type: Schema.Types.ObjectId,
+      required: false,
+      ref: "Template",
+    },
     name: {
       type: String,
       required: true,

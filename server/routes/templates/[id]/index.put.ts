@@ -2,11 +2,13 @@ import { ObjectId } from "mongodb";
 
 const updateSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
-  templateId: z.string().optional(),
 });
 
 export default defineEventHandler(async (event) => {
-  const userId = await getUserId(event);
+  const role = await getRole(event);
+  if (role !== "admin") {
+    throw createError({ statusCode: 403, message: "Forbidden" });
+  }
   const id = getRouterParam(event, "id");
 
   if (!ObjectId.isValid(id)) {
@@ -17,8 +19,8 @@ export default defineEventHandler(async (event) => {
   const validatedBody = await zodValidateBody(event, updateSchema.parse);
 
   // Update the ingredient in the database
-  const updated = await ModelMeals.findOneAndUpdate(
-    { _id: id, userId },
+  const updated = await ModelTemplate.findOneAndUpdate(
+    { _id: id },
     { $set: validatedBody },
     { new: true }
   );
@@ -29,6 +31,6 @@ export default defineEventHandler(async (event) => {
 
   return {
     message: "Item updated successfully",
-    ingredient: updated,
+    data: updated,
   };
 });

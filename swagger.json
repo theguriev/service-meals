@@ -625,6 +625,180 @@
             "example": "Set deleted successfully"
           }
         }
+      },
+      "Template": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the template (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the template",
+            "example": "Daily Meal Template"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the template was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the template was last updated",
+            "readOnly": true
+          }
+        },
+        "required": ["name"]
+      },
+      "TemplateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the template",
+            "minLength": 1,
+            "example": "Weekly Meal Plan"
+          }
+        },
+        "required": ["name"]
+      },
+      "TemplateUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the template (optional for update)",
+            "minLength": 1,
+            "example": "Updated Weekly Meal Plan"
+          }
+        }
+      },
+      "TemplateCreationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Item added successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Template"
+          }
+        }
+      },
+      "TemplateUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Item updated successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Template"
+          }
+        }
+      },
+      "TemplateDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Template and all related data deleted successfully"
+          },
+          "deletedTemplates": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
+          },
+          "deletedMeals": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
+          },
+          "deletedCategories": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
+          },
+          "deletedIngredients": {
+            "$ref": "#/components/schemas/MongoDeleteResult"
+          }
+        },
+        "required": [
+          "message",
+          "deletedTemplates",
+          "deletedMeals",
+          "deletedCategories",
+          "deletedIngredients"
+        ]
+      },
+      "TemplateApplyInput": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "ID of the user to apply the template to",
+            "minLength": 1,
+            "example": "user123"
+          }
+        },
+        "required": ["userId"]
+      },
+      "TemplateApplyResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Template applied successfully"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "templateId": {
+                "type": "string",
+                "example": "605c72ef29592b001c000000"
+              },
+              "userId": {
+                "type": "string",
+                "example": "user123"
+              },
+              "applied": {
+                "type": "object",
+                "properties": {
+                  "meals": {
+                    "type": "integer",
+                    "example": 2
+                  },
+                  "categories": {
+                    "type": "integer",
+                    "example": 4
+                  },
+                  "ingredients": {
+                    "type": "integer",
+                    "example": 12
+                  }
+                }
+              },
+              "createdMeals": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Meal"
+                }
+              },
+              "summary": {
+                "type": "object",
+                "properties": {
+                  "templateName": {
+                    "type": "string",
+                    "example": "Daily Meal Template"
+                  },
+                  "appliedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -1794,6 +1968,387 @@
           },
           "404": {
             "description": "Ingredient or Category not found, or access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates": {
+      "post": {
+        "summary": "Create a new template",
+        "tags": ["Templates"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateCreationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a list of templates",
+        "tags": ["Templates"],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of templates to skip for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of templates to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Template"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates/{id}": {
+      "get": {
+        "summary": "Get a specific template by ID",
+        "tags": ["Templates"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the template to retrieve",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "605c72ef29592b001c000000"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested template",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Template"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing template",
+        "tags": ["Templates"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the template to update",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "605c72ef29592b001c000000"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateUpdateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a template and all related data",
+        "description": "Deletes a template and cascades deletion to all related meals, categories, and ingredients",
+        "tags": ["Templates"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the template to delete",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "605c72ef29592b001c000000"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template and all related data deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateDeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates/{id}/apply": {
+      "post": {
+        "summary": "Apply a template to a specific user",
+        "description": "Creates a copy of all template data (meals, categories, ingredients) and assigns it to the specified user",
+        "tags": ["Templates"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the template to apply",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "605c72ef29592b001c000000"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateApplyInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template applied successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateApplyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template ID or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to apply template",
             "content": {
               "application/json": {
                 "schema": {

@@ -15,6 +15,7 @@ import type { FetchOptions } from "ofetch";
 import { fileURLToPath } from "mlly";
 import { joinURL } from "ufo";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import { adminId, regularId } from "./constants";
 
 interface Context {
   preset: string;
@@ -47,8 +48,12 @@ const ctx: Context = {
     SECRET: "gurievcreative",
     PORT: "4000",
     API_URL: "http://localhost:4000",
-    VALID_ACCESS_TOKEN: issueAccessToken(
-      { userId: 123 },
+    VALID_ADMIN_ACCESS_TOKEN: issueAccessToken(
+      { userId: adminId, role: "admin", id: adminId },
+      { secret: "gurievcreative" }
+    ),
+    VALID_REGULAR_ACCESS_TOKEN: issueAccessToken(
+      { userId: regularId, role: "user", id: regularId },
       { secret: "gurievcreative" }
     ),
   },
