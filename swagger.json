@@ -27,6 +27,11 @@
             "description": "Identifier of the user who owns the meal",
             "example": "user123"
           },
+          "templateId": {
+            "type": "string",
+            "description": "Identifier of the template this meal belongs to (optional)",
+            "example": "605c72ef29592b001c000001"
+          },
           "name": {
             "type": "string",
             "description": "Name of the meal",
@@ -55,6 +60,11 @@
             "description": "Name of the meal",
             "minLength": 1,
             "example": "Chicken Salad"
+          },
+          "templateId": {
+            "type": "string",
+            "description": "Identifier of the template this meal belongs to (optional)",
+            "example": "605c72ef29592b001c000001"
           }
         },
         "required": ["name"]
@@ -67,6 +77,11 @@
             "description": "Name of the meal (optional for update)",
             "minLength": 1,
             "example": "Deluxe Chicken Salad"
+          },
+          "templateId": {
+            "type": "string",
+            "description": "Identifier of the template this meal belongs to (optional)",
+            "example": "605c72ef29592b001c000001"
           }
         }
       },
@@ -116,6 +131,11 @@
             "type": "string",
             "description": "Identifier of the user who owns the meal",
             "example": "user123"
+          },
+          "templateId": {
+            "type": "string",
+            "description": "Identifier of the template this meal belongs to (optional)",
+            "example": "605c72ef29592b001c000001"
           },
           "name": {
             "type": "string",
