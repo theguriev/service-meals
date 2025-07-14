@@ -6,7 +6,8 @@
     "prepare": "nitro prepare",
     "preview": "node .output/server/index.mjs",
     "test:api": "NODE_OPTIONS=\"--enable-source-maps --experimental-vm-modules\" vitest run -c vitest.api.ts",
-    "copy-paste-check": "jscpd  --ignore 'node_modules,.next,.vscode' ."
+    "copy-paste-check": "jscpd  --ignore 'node_modules,.next,.vscode' .",
+    "migrate": "nitro task run db:create-woman-50-60kg-template --payload \"{}\""
   },
   "devDependencies": {
     "jscpd": "^4.0.5",
