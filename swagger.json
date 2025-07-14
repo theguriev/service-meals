@@ -895,6 +895,16 @@
               "type": "integer",
               "default": 10
             }
+          },
+          {
+            "name": "templateId",
+            "in": "query",
+            "description": "Filter meals by template ID (available only for admin users)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000001"
+            }
           }
         ],
         "responses": {
@@ -913,6 +923,16 @@
           },
           "400": {
             "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required for templateId filter",
             "content": {
               "application/json": {
                 "schema": {
