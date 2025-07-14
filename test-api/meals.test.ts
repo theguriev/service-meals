@@ -1,4 +1,5 @@
-let id;
+export { };
+let id: string | undefined;
 
 describe.sequential("Meals API", () => {
   describe("POST /meals", () => {
@@ -144,6 +145,38 @@ describe.sequential("Meals API", () => {
         },
       });
     });
+
+    it("should return 403 if not admin on template meals retrieving", async () => {
+      await $fetch("/meals", {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        query: { templateId: "6808bcfb77143eceb802c5a8" },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(403);
+        },
+      });
+    });
+
+    it("should return 200 if admin on template meals retrieving", async () => {
+      await $fetch("/meals", {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        query: { templateId: "6808bcfb77143eceb802c5a8" },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response._data)).toBe(true);
+        },
+      });
+    });
   });
 
   describe("GET /meals/:id", () => {
@@ -166,7 +199,7 @@ describe.sequential("Meals API", () => {
           },
         });
       }
-      let testCategoryId;
+      let testCategoryId: string;
       for (let i = 0; i < 5; i++) {
         await $fetch(`/categories/${id}`, {
           baseURL: process.env.API_URL,
