@@ -7,7 +7,11 @@
     "preview": "node .output/server/index.mjs",
     "test:api": "NODE_OPTIONS=\"--enable-source-maps --experimental-vm-modules\" vitest run -c vitest.api.ts",
     "copy-paste-check": "jscpd  --ignore 'node_modules,.next,.vscode' .",
-    "migrate": "nitro task run db:create-woman-50-60kg-template --payload \"{}\""
+    "migrate": "nitro task run migrations:run-template-migrations --payload \"{}\"",
+    "migrate:validate": "nitro task run templates:validate-templates --payload \"{}\"",
+    "migrate:generate": "nitro task run templates:generate-template --payload \"{\\\"name\\\":\\\"New Template\\\"}\"",
+    "migrate:create": "nitro task run migrations:create-migration --payload \"{\\\"templateName\\\":\\\"Example Template\\\"}\"",
+    "migrate:clear": "nitro task run db:clear-templates --payload \"{\\\"confirm\\\":true}\""
   },
   "devDependencies": {
     "jscpd": "^4.0.5",
