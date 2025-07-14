@@ -17,8 +17,8 @@ export default defineEventHandler(async (event) => {
   if (templateId && role != "admin") {
     throw createError({
       statusCode: 403,
-      statusMessage: "Access denied",
-      message: "Only admins can access template meals.",
+      statusMessage: "Forbidden",
+      message: "Forbidden - Admin access required for templateId filter",
     });
   }
 
