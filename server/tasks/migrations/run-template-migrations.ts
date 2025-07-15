@@ -136,6 +136,7 @@ async function processTemplateFile(
   // Проверяем, существует ли шаблон с таким именем
   const existingTemplate = await ModelTemplate.findOne({
     name: templateData.name,
+    userId: templateUserId,
   });
   if (existingTemplate) {
     console.log(
@@ -149,6 +150,7 @@ async function processTemplateFile(
   const template = new ModelTemplate({
     name: templateData.name,
     description: templateData.description,
+    userId: templateUserId,
   });
   const savedTemplate = await template.save();
   console.log(
