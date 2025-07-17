@@ -1,12 +1,45 @@
-import { defineConfig } from "vitest/config";
-import Unimport from "unimport/unplugin";
 import { resolve } from "pathe";
+import Unimport from "unimport/unplugin";
+import { defineConfig } from "vitest/config";
 import { imports } from "./constants";
 
 export default defineConfig({
   plugins: [
     Unimport.vite({
-      imports: [...imports, { name: "$fetch", from: "ofetch" }],
+      imports: [
+        ...imports,
+        { name: "$fetch", from: "ofetch" },
+        {
+          name: "default",
+          as: "ModelMeals",
+          from: "./db/model/meals.ts",
+        },
+        {
+          name: "default",
+          as: "ModelCategories",
+          from: "./db/model/categories.ts",
+        },
+        {
+          name: "default",
+          as: "ModelIngredients",
+          from: "./db/model/ingredients.ts",
+        },
+        {
+          name: "default",
+          as: "schemaMeals",
+          from: "./db/schema/meals.ts",
+        },
+        {
+          name: "default",
+          as: "schemaCategories",
+          from: "./db/schema/categories.ts",
+        },
+        {
+          name: "default",
+          as: "schemaIngredients",
+          from: "./db/schema/ingredients.ts",
+        }
+      ],
       dirs: ["./server/utils"],
       dts: true,
     }),
