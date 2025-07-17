@@ -99,7 +99,7 @@ export const ingredientsTestData = [
   },
 ] satisfies Omit<InferSchemaType<typeof schemaIngredients> & {
   _id: Types.ObjectId;
-}, "createdAt" | "updatedAt">[]
+}, "createdAt" | "updatedAt">[];
 
 export async function clearTestData() {
   try {
