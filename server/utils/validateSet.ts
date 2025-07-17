@@ -18,7 +18,6 @@ const validateSet = async (sets?: {
       [categoryId.toString()]: currentValue + (set.value || 0),
     };
   }, {});
-  console.log(ingredients, categoryValues)
 
   return !Object.values(categoryValues ?? {}).some(value => value > 1);
 };
