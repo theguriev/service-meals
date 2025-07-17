@@ -1,3 +1,5 @@
+import validateSet from "~/utils/validateSet";
+
 const validationSchema = z.object({
   ingredients: z
     .array(
@@ -12,6 +14,21 @@ const validationSchema = z.object({
 export default defineEventHandler(async (event) => {
   const userId = await getUserId(event);
   const validatedBody = await zodValidateBody(event, validationSchema.parse);
+
+  const ids = validatedBody.ingredients?.map((i) => i.id);
+  if (ids.length !== new Set(ids).size) {
+    throw createError({
+      statusCode: 400,
+      message: "Duplicate ingredient IDs are not allowed",
+    });
+  }
+
+  if (!(await validateSet(validatedBody.ingredients))) {
+    throw createError({
+      statusCode: 400,
+      message: "Invalid ingredient values per category",
+    });
+  }
 
   const doc = new ModelSets({
     userId,

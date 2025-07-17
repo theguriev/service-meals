@@ -22,6 +22,21 @@ export default defineEventHandler(async (event) => {
   // Validate the request body
   const validatedBody = await zodValidateBody(event, updateSchema.parse);
 
+  const ids = validatedBody.ingredients?.map((i) => i.id);
+  if (ids.length !== new Set(ids).size) {
+    throw createError({
+      statusCode: 400,
+      message: "Duplicate ingredient IDs are not allowed",
+    });
+  }
+
+  if (!(await validateSet(validatedBody.ingredients))) {
+    throw createError({
+      statusCode: 400,
+      message: "Invalid ingredient values per category",
+    });
+  }
+
   // Update the set in the database
   const updated = await ModelSets.findOneAndUpdate(
     { _id: id, userId },
