@@ -819,6 +819,105 @@
             }
           }
         }
+      },
+      "AdditionalMeal": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the additional meal (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000000"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifier of the user who owns additional meal",
+            "example": "user123"
+          },
+          "content": {
+            "type": "string",
+            "description": "Content of the additional meal",
+            "example": "Extra side of fries"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the additional meal was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the additional meal was last updated",
+            "readOnly": true
+          }
+        },
+        "required": ["_id", "userId", "content", "createdAt", "updatedAt"]
+      },
+      "AdditionalMealInput": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Content of the additional meal",
+            "minLength": 1,
+            "example": "Extra side of fries"
+          }
+        },
+        "required": ["content"]
+      },
+      "AdditionalMealUpdateInput": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Content of the additional meal",
+            "minLength": 1,
+            "example": "Updated side of fries"
+          }
+        },
+        "required": ["content"]
+      },
+      "AdditionalMealCreationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Additional meal added successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AdditionalMeal"
+          }
+        }
+      },
+      "AdditionalMealUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Additional meal updated successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AdditionalMeal"
+          }
+        }
+      },
+      "AdditionalMealResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AdditionalMeal"
+          }
+        }
+      },
+      "AdditionalMealDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Additional meal deleted successfully"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -2389,6 +2488,271 @@
           },
           "500": {
             "description": "Failed to apply template",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/additional-meals": {
+      "post": {
+        "summary": "Create a new additional meal",
+        "tags": ["Additional Meals"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdditionalMealInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Additional meal created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdditionalMealCreationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a list of additional meals",
+        "tags": ["Additional Meals"],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of additional meals to skip for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of additional meals to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Filter additional meals created after this date (ISO 8601 format)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Filter additional meals created before this date (ISO 8601 format)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of additional meals retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdditionalMeal"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/additional-meals/{id}": {
+      "get": {
+        "summary": "Get a specific additional meal by ID",
+        "tags": ["Additional Meals"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the additional meal to retrieve",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Additional meal retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdditionalMealResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid additional meal ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Additional meal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing additional meal",
+        "tags": ["Additional Meals"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the additional meal to update",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdditionalMealUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Additional meal updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdditionalMealUpdateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid additional meal ID format or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Additional meal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a additional meal",
+        "tags": ["Additional Meals"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the additional meal to delete",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Additional meal deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdditionalMealDeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid additional meal ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Additional meal not found",
             "content": {
               "application/json": {
                 "schema": {
