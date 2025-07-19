@@ -2716,7 +2716,7 @@
         }
       },
       "delete": {
-        "summary": "Delete a additional meal",
+        "summary": "Delete an additional meal",
         "tags": ["Additional Meals"],
         "parameters": [
           {
