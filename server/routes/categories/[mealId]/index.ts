@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
   const convertedOffset = Number(offset);
   const convertedLimit = Number(limit);
   const userId = await getUserId(event);
+  const role = await getRole(event);
 
   await zodValidateData(
     {
@@ -17,15 +18,18 @@ export default defineEventHandler(async (event) => {
     },
     querySchema.parse
   );
-  const categoriesRaw = await ModelCategories.find({ mealId, userId })
+  const categoriesRaw = await ModelCategories.find(role === "admin" ? { mealId } : { mealId, userId })
     .limit(convertedLimit)
     .skip(convertedOffset);
   return await Promise.all(
     categoriesRaw.map(async (category: any) => {
-      const ingredients = await ModelIngredients.find({
-        categoryId: category._id,
-        userId,
-      });
+      const ingredients = await ModelIngredients.find(role === "admin"
+        ? { categoryId: category._id }
+        : {
+          categoryId: category._id,
+          userId,
+        }
+      );
       return { ...category.toObject(), ingredients };
     })
   );
