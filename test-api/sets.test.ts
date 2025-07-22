@@ -1,12 +1,14 @@
-let id;
+import { ingredientsTestData } from "../test-db-setup";
+
+let id: string | undefined;
 
 describe.sequential("Sets API", () => {
   describe("POST /sets", () => {
     it("should create a new set", async () => {
       const newSet = {
         ingredients: [
-          { id: "ingr1", value: 10 },
-          { id: "ingr2", value: 5 },
+          { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
         ],
       };
       await $fetch("/sets", {
@@ -59,6 +61,53 @@ describe.sequential("Sets API", () => {
         },
       });
     });
+
+    it("should return a validation error if contains duplicate ids", async () => {
+      const newSet = {
+        ingredients: [
+          { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+        ],
+      };
+
+      await $fetch("/sets", {
+        baseURL: process.env.API_URL,
+        method: "POST",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        body: newSet,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+
+    it("should return a validation error if value for same category is too big", async () => {
+      const newSet = {
+        ingredients: [
+          { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[2]._id.toString(), value: 0.5 },
+        ],
+      };
+
+      await $fetch("/sets", {
+        baseURL: process.env.API_URL,
+        method: "POST",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        body: newSet,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
   });
 
   describe("GET /sets", () => {
@@ -73,8 +122,8 @@ describe.sequential("Sets API", () => {
         },
         body: {
           ingredients: [
-            { id: "set1-ingr1", value: 1 },
-            { id: "set1-ingr2", value: 2 },
+            { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+            { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
           ],
         },
       });
@@ -88,8 +137,8 @@ describe.sequential("Sets API", () => {
         },
         body: {
           ingredients: [
-            { id: "set2-ingr1", value: 3 },
-            { id: "set2-ingr2", value: 4 },
+            { id: ingredientsTestData[2]._id.toString(), value: 0.5 },
+            { id: ingredientsTestData[3]._id.toString(), value: 0.5 },
           ],
         },
       });
@@ -120,8 +169,8 @@ describe.sequential("Sets API", () => {
           },
           body: {
             ingredients: [
-              { id: `loop-set-${i}-ingr1`, value: i },
-              { id: `loop-set-${i}-ingr2`, value: i + 1 },
+              { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+              { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
             ],
           },
         });
@@ -174,7 +223,7 @@ describe.sequential("Sets API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
-        body: { ingredients: [{ id: "date-test-ingr1", value: 1 }] },
+        body: { ingredients: [{ id: ingredientsTestData[0]._id.toString(), value: 1 }] },
       });
 
       const endDate = new Date().toISOString();
@@ -200,7 +249,7 @@ describe.sequential("Sets API", () => {
       // Ensure we have an id from previous tests or create one
       if (!id) {
         const newSet = {
-          ingredients: [{ id: "test-set-for-get-ingr1", value: 1 }],
+          ingredients: [{ id: ingredientsTestData[0]._id.toString(), value: 1 }],
         };
         await $fetch("/sets", {
           baseURL: process.env.API_URL,
@@ -269,8 +318,8 @@ describe.sequential("Sets API", () => {
     it("should update an existing set", async () => {
       const updatedSetData = {
         ingredients: [
-          { id: "updated-ingr1", value: 100 },
-          { id: "updated-ingr2", value: 200 },
+          { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
         ],
       };
       await $fetch(`/sets/${id}`, {
@@ -316,7 +365,7 @@ describe.sequential("Sets API", () => {
     it("should return 404 if trying to update a non-existent set", async () => {
       const nonExistentId = "605c72ef29592b001c000000";
       const updatedSetData = {
-        ingredients: [{ id: "nonexistent-ingr1", value: 1 }],
+        ingredients: [{ id: ingredientsTestData[0]._id.toString(), value: 1 }],
       };
       await $fetch(`/sets/${nonExistentId}`, {
         baseURL: process.env.API_URL,
@@ -336,7 +385,7 @@ describe.sequential("Sets API", () => {
     it("should return 400 if set ID is invalid", async () => {
       const invalidId = "invalid-id-format";
       const updatedSetData = {
-        ingredients: [{ id: "invalid-ingr1", value: 1 }],
+        ingredients: [{ id: ingredientsTestData[0]._id.toString(), value: 1 }],
       };
       await $fetch(`/sets/${invalidId}`, {
         baseURL: process.env.API_URL,
@@ -350,6 +399,53 @@ describe.sequential("Sets API", () => {
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);
           expect(response._data.message).toBe("Invalid set ID");
+        },
+      });
+    });
+
+    it("should return a validation error if contains duplicate ids", async () => {
+      const updatedSetData = {
+        ingredients: [
+          { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+        ],
+      };
+
+      await $fetch(`/sets/${id}`, {
+        baseURL: process.env.API_URL,
+        method: "PUT",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        body: updatedSetData,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+
+    it("should return a validation error if value for same category is too big", async () => {
+      const updatedSetData = {
+        ingredients: [
+          { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[2]._id.toString(), value: 0.5 },
+        ],
+      };
+
+      await $fetch(`/sets/${id}`, {
+        baseURL: process.env.API_URL,
+        method: "PUT",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        body: updatedSetData,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
         },
       });
     });
