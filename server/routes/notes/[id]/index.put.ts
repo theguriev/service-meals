@@ -1,5 +1,5 @@
 const validationSchema = z.object({
-  content: z.string().min(1, "Content is required").optional(),
+  content: z.string().min(1, "Content is required"),
 });
 
 export default defineEventHandler(async (event) => {
