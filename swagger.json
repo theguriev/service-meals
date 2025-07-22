@@ -2506,7 +2506,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas"
+                    "$ref": "#/components/schemas/Note"
                   }
                 }
               }
