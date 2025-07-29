@@ -249,7 +249,6 @@ describe.sequential("Templates API", () => {
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
-          console.log("log: response 🚀", response, response._data);
           expect(response.status).toBe(200);
           expect(response._data.message).toBe("Template applied successfully");
           expect(response._data.data).toHaveProperty("templateId");

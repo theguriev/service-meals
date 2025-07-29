@@ -6,9 +6,12 @@ export const mealTestData = {
   _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2c9"),
   name: "Test Meal",
   userId: regularId,
-} satisfies Omit<InferSchemaType<typeof schemaMeals> & {
-  _id: Types.ObjectId;
-}, "createdAt" | "updatedAt">;
+} satisfies Omit<
+  InferSchemaType<typeof schemaMeals> & {
+    _id: Types.ObjectId;
+  },
+  "createdAt" | "updatedAt"
+>;
 
 export const categoriesTestData = [
   {
@@ -29,9 +32,12 @@ export const categoriesTestData = [
     mealId: mealTestData._id,
     userId: regularId,
   },
-] satisfies Omit<InferSchemaType<typeof schemaCategories> & {
-  _id: Types.ObjectId;
-}, "createdAt" | "updatedAt">[];
+] satisfies Omit<
+  InferSchemaType<typeof schemaCategories> & {
+    _id: Types.ObjectId;
+  },
+  "createdAt" | "updatedAt"
+>[];
 
 export const ingredientsTestData = [
   {
@@ -97,15 +103,62 @@ export const ingredientsTestData = [
     proteins: 70,
     grams: 350,
   },
-] satisfies Omit<InferSchemaType<typeof schemaIngredients> & {
-  _id: Types.ObjectId;
-}, "createdAt" | "updatedAt">[];
+] satisfies Omit<
+  InferSchemaType<typeof schemaIngredients> & {
+    _id: Types.ObjectId;
+  },
+  "createdAt" | "updatedAt"
+>[];
+
+export const notesTestData = [
+  {
+    _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2d0"),
+    content: "Today's note - should appear in default filter",
+    userId: regularId,
+    createdAt: new Date(), // Today
+    updatedAt: new Date(),
+  },
+  {
+    _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2d1"),
+    content: "Another note from today with search term test",
+    userId: regularId,
+    createdAt: new Date(), // Today
+    updatedAt: new Date(),
+  },
+  {
+    _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2d2"),
+    content: "Yesterday's note - should not appear in default filter",
+    userId: regularId,
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
+    updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+  },
+  {
+    _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2d3"),
+    content: "Note from 3 days ago with important info",
+    userId: regularId,
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+    updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+  },
+  {
+    _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2d4"),
+    content: "Old note from last week",
+    userId: regularId,
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+    updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+  },
+] satisfies Omit<
+  InferSchemaType<typeof schemaNotes> & {
+    _id: Types.ObjectId;
+  },
+  ""
+>[];
 
 export async function clearTestData() {
   try {
     await ModelIngredients.deleteMany({});
     await ModelCategories.deleteMany({});
     await ModelMeals.deleteMany({});
+    await ModelNotes.deleteMany({});
     console.log(
       "\x1b[32m%s\x1b[0m",
       "✓",
@@ -122,6 +175,7 @@ export async function seedTestData() {
     await ModelMeals.create(mealTestData);
     await ModelCategories.create(categoriesTestData);
     await ModelIngredients.create(ingredientsTestData);
+    await ModelNotes.create(notesTestData);
     console.log("\x1b[32m%s\x1b[0m", "✓", "Test database seeded successfully.");
   } catch (error) {
     console.error("Error seeding test database:", error);
@@ -132,4 +186,15 @@ export async function seedTestData() {
     }
     throw error;
   }
+}
+
+// Helper function to create note with specific date for testing
+export function createNoteWithDate(content: string, daysAgo: number = 0) {
+  const date = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+  return {
+    content,
+    userId: regularId,
+    createdAt: date,
+    updatedAt: date,
+  };
 }
