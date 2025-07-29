@@ -6,7 +6,12 @@ const querySchema = z.object({
   includeAllDates: z.coerce.boolean().default(false),
 });
 
-const getFilter = (search: string, userId: string, date: string | undefined, includeAllDates: boolean) => {
+const getFilter = (
+  search: string,
+  userId: string,
+  date: string | undefined,
+  includeAllDates: boolean
+) => {
   const filter: any = { userId };
 
   // Add search filter
@@ -19,7 +24,7 @@ const getFilter = (search: string, userId: string, date: string | undefined, inc
     const targetDate = date ? new Date(date) : new Date();
     const startOfDay = new Date(targetDate);
     startOfDay.setHours(0, 0, 0, 0);
-    
+
     const endOfDay = new Date(targetDate);
     endOfDay.setHours(23, 59, 59, 999);
 
@@ -33,10 +38,8 @@ const getFilter = (search: string, userId: string, date: string | undefined, inc
 };
 
 export default defineEventHandler(async (event) => {
-  const { offset, limit, search, date, includeAllDates } = await zodValidateData(
-    getQuery(event),
-    querySchema.parse
-  );
+  const { offset, limit, search, date, includeAllDates } =
+    await zodValidateData(getQuery(event), querySchema.parse);
 
   const userId = await getUserId(event);
 

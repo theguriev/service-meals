@@ -99,8 +99,8 @@ describe("Notes API", () => {
           Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
-          console.log("log: respnse 1", response._data);
           expect(Array.isArray(response._data)).toBe(true);
+          expect(response._data.length).toBeLessThan(4);
         },
       });
     });
@@ -113,8 +113,8 @@ describe("Notes API", () => {
           Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
-          console.log("log: respnse 2", response._data);
           expect(Array.isArray(response._data)).toBe(true);
+          expect(response._data.length).toBeGreaterThan(4);
         },
       });
     });
@@ -128,7 +128,39 @@ describe("Notes API", () => {
         },
         onResponse: ({ response }) => {
           expect(Array.isArray(response._data)).toBe(true);
-          // Should only return today's notes by default
+        },
+      });
+    });
+
+    it("should return more notes when includeAllDates=true", async () => {
+      await $fetch("/notes?includeAllDates=true", {
+        baseURL: process.env.API_URL,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(Array.isArray(response._data)).toBe(true);
+          expect(response._data.length).toBeGreaterThanOrEqual(5);
+        },
+      });
+    });
+
+    it("should filter notes by specific date", async () => {
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+      await $fetch(`/notes?date=${yesterdayStr}`, {
+        baseURL: process.env.API_URL,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(Array.isArray(response._data)).toBe(true);
+          if (response._data.length > 0) {
+            expect(response._data[0].content).toContain("Yesterday's note");
+          }
         },
       });
     });

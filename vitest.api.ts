@@ -26,6 +26,11 @@ export default defineConfig({
         },
         {
           name: "default",
+          as: "ModelNotes",
+          from: "./db/model/notes.ts",
+        },
+        {
+          name: "default",
           as: "schemaMeals",
           from: "./db/schema/meals.ts",
         },
@@ -38,7 +43,12 @@ export default defineConfig({
           name: "default",
           as: "schemaIngredients",
           from: "./db/schema/ingredients.ts",
-        }
+        },
+        {
+          name: "default",
+          as: "schemaNotes",
+          from: "./db/schema/notes.ts",
+        },
       ],
       dirs: ["./server/utils"],
       dts: true,
