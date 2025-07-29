@@ -2496,6 +2496,28 @@
               "type": "string",
               "example": "content"
             }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Filter notes by specific date (YYYY-MM-DD format). If not provided, defaults to today",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-07-29"
+            }
+          },
+          {
+            "name": "includeAllDates",
+            "in": "query",
+            "description": "Include notes from all dates (overrides date filtering)",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "example": false
+            }
           }
         ],
         "responses": {

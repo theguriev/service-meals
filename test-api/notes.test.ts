@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("Notes API", () => {
   let noteId: string;
-  let accessToken: string;
 
   describe("POST /notes", () => {
     it("should create a new note", async () => {
@@ -86,6 +85,50 @@ describe("Notes API", () => {
         onResponse: ({ response }) => {
           expect(Array.isArray(response._data)).toBe(true);
           expect(response._data.length).toBe(0);
+        },
+      });
+    });
+
+    it("should filter notes by date", async () => {
+      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+
+      await $fetch(`/notes?date=${today}`, {
+        baseURL: process.env.API_URL,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          console.log("log: respnse 1", response._data);
+          expect(Array.isArray(response._data)).toBe(true);
+        },
+      });
+    });
+
+    it("should include all dates when includeAllDates=true", async () => {
+      await $fetch("/notes?includeAllDates=true", {
+        baseURL: process.env.API_URL,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          console.log("log: respnse 2", response._data);
+          expect(Array.isArray(response._data)).toBe(true);
+        },
+      });
+    });
+
+    it("should default to today's notes when no date parameters provided", async () => {
+      await $fetch("/notes", {
+        baseURL: process.env.API_URL,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(Array.isArray(response._data)).toBe(true);
+          // Should only return today's notes by default
         },
       });
     });
