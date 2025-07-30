@@ -209,31 +209,31 @@
               "name": "Телятина",
               "calories": 150,
               "proteins": 26,
-              "grams": 130
+              "grams": 155
             },
             {
               "name": "Печінка",
               "calories": 150,
               "proteins": 22,
-              "grams": 130
+              "grams": 155
             },
             {
               "name": "Куряче або індиче філе",
               "calories": 150,
               "proteins": 31,
-              "grams": 140
+              "grams": 165
             },
             {
               "name": "Риба (до 5% жиру)",
               "calories": 150,
               "proteins": 28,
-              "grams": 130
+              "grams": 155
             },
             {
               "name": "Риба (від 5% жиру)",
               "calories": 150,
               "proteins": 22,
-              "grams": 100
+              "grams": 120
             },
             {
               "name": "2 яйця",
@@ -245,7 +245,7 @@
               "name": "Морепродукти",
               "calories": 150,
               "proteins": 29,
-              "grams": 185
+              "grams": 220
             }
           ]
         },
@@ -423,31 +423,31 @@
               "name": "Телятина",
               "calories": 150,
               "proteins": 26,
-              "grams": 130
+              "grams": 155
             },
             {
               "name": "Печінка",
               "calories": 150,
               "proteins": 22,
-              "grams": 130
+              "grams": 155
             },
             {
               "name": "Куряче або індиче філе",
               "calories": 150,
               "proteins": 31,
-              "grams": 140
+              "grams": 165
             },
             {
               "name": "Риба (до 5% жиру)",
               "calories": 150,
               "proteins": 28,
-              "grams": 130
+              "grams": 155
             },
             {
               "name": "Риба (від 5% жиру)",
               "calories": 150,
               "proteins": 22,
-              "grams": 100
+              "grams": 120
             },
             {
               "name": "2 яйця",
@@ -459,7 +459,7 @@
               "name": "Морепродукти",
               "calories": 150,
               "proteins": 29,
-              "grams": 185
+              "grams": 220
             }
           ]
         },
