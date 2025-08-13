@@ -1,6 +1,6 @@
 {
   "name": "80-90 кг жінки",
-  "description": "Шаблон харчування для жінок вагою 80-90 кг",
+  "description": "Шаблон харчування для жінок вагою 80-90 кг. Калорійність раціону: 2000 ккал (Б 130 г, Ж 52 г, В 205 г)",
   "meals": [
     {
       "name": "1️⃣ прийом їжі",
@@ -110,6 +110,18 @@
               "calories": 500,
               "proteins": 5,
               "grams": 100
+            },
+            {
+              "name": "Фрукти",
+              "calories": 500,
+              "proteins": 5,
+              "grams": 1000
+            },
+            {
+              "name": "Банани",
+              "calories": 500,
+              "proteins": 5,
+              "grams": 600
             }
           ]
         }
@@ -173,44 +185,44 @@
         {
           "name": "д",
           "description": "Білки",
-          "targetCalories": 145,
+          "targetCalories": 195,
           "ingredients": [
             {
               "name": "Телятина",
-              "calories": 145,
+              "calories": 195,
               "proteins": 28,
-              "grams": 120
+              "grams": 165
             },
             {
               "name": "Печінка",
-              "calories": 145,
+              "calories": 195,
               "proteins": 24,
-              "grams": 120
+              "grams": 165
             },
             {
               "name": "Куряче або індиче філе",
-              "calories": 145,
+              "calories": 195,
               "proteins": 30,
-              "grams": 135
+              "grams": 175
             },
             {
               "name": "Риба (до 5% жиру)",
-              "calories": 145,
+              "calories": 195,
               "proteins": 28,
-              "grams": 155
+              "grams": 175
             },
             {
               "name": "Риба (від 5% жиру)",
-              "calories": 145,
+              "calories": 195,
               "proteins": 24,
-              "grams": 105
+              "grams": 140
             },
-            { "name": "2 яйця", "calories": 145, "proteins": 12, "grams": 100 },
+            { "name": "2 яйця", "calories": 195, "proteins": 12, "grams": 100 },
             {
               "name": "Морепродукти",
-              "calories": 145,
+              "calories": 195,
               "proteins": 28,
-              "grams": 165
+              "grams": 220
             }
           ]
         },
@@ -337,44 +349,44 @@
         {
           "name": "і",
           "description": "Білки",
-          "targetCalories": 145,
+          "targetCalories": 195,
           "ingredients": [
             {
               "name": "Телятина",
-              "calories": 145,
+              "calories": 195,
               "proteins": 28,
-              "grams": 120
+              "grams": 165
             },
             {
               "name": "Печінка",
-              "calories": 145,
+              "calories": 195,
               "proteins": 24,
-              "grams": 120
+              "grams": 165
             },
             {
               "name": "Куряче або індиче філе",
-              "calories": 145,
+              "calories": 195,
               "proteins": 30,
-              "grams": 135
+              "grams": 175
             },
             {
               "name": "Риба (до 5% жиру)",
-              "calories": 145,
+              "calories": 195,
               "proteins": 28,
-              "grams": 155
+              "grams": 175
             },
             {
               "name": "Риба (від 5% жиру)",
-              "calories": 145,
+              "calories": 195,
               "proteins": 24,
-              "grams": 105
+              "grams": 140
             },
-            { "name": "2 яйця", "calories": 145, "proteins": 12, "grams": 100 },
+            { "name": "2 яйця", "calories": 195, "proteins": 12, "grams": 100 },
             {
               "name": "Морепродукти",
-              "calories": 145,
+              "calories": 195,
               "proteins": 28,
-              "grams": 165
+              "grams": 220
             }
           ]
         },
