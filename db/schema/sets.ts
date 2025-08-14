@@ -11,6 +11,7 @@ const schema = new Schema(
       {
         id: { type: String, required: true },
         value: { type: Number, required: true },
+        additionalInfo: { type: String, required: false },
       },
     ],
   },

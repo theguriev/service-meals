@@ -534,6 +534,11 @@
                   "type": "number",
                   "description": "Ingredient value",
                   "example": 10
+                },
+                "additionalInfo": {
+                  "type": "string",
+                  "description": "Additional information about the ingredient",
+                  "example": "spicy"
                 }
               },
               "required": ["id", "value"]
@@ -572,6 +577,11 @@
                   "type": "number",
                   "description": "Ingredient value",
                   "example": 10
+                },
+                "additionalInfo": {
+                  "type": "string",
+                  "description": "Additional information about the ingredient",
+                  "example": "spicy"
                 }
               },
               "required": ["id", "value"]
@@ -598,6 +608,11 @@
                   "type": "number",
                   "description": "Ingredient value",
                   "example": 10
+                },
+                "additionalInfo": {
+                  "type": "string",
+                  "description": "Additional information about the ingredient",
+                  "example": "spicy"
                 }
               },
               "required": ["id", "value"]

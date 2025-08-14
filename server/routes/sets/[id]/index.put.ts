@@ -6,6 +6,7 @@ const updateSchema = z.object({
       z.object({
         id: z.string().min(1, "Ingredient id is required"),
         value: z.number(),
+        additionalInfo: z.string().optional()
       })
     )
     .optional(),
