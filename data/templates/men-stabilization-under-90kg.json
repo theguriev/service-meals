@@ -1,6 +1,6 @@
 {
   "name": "Стабілізація чоловіки до 90 кг",
-  "description": "Шаблон харчування для стабілізації ваги у чоловіків вагової категорії до 90 кг. Калорійність раціону: 2550 ккал (Б 150 г, Ж 125 г, В 287 г)",
+  "description": "Шаблон харчування для стабілізації ваги у чоловіків вагової категорії до 90 кг. Калорійність раціону: 2950 ккал (Б 170 г, Ж 125 г, В 287 г)",
   "meals": [
     {
       "name": "1️⃣ прийом їжі",
@@ -125,6 +125,12 @@
               "calories": 725,
               "proteins": 10,
               "grams": 145
+            },
+            {
+              "name": "Фрукти",
+              "calories": 725,
+              "proteins": 10,
+              "grams": 1450
             }
           ]
         }
@@ -203,49 +209,49 @@
         {
           "name": "д",
           "description": "Тваринні білки",
-          "targetCalories": 155,
+          "targetCalories": 205,
           "ingredients": [
             {
               "name": "Телятина",
-              "calories": 155,
-              "proteins": 28,
-              "grams": 140
+              "calories": 205,
+              "proteins": 36,
+              "grams": 175
             },
             {
               "name": "Печінка",
-              "calories": 155,
-              "proteins": 23,
-              "grams": 140
+              "calories": 205,
+              "proteins": 30,
+              "grams": 175
             },
             {
               "name": "Куряче або індиче філе",
-              "calories": 155,
-              "proteins": 33,
-              "grams": 145
+              "calories": 205,
+              "proteins": 44,
+              "grams": 195
             },
             {
               "name": "Риба (до 5% жиру)",
-              "calories": 155,
-              "proteins": 29,
-              "grams": 140
+              "calories": 205,
+              "proteins": 39,
+              "grams": 195
             },
             {
               "name": "Риба (від 5% жиру)",
-              "calories": 155,
-              "proteins": 23,
-              "grams": 100
+              "calories": 205,
+              "proteins": 30,
+              "grams": 130
             },
             {
               "name": "3 яйця",
-              "calories": 155,
+              "calories": 205,
               "proteins": 18,
               "grams": 150
             },
             {
               "name": "Морепродукти",
-              "calories": 155,
-              "proteins": 30,
-              "grams": 175
+              "calories": 205,
+              "proteins": 40,
+              "grams": 220
             }
           ]
         },
@@ -478,49 +484,49 @@
         {
           "name": "ї",
           "description": "Тваринні білки",
-          "targetCalories": 155,
+          "targetCalories": 205,
           "ingredients": [
             {
               "name": "Телятина",
-              "calories": 155,
-              "proteins": 28,
-              "grams": 140
+              "calories": 205,
+              "proteins": 36,
+              "grams": 175
             },
             {
               "name": "Печінка",
-              "calories": 155,
-              "proteins": 23,
-              "grams": 140
+              "calories": 205,
+              "proteins": 30,
+              "grams": 175
             },
             {
               "name": "Куряче або індиче філе",
-              "calories": 155,
-              "proteins": 33,
-              "grams": 145
+              "calories": 205,
+              "proteins": 44,
+              "grams": 195
             },
             {
               "name": "Риба (до 5% жиру)",
-              "calories": 155,
-              "proteins": 29,
-              "grams": 140
+              "calories": 205,
+              "proteins": 39,
+              "grams": 195
             },
             {
               "name": "Риба (від 5% жиру)",
-              "calories": 155,
-              "proteins": 23,
-              "grams": 100
+              "calories": 205,
+              "proteins": 30,
+              "grams": 130
             },
             {
               "name": "3 яйця",
-              "calories": 155,
+              "calories": 205,
               "proteins": 18,
               "grams": 150
             },
             {
               "name": "Морепродукти",
-              "calories": 155,
-              "proteins": 30,
-              "grams": 175
+              "calories": 205,
+              "proteins": 40,
+              "grams": 220
             }
           ]
         },
