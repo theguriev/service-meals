@@ -70,13 +70,13 @@
           "description": "Білки",
           "targetCalories": 160,
           "ingredients": [
-            { "name": "Телятина", "calories": 160, "proteins": 30, "grams": 130 },
-            { "name": "Печінка", "calories": 160, "proteins": 26, "grams": 130 },
-            { "name": "Куряче або індиче філе", "calories": 160, "proteins": 33, "grams": 150 },
-            { "name": "Риба (до 5% жиру)", "calories": 160, "proteins": 30, "grams": 160 },
-            { "name": "Риба (від 5% жиру)", "calories": 160, "proteins": 26, "grams": 110 },
+            { "name": "Телятина", "calories": 160, "proteins": 30, "grams": 150 },
+            { "name": "Печінка", "calories": 160, "proteins": 26, "grams": 150 },
+            { "name": "Куряче або індиче філе", "calories": 160, "proteins": 33, "grams": 175 },
+            { "name": "Риба (до 5% жиру)", "calories": 160, "proteins": 30, "grams": 185 },
+            { "name": "Риба (від 5% жиру)", "calories": 160, "proteins": 26, "grams": 125 },
             { "name": "2 яйця", "calories": 160, "proteins": 12, "grams": 100 },
-            { "name": "Морепродукти", "calories": 160, "proteins": 30, "grams": 175 }
+            { "name": "Морепродукти", "calories": 160, "proteins": 30, "grams": 200 }
           ]
         },
         {
@@ -149,13 +149,13 @@
           "description": "Білки",
           "targetCalories": 160,
           "ingredients": [
-            { "name": "Телятина", "calories": 160, "proteins": 30, "grams": 130 },
-            { "name": "Печінка", "calories": 160, "proteins": 26, "grams": 130 },
-            { "name": "Куряче або індиче філе", "calories": 160, "proteins": 33, "grams": 150 },
-            { "name": "Риба (до 5% жиру)", "calories": 160, "proteins": 30, "grams": 160 },
-            { "name": "Риба (від 5% жиру)", "calories": 160, "proteins": 26, "grams": 110 },
+        { "name": "Телятина", "calories": 160, "proteins": 30, "grams": 150 },
+            { "name": "Печінка", "calories": 160, "proteins": 26, "grams": 150 },
+            { "name": "Куряче або індиче філе", "calories": 160, "proteins": 33, "grams": 175 },
+            { "name": "Риба (до 5% жиру)", "calories": 160, "proteins": 30, "grams": 185 },
+            { "name": "Риба (від 5% жиру)", "calories": 160, "proteins": 26, "grams": 125 },
             { "name": "2 яйця", "calories": 160, "proteins": 12, "grams": 100 },
-            { "name": "Морепродукти", "calories": 160, "proteins": 30, "grams": 175 }
+            { "name": "Морепродукти", "calories": 160, "proteins": 30, "grams": 200 }
           ]
         },
         {
