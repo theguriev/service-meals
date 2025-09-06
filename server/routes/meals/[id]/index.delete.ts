@@ -1,41 +1,33 @@
 import { ObjectId } from "mongodb";
+import { InferSchemaType, RootFilterQuery } from "mongoose";
 
 export default defineEventHandler(async (event) => {
   const userId = await getUserId(event);
   const id = getRouterParam(event, "id");
+  const { authorizationBase } = useRuntimeConfig();
 
   if (!ObjectId.isValid(id)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
 
-  const resultMeals = await ModelMeals.deleteOne({
+  const user = await getInitialUser(event, authorizationBase);
+  const deleteMatch: RootFilterQuery<InferSchemaType<typeof schemaMeals>> = {
     _id: new ObjectId(id),
-    userId,
-  });
+  };
 
-  const categoriesRaw = await ModelCategories.find({ mealId: id, userId });
-  const ingredientIds = await categoriesRaw.reduce<Promise<Set<ObjectId>>>(
-    async (accPromise, category) => {
-      const acc = await accPromise;
-      const ingredients = await ModelIngredients.find({
-        categoryId: category._id,
-        userId,
-      });
-      const currentIngredientIds = ingredients.map(
-        (ingredient) => ingredient._id
-      );
-      return new Set([...acc, ...currentIngredientIds]);
-    },
-    Promise.resolve(new Set<ObjectId>())
-  );
-  const resultCategories = await ModelCategories.deleteMany({
-    mealId: id,
-    userId,
-  });
+  if (!can(user, "delete-all-meals") && can(user, "delete-template-meals")) {
+    deleteMatch.templateId = { $exists: true };
+  } else if (!can(user, "delete-all-meals")) {
+    deleteMatch.userId = userId;
+  }
+
+  const resultMeals = await ModelMeals.deleteOne(deleteMatch);
+
+  const categoriesRaw = await ModelCategories.find({ mealId: id });
   const resultIngredients = await ModelIngredients.deleteMany({
-    _id: { $in: Array.from(ingredientIds) },
-    userId,
-  });
+    categoryId: { $in: categoriesRaw.map((category) => category._id) }
+  })
+  const resultCategories = await ModelCategories.deleteMany({ mealId: id });
 
   if (resultMeals.deletedCount === 0) {
     throw createError({ statusCode: 404, message: "Item not found" });

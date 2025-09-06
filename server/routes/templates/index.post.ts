@@ -3,8 +3,9 @@ const validationSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const role = await getRole(event);
-  if (role !== "admin") {
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+  if (!can(user, "create-templates")) {
     throw createError({ statusCode: 403, message: "Forbidden" });
   }
   const validatedBody = await zodValidateBody(event, validationSchema.parse);

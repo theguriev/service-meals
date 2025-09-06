@@ -4,8 +4,9 @@ const querySchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const role = await getRole(event);
-  if (role !== "admin") {
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+  if (!can(user, "get-all-templates")) {
     throw createError({ statusCode: 403, message: "Forbidden" });
   }
   const { offset = 0, limit = 100 } = getQuery(event);

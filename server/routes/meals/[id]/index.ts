@@ -1,15 +1,16 @@
 import { ObjectId } from "mongodb";
 
 export default defineEventHandler(async (event) => {
+  const { authorizationBase } = useRuntimeConfig();
   const userId = await getUserId(event);
   const id = getRouterParam(event, "id");
-  const role = await getRole(event);
+  const user = await getInitialUser(event, authorizationBase);
 
   if (!ObjectId.isValid(id)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
 
-  const meal = await ModelMeals.findOne(role === "admin" ? { _id: new ObjectId(id) } : {
+  const meal = await ModelMeals.findOne(can(user, "get-all-meals") ? { _id: new ObjectId(id) } : {
     _id: new ObjectId(id),
     userId,
   });
@@ -21,12 +22,12 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const categoriesRaw = await ModelCategories.find(role === "admin"
+    const categoriesRaw = await ModelCategories.find(can(user, "get-all-categories")
       ? { mealId: id }
       : { mealId: id, userId });
     const categories = await Promise.all(
       categoriesRaw.map(async (category) => {
-        const ingredients = await ModelIngredients.find(role === "admin"
+        const ingredients = await ModelIngredients.find(can(user, "get-all-ingredients")
           ? { categoryId: category._id }
           : {
             categoryId: category._id,
