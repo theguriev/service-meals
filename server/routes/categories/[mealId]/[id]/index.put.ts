@@ -6,8 +6,13 @@ const updateSchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
-  const userId = await getUserId(event);
+  const user = await getInitialUser(event, authorizationBase);
 
+  if (!can(user, "update-categories")) {
+    throw createError({ statusCode: 403, message: "Unauthorized" });
+  }
+
+  const userId = await getUserId(event);
   const id = getRouterParam(event, "id");
   if (!ObjectId.isValid(id)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
@@ -25,7 +30,6 @@ export default defineEventHandler(async (event) => {
   const validatedBody = await zodValidateBody(event, updateSchema.parse);
 
   // Update the ingredient in the database
-  const user = await getInitialUser(event, authorizationBase);
   if (can(user, "update-all-categories") || !can(user, "update-template-categories")) {
     const updated = await ModelCategories.findOneAndUpdate(
       can(user, "update-all-categories") ? { _id: objectId, mealId: objectMealId } : { _id: objectId, userId, mealId: objectMealId },

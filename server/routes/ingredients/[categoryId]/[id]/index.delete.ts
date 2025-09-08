@@ -2,6 +2,12 @@ import { ObjectId } from "mongodb";
 
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+
+  if (!can(user, "delete-ingredients")) {
+    throw createError({ statusCode: 403, message: "Unauthorized" });
+  }
+
   const userId = await getUserId(event);
   const id = new ObjectId(getRouterParam(event, "id"));
   const categoryId = new ObjectId(getRouterParam(event, "categoryId"));
@@ -11,7 +17,6 @@ export default defineEventHandler(async (event) => {
   }
 
   // Check if the category exists and belongs to the user
-  const user = await getInitialUser(event, authorizationBase);
   if (can(user, "delete-all-ingredients") || !can(user, "delete-template-ingredients")) {
     const result = await ModelIngredients.deleteOne(can(user, "delete-all-ingredients") ? {
       _id: id,

@@ -3,6 +3,16 @@ const validationSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+
+  if (!can(user, "create-meals")) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Forbidden",
+    });
+  }
+
   const _id = await getUserId(event);
   const mealId = getRouterParam(event, "mealId");
   const validatedBody = await zodValidateBody(event, validationSchema.parse);

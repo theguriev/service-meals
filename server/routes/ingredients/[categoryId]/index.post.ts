@@ -10,6 +10,15 @@ const validationSchema = z.object({
 export default defineEventHandler(async (event) => {
   const userId = await getUserId(event);
   const categoryId = getRouterParam(event, "categoryId");
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+
+  if (!can(user, "create-ingredients")) {
+    throw createError({
+      statusCode: 403,
+      message: "Access denied",
+    });
+  }
 
   if (!ObjectId.isValid(categoryId)) {
     throw createError({ statusCode: 400, message: "Invalid Category ID" });

@@ -10,6 +10,12 @@ const updateSchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+
+  if (!can(user, "update-ingredients")) {
+    throw createError({ statusCode: 403, message: "Unauthorized" });
+  }
+
   const userId = await getUserId(event);
   const ingredientId = new ObjectId(getRouterParam(event, "id"));
   const categoryId = new ObjectId(getRouterParam(event, "categoryId"));
@@ -30,7 +36,6 @@ export default defineEventHandler(async (event) => {
 
   // Find and update the ingredient
   // Ensure the ingredient belongs to the specified category and user
-  const user = await getInitialUser(event, authorizationBase);
   if (can(user, "update-all-ingredients") || !can(user, "update-template-ingredients")) {
     const updatedIngredient = await ModelIngredients.findOneAndUpdate(
       can(user, "update-all-ingredients") ? {

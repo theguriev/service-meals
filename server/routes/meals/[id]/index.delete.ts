@@ -2,15 +2,20 @@ import { ObjectId } from "mongodb";
 import { InferSchemaType, RootFilterQuery } from "mongoose";
 
 export default defineEventHandler(async (event) => {
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+
+  if (!can(user, "delete-meals")) {
+    throw createError({ statusCode: 403, message: "Unauthorized" });
+  }
+
   const userId = await getUserId(event);
   const id = getRouterParam(event, "id");
-  const { authorizationBase } = useRuntimeConfig();
 
   if (!ObjectId.isValid(id)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
 
-  const user = await getInitialUser(event, authorizationBase);
   const deleteMatch: RootFilterQuery<InferSchemaType<typeof schemaMeals>> = {
     _id: new ObjectId(id),
   };

@@ -7,5 +7,14 @@ export default [
   "delete-own-templates",
   "update-own-templates",
   "get-all-templates",
-  "create-templates"
+  "create-templates",
+  "create-meals",
+  "create-categories",
+  "create-ingredients",
+  "update-meals",
+  "update-categories",
+  "update-ingredients",
+  "delete-meals",
+  "delete-categories",
+  "delete-ingredients",
 ] as const;
