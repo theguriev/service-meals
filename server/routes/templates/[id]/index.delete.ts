@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
   const user = await getInitialUser(event, authorizationBase);
-  if (!can(user, ["delete-own-templates", "delete-all-templates"])) {
+  if (!can(user, ["delete-own-templates", "delete-templates"])) {
     throw createError({ statusCode: 403, message: "Forbidden: User does not have permission to delete templates" });
   }
   const id = getRouterParam(event, "id");
