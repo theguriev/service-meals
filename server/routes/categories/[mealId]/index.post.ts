@@ -13,8 +13,23 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const _id = await getUserId(event);
   const mealId = getRouterParam(event, "mealId");
+  const meal = await ModelMeals.findById(mealId);
+  if (!meal) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Meal not found",
+    });
+  }
+
+  if (meal.templateId && !can(user, "create-template-categories")) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Forbidden",
+    });
+  }
+
+  const _id = await getUserId(event);
   const validatedBody = await zodValidateBody(event, validationSchema.parse);
   const doc = new ModelCategories({
     userId: _id,

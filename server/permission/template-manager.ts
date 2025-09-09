@@ -1,11 +1,15 @@
 export default [
   ...permissionManager,
-  "delete-all-templates",
-  "update-all-templates",
+  "create-templates",
+  "delete-templates",
+  "update-templates",
+  "create-template-meals",
   "delete-template-meals",
   "update-template-meals",
+  "create-template-categories",
   "delete-template-categories",
   "update-template-categories",
+  "create-template-ingredients",
   "delete-template-ingredients",
   "update-template-ingredients",
 ] as const;
