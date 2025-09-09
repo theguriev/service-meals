@@ -7,7 +7,7 @@ const updateSchema = z.object({
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
   const user = await getInitialUser(event, authorizationBase);
-  if (!can(user, ["update-own-templates", "update-templates"])) {
+  if (!can(user, "update-templates")) {
     throw createError({ statusCode: 403, message: "Forbidden: User does not have permission to update templates" });
   }
   const id = getRouterParam(event, "id");
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
   // Update the ingredient in the database
   const updated = await ModelTemplate.findOneAndUpdate(
-    can(user, "update-templates") ? { _id: id } : { _id: id, userId: user._id.toString() },
+    { _id: id },
     { $set: validatedBody },
     { new: true }
   );

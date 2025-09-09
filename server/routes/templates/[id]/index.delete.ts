@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
   const user = await getInitialUser(event, authorizationBase);
-  if (!can(user, ["delete-own-templates", "delete-templates"])) {
+  if (!can(user, "delete-templates")) {
     throw createError({ statusCode: 403, message: "Forbidden: User does not have permission to delete templates" });
   }
   const id = getRouterParam(event, "id");
@@ -19,10 +19,6 @@ export default defineEventHandler(async (event) => {
         statusCode: 404,
         statusMessage: "Template not found",
       });
-    }
-
-    if (!can(user, "delete-own-templates") && templateExists.userId !== user._id) {
-      throw createError({ statusCode: 403, message: "Forbidden: User does not own this template" });
     }
 
     const meals = await ModelMeals.find({
