@@ -5,6 +5,7 @@ const validationSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
+  const logger = await getLogger(event);
   const role = await getRole(event);
   if (role !== "admin") {
     throw createError({ statusCode: 403, message: "Forbidden" });
@@ -181,7 +182,7 @@ export default defineEventHandler(async (event) => {
       },
     };
   } catch (error) {
-    console.error("Error applying template:", error);
+    logger.error({ message: "Error applying template:", error });
 
     if (error.statusCode) {
       throw error;

@@ -11,6 +11,11 @@ export default defineConfig({
         { name: "$fetch", from: "ofetch" },
         {
           name: "default",
+          as: "ModelUser",
+          from: "./db/model/user.ts",
+        },
+        {
+          name: "default",
           as: "ModelMeals",
           from: "./db/model/meals.ts",
         },
@@ -28,6 +33,11 @@ export default defineConfig({
           name: "default",
           as: "ModelNotes",
           from: "./db/model/notes.ts",
+        },
+        {
+          name: "default",
+          as: "schemaUser",
+          from: "./db/schema/user.ts",
         },
         {
           name: "default",

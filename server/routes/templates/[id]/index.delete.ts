@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 
 export default defineEventHandler(async (event) => {
+  const logger = await getLogger(event);
   const role = await getRole(event);
   if (role !== "admin") {
     throw createError({ statusCode: 403, message: "Forbidden" });
@@ -61,7 +62,7 @@ export default defineEventHandler(async (event) => {
       deletedIngredients,
     };
   } catch (error) {
-    console.error("Error deleting template and related data:", error);
+    logger.error({ message: "Error deleting template and related data:", error });
 
     if (error.statusCode) {
       throw error;
