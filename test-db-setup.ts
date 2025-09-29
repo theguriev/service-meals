@@ -1,6 +1,39 @@
 import { ObjectId } from "mongodb";
 import { InferSchemaType, Types } from "mongoose";
-import { regularId } from "./constants";
+import { adminId, regularId } from "./constants";
+
+export const adminUserSeedData = {
+  _id: new ObjectId(adminId), // Specific ObjectId for admin
+  id: 379669528,
+  firstName: "AdminSeedFirstName",
+  lastName: "AdminSeedLastName",
+  username: "testadminseeduser",
+  photoUrl: "https://example.com/adminseed.jpg",
+  authDate: Math.floor(Date.now() / 1000) - 7200,
+  hash: "seed-admin-hash",
+  address: "0xb75f1a7a3c9c60857A37A3C008E5619f0a934673",
+  privateKey:
+    "0xcb4d8dd1bd0859cde9e07fc96011fb53a80c7aff4968a199197b59efbb759b14",
+  role: "admin",
+};
+
+export const regularUserSeedData = {
+  _id: new ObjectId(regularId), // Specific ObjectId for regular user
+  id: 123456789, // Telegram ID, must match regularUserLoginPayload in users.test.ts
+  firstName: "RegularSeedUser",
+  lastName: "TestSeed",
+  username: "testregularseeduser",
+  photoUrl: "https://example.com/regularseed.jpg",
+  authDate: Math.floor(Date.now() / 1000) - 7200,
+  hash: "seed-regular-hash", // Placeholder
+  role: "user",
+  address: "0xCa23Cfc3dffE0bC7E8fFdbE1240008ad592da1d5",
+  privateKey:
+    "0xce60ab2312c1f4e507f59e196f6c4e8a9d664bdfac74d1e0cffaa4debd236f4e",
+  meta: {
+    managerId: adminUserSeedData.id, // Link to admin user
+  },
+};
 
 export const mealTestData = {
   _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2c9"),
@@ -155,6 +188,7 @@ export const notesTestData = [
 
 export async function clearTestData() {
   try {
+    await ModelUser.deleteMany({});
     await ModelIngredients.deleteMany({});
     await ModelCategories.deleteMany({});
     await ModelMeals.deleteMany({});
@@ -172,6 +206,7 @@ export async function clearTestData() {
 
 export async function seedTestData() {
   try {
+    await ModelUser.create([adminUserSeedData, regularUserSeedData]);
     await ModelMeals.create(mealTestData);
     await ModelCategories.create(categoriesTestData);
     await ModelIngredients.create(ingredientsTestData);
