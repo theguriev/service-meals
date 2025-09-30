@@ -1514,7 +1514,6 @@
           }
         }
       },
-
       "post": {
         "summary": "Create a new category for a specific meal",
         "tags": ["Categories"],
@@ -1552,7 +1551,7 @@
         }
       }
     },
-    "/meal/{id}/categories": {
+    "/meals/{id}/categories": {
       "get": {
         "summary": "Get a list of categories for a specific meal",
         "tags": ["Categories"],
