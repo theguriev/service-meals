@@ -279,9 +279,15 @@
             "description": "Name of the category",
             "minLength": 1,
             "example": "Lunch"
+          },
+          "mealId": {
+            "type": "string",
+            "description": "Identifier of the meal this category belongs to",
+            "example": "605c72ef29592b001c000000",
+            "pattern": "^[0-9a-fA-F]{24}$"
           }
         },
-        "required": ["name"]
+        "required": ["name", "mealId"]
       },
       "CategoryUpdateInput": {
         "type": "object",
@@ -291,6 +297,12 @@
             "description": "Name of the category (optional for update)",
             "minLength": 1,
             "example": "Quick Lunch"
+          },
+          "mealId": {
+            "type": "string",
+            "description": "Identifier of the meal this category belongs to (optional for update)",
+            "example": "605c72ef29592b001c000000",
+            "pattern": "^[0-9a-fA-F]{24}$"
           }
         }
       },
@@ -411,9 +423,15 @@
             "description": "Weight in grams",
             "minimum": 0,
             "example": 100
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "Identifier of the category this ingredient belongs to",
+            "example": "605c72ef29592b001c000000",
+            "pattern": "^[0-9a-fA-F]{24}$"
           }
         },
-        "required": ["name", "calories", "proteins", "grams"]
+        "required": ["name", "calories", "proteins", "grams", "categoryId"]
       },
       "IngredientUpdateInput": {
         "type": "object",
@@ -444,6 +462,12 @@
             "description": "Weight in grams (optional for update)",
             "minimum": 0,
             "example": 120
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "Identifier of the category this ingredient belongs to (optional for update)",
+            "example": "605c72ef29592b001c000000",
+            "pattern": "^[0-9a-fA-F]{24}$"
           }
         }
       },
@@ -1489,24 +1513,11 @@
             }
           }
         }
-      }
-    },
-    "/categories/{mealId}": {
+      },
+
       "post": {
         "summary": "Create a new category for a specific meal",
         "tags": ["Categories"],
-        "parameters": [
-          {
-            "name": "mealId",
-            "in": "path",
-            "required": true,
-            "description": "ID of the meal to associate the category with",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000000"
-            }
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1539,13 +1550,15 @@
             }
           }
         }
-      },
+      }
+    },
+    "/meal/{id}/categories": {
       "get": {
         "summary": "Get a list of categories for a specific meal",
         "tags": ["Categories"],
         "parameters": [
           {
-            "name": "mealId",
+            "name": "id",
             "in": "path",
             "required": true,
             "description": "ID of the meal to retrieve categories for",
@@ -1602,21 +1615,11 @@
         }
       }
     },
-    "/categories/{mealId}/{id}": {
+    "/categories/{id}": {
       "put": {
         "summary": "Update an existing category",
         "tags": ["Categories"],
         "parameters": [
-          {
-            "name": "mealId",
-            "in": "path",
-            "required": true,
-            "description": "ID of the meal the category belongs to",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000000"
-            }
-          },
           {
             "name": "id",
             "in": "path",
@@ -1675,16 +1678,6 @@
         "summary": "Delete a category and its associated ingredients",
         "tags": ["Categories"],
         "parameters": [
-          {
-            "name": "mealId",
-            "in": "path",
-            "required": true,
-            "description": "ID of the meal the category belongs to",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000000"
-            }
-          },
           {
             "name": "id",
             "in": "path",
@@ -1791,24 +1784,10 @@
             }
           }
         }
-      }
-    },
-    "/ingredients/{categoryId}": {
+      },
       "post": {
         "summary": "Create a new ingredient for a specific category",
         "tags": ["Ingredients"],
-        "parameters": [
-          {
-            "name": "categoryId",
-            "in": "path",
-            "required": true,
-            "description": "ID of the category to associate the ingredient with",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000001"
-            }
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1849,25 +1828,17 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Category not found or access denied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
           }
         }
-      },
+      }
+    },
+    "/categories/{id}/ingredients": {
       "get": {
         "summary": "Get a list of ingredients for a specific category",
         "tags": ["Ingredients"],
         "parameters": [
           {
-            "name": "categoryId",
+            "name": "id",
             "in": "path",
             "required": true,
             "description": "ID of the category to retrieve ingredients for",
@@ -1944,21 +1915,11 @@
         }
       }
     },
-    "/ingredients/{categoryId}/{id}": {
+    "/ingredients/{id}": {
       "put": {
         "summary": "Update an existing ingredient",
         "tags": ["Ingredients"],
         "parameters": [
-          {
-            "name": "categoryId",
-            "in": "path",
-            "required": true,
-            "description": "ID of the category the ingredient belongs to",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000001"
-            }
-          },
           {
             "name": "id",
             "in": "path",
@@ -2012,7 +1973,7 @@
             }
           },
           "404": {
-            "description": "Ingredient or Category not found, or access denied",
+            "description": "Ingredient not found, or access denied",
             "content": {
               "application/json": {
                 "schema": {
@@ -2027,16 +1988,6 @@
         "summary": "Delete an ingredient",
         "tags": ["Ingredients"],
         "parameters": [
-          {
-            "name": "categoryId",
-            "in": "path",
-            "required": true,
-            "description": "ID of the category the ingredient belongs to",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000001"
-            }
-          },
           {
             "name": "id",
             "in": "path",
@@ -2080,7 +2031,7 @@
             }
           },
           "404": {
-            "description": "Ingredient or Category not found, or access denied",
+            "description": "Ingredient not found, or access denied",
             "content": {
               "application/json": {
                 "schema": {

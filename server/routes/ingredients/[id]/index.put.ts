@@ -6,32 +6,33 @@ const updateSchema = z.object({
   calories: z.number().min(0).optional(),
   proteins: z.number().min(0).optional(),
   grams: z.number().min(0).optional(),
+  categoryId: z.string().transform(objectIdTransform).optional(),
 });
 
 export default defineEventHandler(async (event) => {
   const userId = await getUserId(event);
   const ingredientId = getRouterParam(event, "id");
-  const categoryId = getRouterParam(event, "categoryId");
+
+  // Validate the request body
+  const { categoryId, ...validatedBody } = await zodValidateBody(event, updateSchema.parse);
 
   if (!userId) {
     throw createError({ statusCode: 401, message: "Unauthorized" });
   }
 
-  if (!ObjectId.isValid(ingredientId) || !ObjectId.isValid(categoryId)) {
+  if (!ObjectId.isValid(ingredientId)) {
     throw createError({
       statusCode: 400,
-      message: "Invalid ingredient or category ID",
+      message: "Invalid ingredient ID",
     });
   }
 
-  // Validate the request body
-  const validatedBody = await zodValidateBody(event, updateSchema.parse);
-  const category = await ModelCategories.findOne({
+  const category = categoryId ? await ModelCategories.findOne({
     _id: new ObjectId(categoryId),
     userId,
-  });
+  }) : undefined
 
-  if (!category) {
+  if (categoryId && !category) {
     throw createError({
       statusCode: 404,
       message: "Category not found or access denied",
@@ -43,10 +44,9 @@ export default defineEventHandler(async (event) => {
   const updatedIngredient = await ModelIngredients.findOneAndUpdate(
     {
       _id: new ObjectId(ingredientId),
-      categoryId: categoryId,
       userId,
     },
-    { $set: validatedBody },
+    { $set: { ...validatedBody, categoryId } },
     { new: true } // Return the updated document
   );
 

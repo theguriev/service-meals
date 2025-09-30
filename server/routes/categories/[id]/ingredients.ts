@@ -5,7 +5,7 @@ const querySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const { offset = 0, limit = 10 } = getQuery(event);
-  const categoryId = getRouterParam(event, "categoryId");
+  const categoryId = getRouterParam(event, "id");
   const userId = await getUserId(event);
 
   const convertedOffset = Number(offset);

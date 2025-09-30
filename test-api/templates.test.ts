@@ -76,10 +76,10 @@ describe.sequential("Templates API", () => {
       });
 
       let categoryId = "";
-      await $fetch(`/categories/${mealId}`, {
+      await $fetch(`/categories`, {
         method: "POST",
         baseURL: process.env.API_URL,
-        body: { name: "Test Category" },
+        body: { name: "Test Category", mealId },
         headers: {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
@@ -90,7 +90,7 @@ describe.sequential("Templates API", () => {
       });
 
       let ingredientId = "";
-      await $fetch(`/ingredients/${categoryId}`, {
+      await $fetch(`/ingredients`, {
         method: "POST",
         baseURL: process.env.API_URL,
         body: {
@@ -98,6 +98,7 @@ describe.sequential("Templates API", () => {
           calories: 100,
           proteins: 10,
           grams: 50,
+          categoryId,
         },
         headers: {
           Accept: "application/json",
@@ -375,10 +376,10 @@ describe.sequential("Templates API", () => {
         },
       });
 
-      await $fetch(`/categories/${testMealId}`, {
+      await $fetch(`/categories`, {
         method: "POST",
         baseURL: process.env.API_URL,
-        body: { name: "Test Category for Cascade Delete" },
+        body: { name: "Test Category for Cascade Delete", mealId: testMealId },
         headers: {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
@@ -388,7 +389,7 @@ describe.sequential("Templates API", () => {
         },
       });
 
-      await $fetch(`/ingredients/${testCategoryId}`, {
+      await $fetch(`/ingredients`, {
         method: "POST",
         baseURL: process.env.API_URL,
         body: {
@@ -396,6 +397,7 @@ describe.sequential("Templates API", () => {
           calories: 150,
           proteins: 20,
           grams: 75,
+          categoryId: testCategoryId,
         },
         headers: {
           Accept: "application/json",

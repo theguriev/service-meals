@@ -2,24 +2,24 @@ import { ObjectId } from "mongodb";
 
 const updateSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
+  mealId: z.string().transform(objectIdTransform).optional()
 });
 
 export default defineEventHandler(async (event) => {
   const userId = await getUserId(event);
   const id = getRouterParam(event, "id");
-  const mealId = getRouterParam(event, "mealId");
 
   if (!ObjectId.isValid(id)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
 
   // Validate the request body
-  const validatedBody = await zodValidateBody(event, updateSchema.parse);
+  const { mealId, ...validatedBody } = await zodValidateBody(event, updateSchema.parse);
 
   // Update the ingredient in the database
   const updated = await ModelCategories.findOneAndUpdate(
-    { _id: id, userId, mealId },
-    { $set: validatedBody },
+    { _id: id, userId },
+    { $set: { ...validatedBody, mealId } },
     { new: true }
   );
 

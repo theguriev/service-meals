@@ -1,11 +1,11 @@
 const validationSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  mealId: z.string().transform(objectIdTransform)
 });
 
 export default defineEventHandler(async (event) => {
   const _id = await getUserId(event);
-  const mealId = getRouterParam(event, "mealId");
-  const validatedBody = await zodValidateBody(event, validationSchema.parse);
+  const { mealId, ...validatedBody } = await zodValidateBody(event, validationSchema.parse);
   const doc = new ModelCategories({
     userId: _id,
     mealId,

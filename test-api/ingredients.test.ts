@@ -8,8 +8,11 @@ describe.sequential("Ingredients API", () => {
     // For simplicity, we assume a meal might exist or create one if necessary.
     // Here, we'll use a placeholder mealId, assuming it's managed elsewhere or not strictly needed for category creation in this context.
     const mealIdForCategory = "685950e525652632670bc23c";
-    const newCategory = { name: "Test Category for Ingredients" };
-    await $fetch(`/categories/${mealIdForCategory}`, {
+    const newCategory = {
+      name: "Test Category for Ingredients",
+      mealId: mealIdForCategory,
+    };
+    await $fetch(`/categories`, {
       baseURL: process.env.API_URL,
       method: "POST",
       headers: {
@@ -24,15 +27,16 @@ describe.sequential("Ingredients API", () => {
     });
   });
 
-  describe("POST /ingredients/{categoryId}", () => {
+  describe("POST /ingredients", () => {
     it("should create a new ingredient for a category", async () => {
       const newIngredient = {
         name: "Chicken Breast",
         calories: 165,
         proteins: 31,
         grams: 100,
+        categoryId: testCategoryId,
       };
-      await $fetch(`/ingredients/${testCategoryId}`, {
+      await $fetch(`/ingredients`, {
         baseURL: process.env.API_URL,
         method: "POST",
         headers: {
@@ -51,7 +55,7 @@ describe.sequential("Ingredients API", () => {
     });
 
     it("should return a validation error if required fields are missing", async () => {
-      await $fetch(`/ingredients/${testCategoryId}`, {
+      await $fetch(`/ingredients`, {
         baseURL: process.env.API_URL,
         method: "POST",
         ignoreResponseError: true,
@@ -73,8 +77,9 @@ describe.sequential("Ingredients API", () => {
         calories: 100,
         proteins: 10,
         grams: 50,
+        categoryId: nonExistentCategoryId,
       };
-      await $fetch(`/ingredients/${nonExistentCategoryId}`, {
+      await $fetch(`/ingredients`, {
         baseURL: process.env.API_URL,
         method: "POST",
         ignoreResponseError: true,
@@ -86,17 +91,17 @@ describe.sequential("Ingredients API", () => {
         onResponse: ({ response }) => {
           expect(response.status).toBe(404);
           expect(response._data.message).toBe(
-            "Category not found or access denied"
+            "Category not found or access denied",
           );
         },
       });
     });
   });
 
-  describe("GET /ingredients/{categoryId}", () => {
+  describe("GET /categories/{id}/ingredients", () => {
     it("should retrieve a list of ingredients for a specific category", async () => {
       // Create an ingredient first to ensure there's data
-      await $fetch(`/ingredients/${testCategoryId}`, {
+      await $fetch(`/categories/${testCategoryId}/ingredients`, {
         baseURL: process.env.API_URL,
         method: "POST",
         headers: {
@@ -111,7 +116,7 @@ describe.sequential("Ingredients API", () => {
         },
       });
 
-      await $fetch(`/ingredients/${testCategoryId}`, {
+      await $fetch(`/categories/${testCategoryId}/ingredients`, {
         baseURL: process.env.API_URL,
         method: "GET",
         headers: {
@@ -122,7 +127,7 @@ describe.sequential("Ingredients API", () => {
           expect(response.status).toBe(200);
           expect(Array.isArray(response._data)).toBe(true);
           const ingredientForCategory = response._data.find(
-            (ing) => ing.categoryId === testCategoryId
+            (ing) => ing.categoryId === testCategoryId,
           );
           expect(ingredientForCategory).toBeDefined();
         },
@@ -134,7 +139,7 @@ describe.sequential("Ingredients API", () => {
       const offset = 0;
       // Create a few ingredients for pagination testing
       for (let i = 0; i < 2; i++) {
-        await $fetch(`/ingredients/${testCategoryId}`, {
+        await $fetch(`/ingredients`, {
           baseURL: process.env.API_URL,
           method: "POST",
           headers: {
@@ -146,26 +151,28 @@ describe.sequential("Ingredients API", () => {
             calories: 10 * i,
             proteins: i,
             grams: 5 * i,
+            categoryId: testCategoryId,
           },
         });
       }
 
-      await $fetch(
-        `/ingredients/${testCategoryId}?offset=${offset}&limit=${limit}`,
-        {
-          baseURL: process.env.API_URL,
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
-          },
-          onResponse: ({ response }) => {
-            expect(response.status).toBe(200);
-            expect(Array.isArray(response._data)).toBe(true);
-            expect(response._data.length).toBeLessThanOrEqual(limit);
-          },
-        }
-      );
+      await $fetch(`/categories/${testCategoryId}/ingredients`, {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        query: {
+          offset,
+          limit,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response._data)).toBe(true);
+          expect(response._data.length).toBeLessThanOrEqual(limit);
+        },
+      });
     });
   });
 
@@ -187,13 +194,14 @@ describe.sequential("Ingredients API", () => {
     });
   });
 
-  describe("PUT /ingredients/{categoryId}/{id}", () => {
+  describe("PUT /ingredients/{id}", () => {
     it("should update an existing ingredient", async () => {
       const updatedIngredientData = {
         name: "Grilled Chicken Breast",
         calories: 170,
+        categoryId: testCategoryId,
       };
-      await $fetch(`/ingredients/${testCategoryId}/${ingredientId}`, {
+      await $fetch(`/ingredients/${ingredientId}`, {
         baseURL: process.env.API_URL,
         method: "PUT",
         headers: {
@@ -211,7 +219,7 @@ describe.sequential("Ingredients API", () => {
 
     it("should return 404 if trying to update a non-existent ingredient", async () => {
       const nonExistentId = "605c72ef29592b001c000000";
-      await $fetch(`/ingredients/${testCategoryId}/${nonExistentId}`, {
+      await $fetch(`/ingredients/${nonExistentId}`, {
         baseURL: process.env.API_URL,
         method: "PUT",
         ignoreResponseError: true,
@@ -227,7 +235,7 @@ describe.sequential("Ingredients API", () => {
     });
   });
 
-  describe("DELETE /ingredients/{categoryId}/{id}", () => {
+  describe("DELETE /ingredients/{id}", () => {
     it("should delete an existing ingredient", async () => {
       // Create a new ingredient specifically for this delete test to avoid conflicts
       const ingredientToDelete = {
@@ -235,9 +243,10 @@ describe.sequential("Ingredients API", () => {
         calories: 10,
         proteins: 1,
         grams: 1,
+        categoryId: testCategoryId,
       };
       let tempIngredientId: string;
-      await $fetch(`/ingredients/${testCategoryId}`, {
+      await $fetch(`/ingredients`, {
         baseURL: process.env.API_URL,
         method: "POST",
         headers: {
@@ -251,7 +260,7 @@ describe.sequential("Ingredients API", () => {
         },
       });
 
-      await $fetch(`/ingredients/${testCategoryId}/${tempIngredientId}`, {
+      await $fetch(`/ingredients/${tempIngredientId}`, {
         baseURL: process.env.API_URL,
         method: "DELETE",
         headers: {
@@ -267,7 +276,7 @@ describe.sequential("Ingredients API", () => {
 
     it("should return 404 if trying to delete a non-existent ingredient", async () => {
       const nonExistentId = "605c72ef29592b001c000000";
-      await $fetch(`/ingredients/${testCategoryId}/${nonExistentId}`, {
+      await $fetch(`/ingredients/${nonExistentId}`, {
         baseURL: process.env.API_URL,
         method: "DELETE",
         ignoreResponseError: true,
@@ -298,7 +307,7 @@ describe.sequential("Ingredients API", () => {
             Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
           },
           ignoreResponseError: true, // Ignore if already deleted or non-existent
-        }
+        },
       );
     }
   });
