@@ -5,6 +5,7 @@ const querySchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
+  const { authorizationBase } = useRuntimeConfig();
   const { offset, limit, templateId } = await zodValidateData(
     getQuery(event),
     querySchema.parse
@@ -12,13 +13,13 @@ export default defineEventHandler(async (event) => {
 
   // Assuming getUserId is a utility function to get the current user's ID
   const userId = await getUserId(event);
-  const role = await getRole(event);
+  const user = await getInitialUser(event, authorizationBase);
 
-  if (templateId && role != "admin") {
+  if (templateId && !can(user, ["get-template-meals", "get-all-meals"])) {
     throw createError({
       statusCode: 403,
       statusMessage: "Forbidden",
-      message: "Forbidden - Admin access required for templateId filter",
+      message: "Forbidden - No access for templateId filter",
     });
   }
 

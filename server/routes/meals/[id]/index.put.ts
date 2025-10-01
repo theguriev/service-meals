@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { RootFilterQuery } from "mongoose";
 
 const updateSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
@@ -6,6 +7,13 @@ const updateSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+
+  if (!can(user, "update-meals")) {
+    throw createError({ statusCode: 403, message: "Unauthorized" });
+  }
+
   const userId = await getUserId(event);
   const id = getRouterParam(event, "id");
 
@@ -17,8 +25,18 @@ export default defineEventHandler(async (event) => {
   const validatedBody = await zodValidateBody(event, updateSchema.parse);
 
   // Update the ingredient in the database
+  const updateMatch: RootFilterQuery<InferSchemaType<typeof schemaMeals>> = {
+    _id: new ObjectId(id),
+  };
+
+  if (!can(user, "update-all-meals") && can(user, "update-template-meals")) {
+    updateMatch.templateId = { $exists: true };
+  } else if (!can(user, "update-all-meals")) {
+    updateMatch.userId = userId;
+  }
+
   const updated = await ModelMeals.findOneAndUpdate(
-    { _id: id, userId },
+    updateMatch,
     { $set: validatedBody },
     { new: true }
   );
