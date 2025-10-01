@@ -68,7 +68,7 @@ describe.sequential("Templates API", () => {
         body: { name: "Test Meal for Template", templateId },
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           mealId = response._data.data._id;
@@ -82,7 +82,7 @@ describe.sequential("Templates API", () => {
         body: { name: "Test Category", mealId },
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           categoryId = response._data.data._id;
@@ -102,7 +102,7 @@ describe.sequential("Templates API", () => {
         },
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           ingredientId = response._data.data._id;
@@ -369,7 +369,7 @@ describe.sequential("Templates API", () => {
         },
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           testMealId = response._data.data._id;
@@ -382,7 +382,7 @@ describe.sequential("Templates API", () => {
         body: { name: "Test Category for Cascade Delete", mealId: testMealId },
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           testCategoryId = response._data.data._id;
@@ -401,7 +401,7 @@ describe.sequential("Templates API", () => {
         },
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           testIngredientId = response._data.data._id;

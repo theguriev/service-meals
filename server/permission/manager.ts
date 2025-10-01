@@ -1,0 +1,17 @@
+export default [
+  "get-all-meals",
+  "get-all-categories",
+  "get-all-ingredients",
+  "get-template-meals",
+  "apply-templates",
+  "get-all-templates",
+  "create-meals",
+  "create-categories",
+  "create-ingredients",
+  "update-meals",
+  "update-categories",
+  "update-ingredients",
+  "delete-meals",
+  "delete-categories",
+  "delete-ingredients",
+] as const;

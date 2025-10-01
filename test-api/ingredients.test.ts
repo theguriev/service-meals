@@ -4,10 +4,24 @@ let testCategoryId: string; // Will be created during tests
 describe.sequential("Ingredients API", () => {
   // Setup: Create a category to be used for ingredient tests
   beforeAll(async () => {
-    // First, ensure a meal exists to associate the category with
-    // For simplicity, we assume a meal might exist or create one if necessary.
-    // Here, we'll use a placeholder mealId, assuming it's managed elsewhere or not strictly needed for category creation in this context.
-    const mealIdForCategory = "685950e525652632670bc23c";
+    let mealIdForCategory: string;
+    const newMeal = {
+      name: "Test Meal for Ingredients",
+    };
+    await $fetch(`/meals`, {
+      baseURL: process.env.API_URL,
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+      },
+      body: newMeal,
+      onResponse: ({ response }) => {
+        expect(response.status).toBe(200);
+        mealIdForCategory = response._data.data._id; // Save created mealId
+      },
+    });
+
     const newCategory = {
       name: "Test Category for Ingredients",
       mealId: mealIdForCategory,
@@ -17,7 +31,7 @@ describe.sequential("Ingredients API", () => {
       method: "POST",
       headers: {
         Accept: "application/json",
-        Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
       },
       body: newCategory,
       onResponse: ({ response }) => {
@@ -41,7 +55,7 @@ describe.sequential("Ingredients API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         body: newIngredient,
         onResponse: ({ response }) => {
@@ -61,7 +75,7 @@ describe.sequential("Ingredients API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         body: { name: "Missing Fields Test" }, // Missing calories, proteins, grams
         onResponse: ({ response }) => {
@@ -70,7 +84,30 @@ describe.sequential("Ingredients API", () => {
       });
     });
 
-    it("should return 404 if category does not exist or does not belong to user", async () => {
+    it("should return 403 if user is not admin", async () => {
+      const newIngredient = {
+        name: "Chicken Breast",
+        calories: 165,
+        proteins: 31,
+        grams: 100,
+        categoryId: testCategoryId
+      };
+      await $fetch(`/ingredients`, {
+        baseURL: process.env.API_URL,
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        body: newIngredient,
+        ignoreResponseError: true,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(403);
+        },
+      });
+    });
+
+    it("should return 404 if category does not exist", async () => {
       const nonExistentCategoryId = "605c72ef29592b001c000000"; // Example non-existent ID
       const newIngredient = {
         name: "Test Ingredient",
@@ -85,13 +122,13 @@ describe.sequential("Ingredients API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         body: newIngredient,
         onResponse: ({ response }) => {
           expect(response.status).toBe(404);
           expect(response._data.message).toBe(
-            "Category not found or access denied",
+            "Category not found",
           );
         },
       });
@@ -106,7 +143,7 @@ describe.sequential("Ingredients API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         body: {
           name: "Ingredient for GET test",
@@ -121,7 +158,7 @@ describe.sequential("Ingredients API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -144,7 +181,7 @@ describe.sequential("Ingredients API", () => {
           method: "POST",
           headers: {
             Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+            Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
           },
           body: {
             name: `Paginated Ingredient ${i + 1}`,
@@ -161,7 +198,7 @@ describe.sequential("Ingredients API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         query: {
           offset,
@@ -183,7 +220,7 @@ describe.sequential("Ingredients API", () => {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         query: { limit: 5, offset: 0 },
         onResponse: ({ response }) => {
@@ -206,7 +243,7 @@ describe.sequential("Ingredients API", () => {
         method: "PUT",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         body: updatedIngredientData,
         onResponse: ({ response }) => {
@@ -225,7 +262,7 @@ describe.sequential("Ingredients API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         body: { name: "Update Non Existent" },
         onResponse: ({ response }) => {
@@ -251,7 +288,7 @@ describe.sequential("Ingredients API", () => {
         method: "POST",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         body: ingredientToDelete,
         onResponse: ({ response }) => {
@@ -265,7 +302,7 @@ describe.sequential("Ingredients API", () => {
         method: "DELETE",
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
@@ -282,7 +319,7 @@ describe.sequential("Ingredients API", () => {
         ignoreResponseError: true,
         headers: {
           Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(404);
@@ -304,7 +341,7 @@ describe.sequential("Ingredients API", () => {
           method: "DELETE",
           headers: {
             Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+            Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
           },
           ignoreResponseError: true, // Ignore if already deleted or non-existent
         },

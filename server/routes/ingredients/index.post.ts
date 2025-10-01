@@ -10,16 +10,37 @@ const validationSchema = z.object({
 export default defineEventHandler(async (event) => {
   const userId = await getUserId(event);
   const { categoryId, ...validatedBody } = await zodValidateBody(event, validationSchema.parse);
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+
+  if (!can(user, "create-ingredients")) {
+    throw createError({
+      statusCode: 403,
+      message: "Access denied",
+    });
+  }
 
   // Check if the category exists and belongs to the user
-  const category = await ModelCategories.findOne({
-    _id: categoryId,
-    userId,
-  });
+  const category = await ModelCategories.findById(categoryId);
   if (!category) {
     throw createError({
       statusCode: 404,
-      message: "Category not found or access denied",
+      message: "Category not found",
+    });
+  }
+
+  const meal = await ModelMeals.findById(category.mealId);
+  if (!meal) {
+    throw createError({
+      statusCode: 404,
+      message: "Meal not found",
+    });
+  }
+
+  if (meal.templateId && !can(user, "create-template-ingredients")) {
+    throw createError({
+      statusCode: 403,
+      message: "Access denied",
     });
   }
 

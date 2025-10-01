@@ -4,6 +4,8 @@ const querySchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
   const { offset = 0, limit = 10 } = getQuery(event);
   const categoryId = getRouterParam(event, "id");
   const userId = await getUserId(event);
@@ -19,7 +21,7 @@ export default defineEventHandler(async (event) => {
     querySchema.parse
   );
 
-  return ModelIngredients.find({ categoryId, userId })
+  return ModelIngredients.find(can(user, "get-all-ingredients") ? { categoryId } : { categoryId, userId })
     .limit(convertedLimit)
     .skip(convertedOffset);
 });

@@ -10,53 +10,121 @@ const updateSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+
+  if (!can(user, "update-ingredients")) {
+    throw createError({ statusCode: 403, message: "Unauthorized" });
+  }
+
   const userId = await getUserId(event);
-  const ingredientId = getRouterParam(event, "id");
 
   // Validate the request body
-  const { categoryId, ...validatedBody } = await zodValidateBody(event, updateSchema.parse);
+  const { categoryId, ...validatedBody } = await zodValidateBody(
+    event,
+    updateSchema.parse,
+  );
+  const ingredientIdParam = getRouterParam(event, "id");
 
   if (!userId) {
     throw createError({ statusCode: 401, message: "Unauthorized" });
   }
 
-  if (!ObjectId.isValid(ingredientId)) {
+  if (!ObjectId.isValid(ingredientIdParam)) {
     throw createError({
       statusCode: 400,
       message: "Invalid ingredient ID",
     });
   }
 
-  const category = categoryId ? await ModelCategories.findOne({
-    _id: new ObjectId(categoryId),
-    userId,
-  }) : undefined
+  const ingredientId = new ObjectId(ingredientIdParam);
+
+  const category = categoryId
+    ? await ModelCategories.findOne({
+        _id: new ObjectId(categoryId),
+      })
+    : undefined;
 
   if (categoryId && !category) {
     throw createError({
       statusCode: 404,
-      message: "Category not found or access denied",
+      message: "Category not found",
     });
   }
 
   // Find and update the ingredient
   // Ensure the ingredient belongs to the specified category and user
-  const updatedIngredient = await ModelIngredients.findOneAndUpdate(
-    {
-      _id: new ObjectId(ingredientId),
-      userId,
-    },
-    { $set: { ...validatedBody, categoryId } },
-    { new: true } // Return the updated document
-  );
+  if (
+    can(user, "update-all-ingredients") ||
+    !can(user, "update-template-ingredients")
+  ) {
+    const updatedIngredient = await ModelIngredients.findOneAndUpdate(
+      can(user, "update-all-ingredients")
+        ? {
+            _id: ingredientId,
+          }
+        : {
+            _id: ingredientId,
+            userId,
+          },
+      { $set: { ...validatedBody, categoryId } },
+      { new: true }, // Return the updated document
+    );
 
-  if (!updatedIngredient) {
-    throw createError({
-      statusCode: 404,
-      message:
-        "Ingredient not found, or it does not belong to the specified category/user",
-    });
+    if (!updatedIngredient) {
+      throw createError({
+        statusCode: 404,
+        message:
+          "Ingredient not found, or it does not belong to the specified category/user",
+      });
+    }
+
+    return updatedIngredient;
+  } else {
+    const ingredients = await ModelIngredients.aggregate([
+      {
+        $match: {
+          _id: ingredientId,
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $lookup: {
+                from: "meals",
+                localField: "mealId",
+                foreignField: "_id",
+                as: "meals",
+              },
+            },
+          ],
+          as: "categories",
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { "categories.meals.templateId": { $exists: true, $ne: null } },
+            { userId },
+          ],
+        },
+      },
+    ]);
+
+    if (ingredients.length === 0) {
+      throw createError({ statusCode: 404, message: "Item not found" });
+    }
+
+    const updated = await ModelCategories.findOneAndUpdate(
+      { _id: ingredientId },
+      { $set: { ...validatedBody, categoryId } },
+      { new: true },
+    );
+
+    return updated;
   }
-
-  return updatedIngredient;
 });

@@ -5,9 +5,10 @@ const updateSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const role = await getRole(event);
-  if (role !== "admin") {
-    throw createError({ statusCode: 403, message: "Forbidden" });
+  const { authorizationBase } = useRuntimeConfig();
+  const user = await getInitialUser(event, authorizationBase);
+  if (!can(user, "update-templates")) {
+    throw createError({ statusCode: 403, message: "Forbidden: User does not have permission to update templates" });
   }
   const id = getRouterParam(event, "id");
 
