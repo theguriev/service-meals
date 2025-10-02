@@ -90,7 +90,7 @@ describe.sequential("Sets API", () => {
         ingredients: [
           { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
           { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
-          { id: ingredientsTestData[2]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[2]._id.toString(), value: 1.5 },
         ],
       };
 
@@ -431,7 +431,7 @@ describe.sequential("Sets API", () => {
         ingredients: [
           { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
           { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
-          { id: ingredientsTestData[2]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[2]._id.toString(), value: 1.5 },
         ],
       };
 
