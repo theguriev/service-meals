@@ -1,11 +1,11 @@
+import { sumBy } from "es-toolkit";
 import { writeFile } from "fs/promises";
 import { join } from "path";
 
 interface TemplateGeneratorOptions {
   name: string;
   description?: string;
-  mealsCount?: number;
-  categoriesPerMeal?: string[];
+  categories?: string[];
   withExampleIngredients?: boolean;
 }
 
@@ -25,14 +25,7 @@ export default defineTask({
       console.log(`🚀 Generating template: ${options.name}`);
 
       // Устанавливаем defaults
-      const mealsCount = options.mealsCount || 5;
-      const categoriesPerMeal = options.categoriesPerMeal || [
-        "а",
-        "б",
-        "в",
-        "г",
-        "д",
-      ];
+      const categories = options.categories || ["а", "б", "в", "г", "д"];
       const withExampleIngredients = options.withExampleIngredients !== false;
 
       // Создаем структуру шаблона
@@ -40,34 +33,24 @@ export default defineTask({
         name: options.name,
         description:
           options.description || `Шаблон харчування: ${options.name}`,
-        meals: [] as any[],
+        categories: [] as any[],
       };
 
-      // Генерируем meals
-      for (let i = 1; i <= mealsCount; i++) {
-        const meal = {
-          name: `${i}️⃣ прийом їжі`,
-          categories: [] as any[],
+      // Генерируем категории
+      for (const categoryLetter of categories) {
+        const category = {
+          name: categoryLetter,
+          description: getCategoryDescription(categoryLetter),
+          targetCalories: getCategoryTargetCalories(categoryLetter),
+          ingredients: [] as any[],
         };
 
-        // Генерируем категории для каждого meal
-        for (const categoryLetter of categoriesPerMeal) {
-          const category = {
-            name: categoryLetter,
-            description: getCategoryDescription(categoryLetter),
-            targetCalories: getCategoryTargetCalories(categoryLetter),
-            ingredients: [] as any[],
-          };
-
-          // Добавляем примеры ингредиентов если нужно
-          if (withExampleIngredients) {
-            category.ingredients = getExampleIngredients(categoryLetter);
-          }
-
-          meal.categories.push(category);
+        // Добавляем примеры ингредиентов если нужно
+        if (withExampleIngredients) {
+          category.ingredients = getExampleIngredients(categoryLetter);
         }
 
-        template.meals.push(meal);
+        template.categories.push(category);
       }
 
       // Создаем filename из имени шаблона
@@ -84,26 +67,18 @@ export default defineTask({
 
       console.log(`✅ Template generated: ${filename}`);
       console.log(`📁 File saved to: data/templates/${filename}`);
-      console.log(
-        `🍽️  Generated ${mealsCount} meals with ${categoriesPerMeal.length} categories each`
-      );
+      console.log(`🍽️  Generated ${categories.length} categories`);
 
       if (withExampleIngredients) {
-        const totalIngredients = template.meals.reduce(
-          (total, meal) =>
-            total +
-            meal.categories.reduce(
-              (catTotal: number, cat: any) => catTotal + cat.ingredients.length,
-              0
-            ),
-          0
+        const totalIngredients = sumBy(template.categories, (category) =>
+          category.ingredients.length
         );
         console.log(`🥗 Added ${totalIngredients} example ingredients`);
       }
 
       console.log(`\n💡 Next steps:`);
       console.log(
-        `   1. Edit data/templates/${filename} to customize your template`
+        `   1. Edit data/templates/${filename} to customize your template`,
       );
       console.log(`   2. Run: pnpm migrate to import the template`);
 
@@ -111,18 +86,10 @@ export default defineTask({
         result: {
           filename,
           filePath,
-          mealsCount,
-          categoriesCount: categoriesPerMeal.length,
+          categoriesCount: categories.length,
           totalIngredients: withExampleIngredients
-            ? template.meals.reduce(
-                (total, meal) =>
-                  total +
-                  meal.categories.reduce(
-                    (catTotal: number, cat: any) =>
-                      catTotal + cat.ingredients.length,
-                    0
-                  ),
-                0
+            ? sumBy(template.categories, (category) =>
+                category.ingredients.length
               )
             : 0,
         },

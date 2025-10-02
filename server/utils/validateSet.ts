@@ -19,7 +19,7 @@ const validateSet = async (sets?: {
     };
   }, {});
 
-  return !Object.values(categoryValues ?? {}).some(value => value > 1);
+  return !Object.values(categoryValues ?? {}).some(value => value > 2);
 };
 
 export default validateSet;

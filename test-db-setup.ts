@@ -2,34 +2,20 @@ import { ObjectId } from "mongodb";
 import { InferSchemaType, Types } from "mongoose";
 import { regularId } from "./constants";
 
-export const mealTestData = {
-  _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2c9"),
-  name: "Test Meal",
-  userId: regularId,
-} satisfies Omit<
-  InferSchemaType<typeof schemaMeals> & {
-    _id: Types.ObjectId;
-  },
-  "createdAt" | "updatedAt"
->;
-
 export const categoriesTestData = [
   {
     _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2c9"),
     name: "Test Category",
-    mealId: mealTestData._id,
     userId: regularId,
   },
   {
     _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2ca"),
     name: "Test Category 2",
-    mealId: mealTestData._id,
     userId: regularId,
   },
   {
     _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2cb"),
     name: "Test Category 3",
-    mealId: mealTestData._id,
     userId: regularId,
   },
 ] satisfies Omit<
@@ -157,7 +143,6 @@ export async function clearTestData() {
   try {
     await ModelIngredients.deleteMany({});
     await ModelCategories.deleteMany({});
-    await ModelMeals.deleteMany({});
     await ModelNotes.deleteMany({});
     console.log(
       "\x1b[32m%s\x1b[0m",
@@ -172,7 +157,6 @@ export async function clearTestData() {
 
 export async function seedTestData() {
   try {
-    await ModelMeals.create(mealTestData);
     await ModelCategories.create(categoriesTestData);
     await ModelIngredients.create(ingredientsTestData);
     await ModelNotes.create(notesTestData);

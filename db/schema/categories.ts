@@ -7,14 +7,14 @@ const schema = new Schema(
       required: true,
       ref: "User",
     },
-    mealId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "Meal",
-    },
     name: {
       type: String,
       required: true,
+    },
+    templateId: {
+      type: Schema.Types.ObjectId,
+      required: false,
+      ref: "Template",
     },
   },
   { timestamps: true }

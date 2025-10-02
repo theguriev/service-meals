@@ -4,27 +4,8 @@ let testCategoryId: string; // Will be created during tests
 describe.sequential("Ingredients API", () => {
   // Setup: Create a category to be used for ingredient tests
   beforeAll(async () => {
-    let mealIdForCategory: string;
-    const newMeal = {
-      name: "Test Meal for Ingredients",
-    };
-    await $fetch(`/meals`, {
-      baseURL: process.env.API_URL,
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
-      },
-      body: newMeal,
-      onResponse: ({ response }) => {
-        expect(response.status).toBe(200);
-        mealIdForCategory = response._data.data._id; // Save created mealId
-      },
-    });
-
     const newCategory = {
       name: "Test Category for Ingredients",
-      mealId: mealIdForCategory,
     };
     await $fetch(`/categories`, {
       baseURL: process.env.API_URL,
@@ -331,11 +312,8 @@ describe.sequential("Ingredients API", () => {
   // Cleanup: Delete the category created for tests
   afterAll(async () => {
     if (testCategoryId) {
-      // Assuming a mealId is required for category deletion, similar to creation.
-      // This might need adjustment based on your actual API for deleting categories.
-      const mealIdForCategoryDeletion = "mealForCategory123"; // Same as used in beforeAll
       await $fetch(
-        `/categories/${mealIdForCategoryDeletion}/${testCategoryId}`,
+        `/categories/${testCategoryId}`,
         {
           baseURL: process.env.API_URL,
           method: "DELETE",

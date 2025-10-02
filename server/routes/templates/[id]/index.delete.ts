@@ -4,7 +4,10 @@ export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
   const user = await getInitialUser(event, authorizationBase);
   if (!can(user, "delete-templates")) {
-    throw createError({ statusCode: 403, message: "Forbidden: User does not have permission to delete templates" });
+    throw createError({
+      statusCode: 403,
+      message: "Forbidden: User does not have permission to delete templates",
+    });
   }
   const id = getRouterParam(event, "id");
 
@@ -21,32 +24,20 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const meals = await ModelMeals.find({
+    let deletedIngredients = { acknowledged: false, deletedCount: 0 };
+
+    const categories = await ModelCategories.find({
       templateId: new ObjectId(id),
     });
-    const mealIds = meals.map((meal) => meal._id);
+    const categoryIds = categories.map((category) => category._id);
 
-    let deletedIngredients = { acknowledged: false, deletedCount: 0 };
-    let deletedCategories = { acknowledged: false, deletedCount: 0 };
-
-    if (mealIds.length > 0) {
-      const categories = await ModelCategories.find({
-        mealId: { $in: mealIds },
-      });
-      const categoryIds = categories.map((category) => category._id);
-
-      if (categoryIds.length > 0) {
-        deletedIngredients = await ModelIngredients.deleteMany({
-          categoryId: { $in: categoryIds },
-        });
-      }
-
-      deletedCategories = await ModelCategories.deleteMany({
-        mealId: { $in: mealIds },
+    if (categoryIds.length > 0) {
+      deletedIngredients = await ModelIngredients.deleteMany({
+        categoryId: { $in: categoryIds },
       });
     }
 
-    const deletedMeals = await ModelMeals.deleteMany({
+    const deletedCategories = await ModelCategories.deleteMany({
       templateId: new ObjectId(id),
     });
 
@@ -57,7 +48,6 @@ export default defineEventHandler(async (event) => {
     return {
       message: "Template and all related data deleted successfully",
       deletedTemplates,
-      deletedMeals,
       deletedCategories,
       deletedIngredients,
     };

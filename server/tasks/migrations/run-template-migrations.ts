@@ -1,6 +1,6 @@
+import { existsSync } from "fs";
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-import { existsSync } from "fs";
 import { templateUserId } from "~~/constants";
 
 interface TemplateIngredient {
@@ -17,22 +17,16 @@ interface TemplateCategory {
   ingredients: TemplateIngredient[];
 }
 
-interface TemplateMeal {
-  name: string;
-  categories: TemplateCategory[];
-}
-
 interface TemplateData {
   name: string;
   description?: string;
-  meals: TemplateMeal[];
+  categories: TemplateCategory[];
 }
 
 interface MigrationStats {
   templatesProcessed: number;
   templatesCreated: number;
   templatesSkipped: number;
-  mealsCreated: number;
   categoriesCreated: number;
   ingredientsCreated: number;
 }
@@ -50,7 +44,6 @@ export default defineTask({
         templatesProcessed: 0,
         templatesCreated: 0,
         templatesSkipped: 0,
-        mealsCreated: 0,
         categoriesCreated: 0,
         ingredientsCreated: 0,
       };
@@ -84,7 +77,6 @@ export default defineTask({
 
           stats.templatesCreated += templateStats.templatesCreated;
           stats.templatesSkipped += templateStats.templatesSkipped;
-          stats.mealsCreated += templateStats.mealsCreated;
           stats.categoriesCreated += templateStats.categoriesCreated;
           stats.ingredientsCreated += templateStats.ingredientsCreated;
         } catch (error) {
@@ -99,7 +91,6 @@ export default defineTask({
       console.log(`📁 Templates processed: ${stats.templatesProcessed}`);
       console.log(`✅ Templates created: ${stats.templatesCreated}`);
       console.log(`⏭️  Templates skipped: ${stats.templatesSkipped}`);
-      console.log(`🍽️  Meals created: ${stats.mealsCreated}`);
       console.log(`📂 Categories created: ${stats.categoriesCreated}`);
       console.log(`🥗 Ingredients created: ${stats.ingredientsCreated}`);
       console.log("=".repeat(50));
@@ -113,12 +104,11 @@ export default defineTask({
 });
 
 async function processTemplateFile(
-  filename: string
+  filename: string,
 ): Promise<Omit<MigrationStats, "templatesProcessed">> {
   const stats: Omit<MigrationStats, "templatesProcessed"> = {
     templatesCreated: 0,
     templatesSkipped: 0,
-    mealsCreated: 0,
     categoriesCreated: 0,
     ingredientsCreated: 0,
   };
@@ -140,7 +130,7 @@ async function processTemplateFile(
   });
   if (existingTemplate) {
     console.log(
-      `  ⏭️  Template "${templateData.name}" already exists, skipping...`
+      `  ⏭️  Template "${templateData.name}" already exists, skipping...`,
     );
     stats.templatesSkipped++;
     return stats;
@@ -154,60 +144,45 @@ async function processTemplateFile(
   });
   const savedTemplate = await template.save();
   console.log(
-    `  ✅ Created template: ${savedTemplate.name} (${savedTemplate._id})`
+    `  ✅ Created template: ${savedTemplate.name} (${savedTemplate._id})`,
   );
   stats.templatesCreated++;
 
-  // Создаем meals, categories и ingredients
-  for (const mealData of templateData.meals) {
-    console.log(`    🍽️  Processing meal: ${mealData.name}`);
+  // Создаем категории
+  for (const categoryData of templateData.categories) {
+    console.log(`      📂 Processing category: ${categoryData.name}`);
 
-    // Создаем meal
-    const meal = new ModelMeals({
-      templateId: savedTemplate._id,
-      name: mealData.name,
+    // Создаем category
+    const category = new ModelCategories({
+      name: categoryData.name,
+      description: categoryData.description,
+      targetCalories: categoryData.targetCalories,
       userId: templateUserId,
+      templateId: savedTemplate._id,
     });
-    const savedMeal = await meal.save();
-    console.log(`    ✅ Created meal: ${savedMeal.name} (${savedMeal._id})`);
-    stats.mealsCreated++;
+    const savedCategory = await category.save();
+    console.log(
+      `      ✅ Created category: ${savedCategory.name} (${savedCategory._id})`,
+    );
+    stats.categoriesCreated++;
 
-    // Создаем категории для этого meal
-    for (const categoryData of mealData.categories) {
-      console.log(`      📂 Processing category: ${categoryData.name}`);
-
-      // Создаем category
-      const category = new ModelCategories({
-        mealId: savedMeal._id,
-        name: categoryData.name,
-        description: categoryData.description,
-        targetCalories: categoryData.targetCalories,
+    // Создаем ingredients для этой категории
+    for (const ingredientData of categoryData.ingredients) {
+      const ingredient = new ModelIngredients({
+        categoryId: savedCategory._id,
+        name: ingredientData.name,
+        calories: ingredientData.calories,
+        proteins: ingredientData.proteins,
+        grams: ingredientData.grams,
         userId: templateUserId,
       });
-      const savedCategory = await category.save();
-      console.log(
-        `      ✅ Created category: ${savedCategory.name} (${savedCategory._id})`
-      );
-      stats.categoriesCreated++;
-
-      // Создаем ingredients для этой категории
-      for (const ingredientData of categoryData.ingredients) {
-        const ingredient = new ModelIngredients({
-          categoryId: savedCategory._id,
-          name: ingredientData.name,
-          calories: ingredientData.calories,
-          proteins: ingredientData.proteins,
-          grams: ingredientData.grams,
-          userId: templateUserId,
-        });
-        await ingredient.save();
-        stats.ingredientsCreated++;
-      }
-
-      console.log(
-        `      🥗 Created ${categoryData.ingredients.length} ingredients for category "${categoryData.name}"`
-      );
+      await ingredient.save();
+      stats.ingredientsCreated++;
     }
+
+    console.log(
+      `      🥗 Created ${categoryData.ingredients.length} ingredients for category "${categoryData.name}"`,
+    );
   }
 
   return stats;

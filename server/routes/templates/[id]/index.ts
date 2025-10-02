@@ -16,93 +16,20 @@ export default defineEventHandler(async (event) => {
     { $match: { _id: new ObjectId(id) } },
     {
       $lookup: {
-        from: "meals",
+        from: "categories",
         localField: "_id",
         foreignField: "templateId",
-        as: "meals",
-      },
-    },
-    {
-      $lookup: {
-        from: "categories",
-        localField: "meals._id",
-        foreignField: "mealId",
+        pipeline: [
+          {
+            $lookup: {
+              from: "ingredients",
+              localField: "_id",
+              foreignField: "categoryId",
+              as: "ingredients",
+            },
+          },
+        ],
         as: "categories",
-      },
-    },
-    {
-      $lookup: {
-        from: "ingredients",
-        localField: "categories._id",
-        foreignField: "categoryId",
-        as: "ingredients",
-      },
-    },
-    {
-      $addFields: {
-        meals: {
-          $map: {
-            input: "$meals",
-            as: "meal",
-            in: {
-              $mergeObjects: [
-                "$$meal",
-                {
-                  categories: {
-                    $filter: {
-                      input: "$categories",
-                      cond: { $eq: ["$$this.mealId", "$$meal._id"] },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-        },
-      },
-    },
-    {
-      $addFields: {
-        meals: {
-          $map: {
-            input: "$meals",
-            as: "meal",
-            in: {
-              $mergeObjects: [
-                "$$meal",
-                {
-                  categories: {
-                    $map: {
-                      input: "$$meal.categories",
-                      as: "category",
-                      in: {
-                        $mergeObjects: [
-                          "$$category",
-                          {
-                            ingredients: {
-                              $filter: {
-                                input: "$ingredients",
-                                cond: {
-                                  $eq: ["$$this.categoryId", "$$category._id"],
-                                },
-                              },
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        categories: 0,
-        ingredients: 0,
       },
     },
   ]);

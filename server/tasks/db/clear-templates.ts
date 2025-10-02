@@ -13,24 +13,26 @@ export default defineTask({
 
       if (!confirmCleanup) {
         console.log(
-          "⚠️  This will delete ALL templates, meals, categories and ingredients!"
+          "⚠️  This will delete ALL templates, categories and ingredients!",
         );
         console.log(
-          "⚠️  To confirm, run with: --payload '{\"confirm\": true}'"
+          "⚠️  To confirm, run with: --payload '{\"confirm\": true}'",
         );
         return {
           result: {
             cancelled: true,
+            cleaned: false,
             message: "Cleanup cancelled - confirmation required",
+            deletedTemplates: 0,
+            deletedCategories: 0,
+            deletedIngredients: 0,
+            totalDeleted: 0,
           },
         };
       }
 
       // Подсчитываем что будем удалять
       const templatesCount = await ModelTemplate.find({
-        userId: templateUserId,
-      }).countDocuments();
-      const mealsCount = await ModelMeals.find({
         userId: templateUserId,
       }).countDocuments();
       const categoriesCount = await ModelCategories.find({
@@ -42,14 +44,21 @@ export default defineTask({
 
       console.log("📊 Current database state:");
       console.log(`   🏷️  Templates: ${templatesCount}`);
-      console.log(`   🍽️  Meals: ${mealsCount}`);
       console.log(`   📂 Categories: ${categoriesCount}`);
       console.log(`   🥗 Ingredients: ${ingredientsCount}`);
 
       if (templatesCount === 0) {
         console.log("✅ Database is already clean!");
         return {
-          result: { cleaned: false, message: "Database was already clean" },
+          result: {
+            cancelled: false,
+            cleaned: false,
+            message: "Database was already clean",
+            deletedTemplates: 0,
+            deletedCategories: 0,
+            deletedIngredients: 0,
+            totalDeleted: 0,
+          },
         };
       }
 
@@ -60,18 +69,13 @@ export default defineTask({
         userId: templateUserId,
       });
       console.log(
-        `   🥗 Deleted ${deletedIngredients.deletedCount} ingredients`
+        `   🥗 Deleted ${deletedIngredients.deletedCount} ingredients`,
       );
 
       const deletedCategories = await ModelCategories.deleteMany({
         userId: templateUserId,
       });
       console.log(`   📂 Deleted ${deletedCategories.deletedCount} categories`);
-
-      const deletedMeals = await ModelMeals.deleteMany({
-        userId: templateUserId,
-      });
-      console.log(`   🍽️  Deleted ${deletedMeals.deletedCount} meals`);
 
       const deletedTemplates = await ModelTemplate.deleteMany({
         userId: templateUserId,
@@ -83,14 +87,14 @@ export default defineTask({
 
       return {
         result: {
+          cancelled: false,
           cleaned: true,
+          message: "Database cleanup completed successfully!",
           deletedTemplates: deletedTemplates.deletedCount,
-          deletedMeals: deletedMeals.deletedCount,
           deletedCategories: deletedCategories.deletedCount,
           deletedIngredients: deletedIngredients.deletedCount,
           totalDeleted:
             deletedTemplates.deletedCount +
-            deletedMeals.deletedCount +
             deletedCategories.deletedCount +
             deletedIngredients.deletedCount,
         },

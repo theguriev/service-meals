@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 const updateSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
-  mealId: z.string().transform(objectIdTransform).optional()
+  templateId: z.string().transform(objectIdTransform).optional(),
 });
 
 export default defineEventHandler(async (event) => {
@@ -15,69 +15,45 @@ export default defineEventHandler(async (event) => {
 
   const userId = await getUserId(event);
   const id = getRouterParam(event, "id");
-
   if (!ObjectId.isValid(id)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
   const objectId = new ObjectId(id);
 
   // Validate the request body
-  const validatedBody = await zodValidateBody(event, updateSchema.parse);
+  const { templateId, ...validatedBody } = await zodValidateBody(
+    event,
+    updateSchema.parse,
+  );
+
+  if (
+    templateId &&
+    !can(user, "update-all-categories") &&
+    !can(user, "update-template-categories")
+  ) {
+    throw createError({ statusCode: 403, message: "Unauthorized" });
+  }
 
   // Update the ingredient in the database
-  if (can(user, "update-all-categories") || !can(user, "update-template-categories")) {
-    const updated = await ModelCategories.findOneAndUpdate(
-      can(user, "update-all-categories") ? { _id: objectId } : { _id: objectId, userId },
-      { $set: validatedBody },
-      { new: true }
-    );
+  const updated = await ModelCategories.findOneAndUpdate(
+    can(user, "update-all-categories")
+      ? { _id: objectId }
+      : can(user, "update-template-categories")
+        ? {
+            _id: objectId,
+            $or: [{ templateId: { $exists: true, $ne: null } }, { userId }],
+          }
+        : { _id: objectId, userId },
+    { $set: { templateId, ...validatedBody } },
+    { new: true },
+  );
 
-    if (!updated) {
-      throw createError({ statusCode: 404, message: "Item not found" });
-    }
-
-    return {
-      message: "Item updated successfully",
-      ingredient: updated,
-    };
-  } else {
-    const categories = await ModelCategories.aggregate([
-      {
-        $match: {
-          _id: objectId,
-        }
-      },
-      {
-        $lookup: {
-          from: "meals",
-          localField: "mealId",
-          foreignField: "_id",
-          as: "meals"
-        }
-      },
-      {
-        $match: {
-          $or: [
-            { "meals.templateId": { $exists: true, $ne: null } },
-            { userId }
-          ]
-        }
-      }
-    ]);
-
-    if (categories.length === 0) {
-      throw createError({ statusCode: 404, message: "Item not found" });
-    }
-
-    const updated = await ModelCategories.findOneAndUpdate(
-      { _id: objectId },
-      { $set: validatedBody },
-      { new: true }
-    );
-
-    return {
-      message: "Item updated successfully",
-      ingredient: updated,
-    };
+  if (!updated) {
+    throw createError({ statusCode: 404, message: "Item not found" });
   }
+
+  return {
+    message: "Item updated successfully",
+    ingredient: updated,
+  };
 });
