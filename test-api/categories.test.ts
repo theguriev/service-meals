@@ -1,11 +1,31 @@
-let categoryId;
-let testMealId = "685950e525652632670bc78c"; // Static mealId for testing purposes
+let categoryId: string;
+let testMealId: string; // Static mealId for testing purposes
 
 describe.sequential("Categories API", () => {
-  describe("POST /categories/{mealId}", () => {
+  // Setup: Create a meal to be used for category tests
+  beforeAll(async () => {
+    const newMeal = {
+      name: "Test Meal for Ingredients",
+    };
+    await $fetch(`/meals`, {
+      baseURL: process.env.API_URL,
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+      },
+      body: newMeal,
+      onResponse: ({ response }) => {
+        expect(response.status).toBe(200);
+        testMealId = response._data.data._id; // Save created mealId
+      },
+    });
+  });
+
+  describe("POST /categories", () => {
     it("should create a new category for a meal", async () => {
-      const newCategory = { name: "Category A" };
-      await $fetch(`/categories/${testMealId}`, {
+      const newCategory = { name: "Category A", mealId: testMealId };
+      await $fetch(`/categories`, {
         baseURL: process.env.API_URL,
         method: "POST",
         headers: {
@@ -24,7 +44,7 @@ describe.sequential("Categories API", () => {
     });
 
     it("should return a validation error if name is missing", async () => {
-      await $fetch(`/categories/${testMealId}`, {
+      await $fetch(`/categories`, {
         baseURL: process.env.API_URL,
         method: "POST",
         ignoreResponseError: true,
@@ -32,7 +52,7 @@ describe.sequential("Categories API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
-        body: {},
+        body: { mealId: testMealId },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);
         },
@@ -40,7 +60,7 @@ describe.sequential("Categories API", () => {
     });
 
     it("should return 403 if user can't create category", async () => {
-      await $fetch(`/categories/${testMealId}`, {
+      await $fetch(`/categories`, {
         baseURL: process.env.API_URL,
         method: "POST",
         ignoreResponseError: true,
@@ -48,7 +68,7 @@ describe.sequential("Categories API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
-        body: { name: "Category for POST test" },
+        body: { name: "Category for POST test", mealId: testMealId },
         onResponse: ({ response }) => {
           expect(response.status).toBe(403);
         },
@@ -56,20 +76,20 @@ describe.sequential("Categories API", () => {
     });
   });
 
-  describe("GET /categories/{mealId}", () => {
+  describe("GET /meals/{mealId}/categories", () => {
     it("should retrieve a list of categories for a specific meal", async () => {
       // Create a category first to ensure there's data for the mealId
-      await $fetch(`/categories/${testMealId}`, {
+      await $fetch(`/categories`, {
         baseURL: process.env.API_URL,
         method: "POST",
         headers: {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
-        body: { name: "Category for GET test" },
+        body: { name: "Category for GET test", mealId: testMealId },
       });
 
-      await $fetch(`/categories/${testMealId}`, {
+      await $fetch(`/meals/${testMealId}/categories`, {
         baseURL: process.env.API_URL,
         method: "GET",
         headers: {
@@ -96,7 +116,7 @@ describe.sequential("Categories API", () => {
       const offset = 1;
       // Create a few categories for pagination testing under testMealId
       for (let i = 0; i < 5; i++) {
-        await $fetch(`/categories/${testMealId}`, {
+        await $fetch(`/meals/${testMealId}/categories`, {
           baseURL: process.env.API_URL,
           method: "POST",
           headers: {
@@ -108,13 +128,17 @@ describe.sequential("Categories API", () => {
       }
 
       await $fetch(
-        `/categories/${testMealId}?offset=${offset}&limit=${limit}`,
+        `/meals/${testMealId}/categories`,
         {
           baseURL: process.env.API_URL,
           method: "GET",
           headers: {
             Accept: "application/json",
             Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+          },
+          query: {
+            offset,
+            limit,
           },
           onResponse: ({ response }) => {
             expect(response.status).toBe(200);
@@ -150,10 +174,10 @@ describe.sequential("Categories API", () => {
     });
   });
 
-  describe("PUT /categories/{mealId}/{id}", () => {
+  describe("PUT /categories/{id}", () => {
     it("should update an existing category", async () => {
-      const updatedCategoryData = { name: "Updated Category Name" };
-      await $fetch(`/categories/${testMealId}/${categoryId}`, {
+      const updatedCategoryData = { name: "Updated Category Name", mealId: testMealId };
+      await $fetch(`/categories/${categoryId}`, {
         baseURL: process.env.API_URL,
         method: "PUT",
         headers: {
@@ -171,7 +195,7 @@ describe.sequential("Categories API", () => {
 
     it("should return 404 if trying to update a non-existent category", async () => {
       const nonExistentId = "605c72ef29592b001c000000";
-      await $fetch(`/categories/${testMealId}/${nonExistentId}`, {
+      await $fetch(`/categories/${nonExistentId}`, {
         baseURL: process.env.API_URL,
         method: "PUT",
         ignoreResponseError: true,
@@ -179,7 +203,7 @@ describe.sequential("Categories API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
-        body: { name: "Update Non Existent" },
+        body: { name: "Update Non Existent", mealId: testMealId },
         onResponse: ({ response }) => {
           expect(response.status).toBe(404);
           expect(response._data.message).toBe("Item not found");
@@ -189,7 +213,7 @@ describe.sequential("Categories API", () => {
 
     it("should return 400 if category ID is invalid", async () => {
       const invalidId = "invalid-id-format";
-      await $fetch(`/categories/${testMealId}/${invalidId}`, {
+      await $fetch(`/categories/${invalidId}`, {
         baseURL: process.env.API_URL,
         method: "PUT",
         ignoreResponseError: true,
@@ -197,7 +221,7 @@ describe.sequential("Categories API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
-        body: { name: "Update Invalid Id" },
+        body: { name: "Update Invalid Id", mealId: testMealId },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);
           expect(response._data.message).toBe("Invalid item ID");
@@ -206,9 +230,9 @@ describe.sequential("Categories API", () => {
     });
   });
 
-  describe("DELETE /categories/{mealId}/{id}", () => {
+  describe("DELETE /categories/{id}", () => {
     it("should delete an existing category", async () => {
-      await $fetch(`/categories/${testMealId}/${categoryId}`, {
+      await $fetch(`/categories/${categoryId}`, {
         baseURL: process.env.API_URL,
         method: "DELETE",
         headers: {
@@ -224,7 +248,7 @@ describe.sequential("Categories API", () => {
 
     it("should return 404 if trying to delete a non-existent category", async () => {
       const nonExistentId = "605c72ef29592b001c000000";
-      await $fetch(`/categories/${testMealId}/${nonExistentId}`, {
+      await $fetch(`/categories/${nonExistentId}`, {
         baseURL: process.env.API_URL,
         method: "DELETE",
         ignoreResponseError: true,
@@ -241,7 +265,7 @@ describe.sequential("Categories API", () => {
 
     it("should return 400 if category ID is invalid", async () => {
       const invalidId = "invalid-id-format";
-      await $fetch(`/categories/${testMealId}/${invalidId}`, {
+      await $fetch(`/categories/${invalidId}`, {
         baseURL: process.env.API_URL,
         method: "DELETE",
         ignoreResponseError: true,

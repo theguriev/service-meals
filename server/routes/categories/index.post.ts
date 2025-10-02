@@ -1,8 +1,11 @@
 const validationSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  mealId: z.string().transform(objectIdTransform)
 });
 
 export default defineEventHandler(async (event) => {
+  const _id = await getUserId(event);
+  const { mealId, ...validatedBody } = await zodValidateBody(event, validationSchema.parse);
   const { authorizationBase } = useRuntimeConfig();
   const user = await getInitialUser(event, authorizationBase);
 
@@ -13,7 +16,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const mealId = getRouterParam(event, "mealId");
   const meal = await ModelMeals.findById(mealId);
   if (!meal) {
     throw createError({
@@ -28,9 +30,7 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Forbidden",
     });
   }
-
-  const _id = await getUserId(event);
-  const validatedBody = await zodValidateBody(event, validationSchema.parse);
+  
   const doc = new ModelCategories({
     userId: _id,
     mealId,

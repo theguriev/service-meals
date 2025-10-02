@@ -6,6 +6,7 @@ const updateSchema = z.object({
   calories: z.number().min(0).optional(),
   proteins: z.number().min(0).optional(),
   grams: z.number().min(0).optional(),
+  categoryId: z.string().transform(objectIdTransform).optional(),
 });
 
 export default defineEventHandler(async (event) => {
@@ -17,37 +18,57 @@ export default defineEventHandler(async (event) => {
   }
 
   const userId = await getUserId(event);
-  const ingredientId = new ObjectId(getRouterParam(event, "id"));
-  const categoryId = new ObjectId(getRouterParam(event, "categoryId"));
+
+  // Validate the request body
+  const { categoryId, ...validatedBody } = await zodValidateBody(
+    event,
+    updateSchema.parse,
+  );
+  const ingredientIdParam = getRouterParam(event, "id");
 
   if (!userId) {
     throw createError({ statusCode: 401, message: "Unauthorized" });
   }
 
-  if (!ObjectId.isValid(ingredientId) || !ObjectId.isValid(categoryId)) {
+  if (!ObjectId.isValid(ingredientIdParam)) {
     throw createError({
       statusCode: 400,
-      message: "Invalid ingredient or category ID",
+      message: "Invalid ingredient ID",
     });
   }
 
-  // Validate the request body
-  const validatedBody = await zodValidateBody(event, updateSchema.parse);
+  const ingredientId = new ObjectId(ingredientIdParam);
+
+  const category = categoryId
+    ? await ModelCategories.findOne({
+        _id: new ObjectId(categoryId),
+      })
+    : undefined;
+
+  if (categoryId && !category) {
+    throw createError({
+      statusCode: 404,
+      message: "Category not found",
+    });
+  }
 
   // Find and update the ingredient
   // Ensure the ingredient belongs to the specified category and user
-  if (can(user, "update-all-ingredients") || !can(user, "update-template-ingredients")) {
+  if (
+    can(user, "update-all-ingredients") ||
+    !can(user, "update-template-ingredients")
+  ) {
     const updatedIngredient = await ModelIngredients.findOneAndUpdate(
-      can(user, "update-all-ingredients") ? {
-        _id: ingredientId,
-        userId,
-      } : {
-        _id: ingredientId,
-        categoryId: categoryId,
-        userId,
-      },
-      { $set: validatedBody },
-      { new: true } // Return the updated document
+      can(user, "update-all-ingredients")
+        ? {
+            _id: ingredientId,
+          }
+        : {
+            _id: ingredientId,
+            userId,
+          },
+      { $set: { ...validatedBody, categoryId } },
+      { new: true }, // Return the updated document
     );
 
     if (!updatedIngredient) {
@@ -64,8 +85,7 @@ export default defineEventHandler(async (event) => {
       {
         $match: {
           _id: ingredientId,
-          categoryId,
-        }
+        },
       },
       {
         $lookup: {
@@ -78,18 +98,21 @@ export default defineEventHandler(async (event) => {
                 from: "meals",
                 localField: "mealId",
                 foreignField: "_id",
-                as: "meals"
-              }
-            }
+                as: "meals",
+              },
+            },
           ],
-          as: "categories"
-        }
+          as: "categories",
+        },
       },
       {
         $match: {
-          "categories.meals.templateId": { $exists: true, $ne: null }
-        }
-      }
+          $or: [
+            { "categories.meals.templateId": { $exists: true, $ne: null } },
+            { userId },
+          ],
+        },
+      },
     ]);
 
     if (ingredients.length === 0) {
@@ -98,8 +121,8 @@ export default defineEventHandler(async (event) => {
 
     const updated = await ModelCategories.findOneAndUpdate(
       { _id: ingredientId },
-      { $set: validatedBody },
-      { new: true }
+      { $set: { ...validatedBody, categoryId } },
+      { new: true },
     );
 
     return updated;

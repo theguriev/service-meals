@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
   const user = await getInitialUser(event, authorizationBase);
   const { offset = 0, limit = 10 } = getQuery(event);
-  const categoryId = getRouterParam(event, "categoryId");
+  const categoryId = getRouterParam(event, "id");
   const userId = await getUserId(event);
 
   const convertedOffset = Number(offset);

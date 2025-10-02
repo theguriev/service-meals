@@ -8,7 +8,7 @@ const querySchema = z.object({
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
   const { offset = 0, limit = 10 } = getQuery(event);
-  const mealId = new Types.ObjectId(getRouterParam(event, "mealId"));
+  const mealId = new Types.ObjectId(getRouterParam(event, "id"));
   const convertedOffset = Number(offset);
   const convertedLimit = Number(limit);
   const userId = await getUserId(event);

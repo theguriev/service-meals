@@ -9,22 +9,21 @@ export default defineEventHandler(async (event) => {
   }
 
   const userId = await getUserId(event);
-  const id = new ObjectId(getRouterParam(event, "id"));
-  const categoryId = new ObjectId(getRouterParam(event, "categoryId"));
+  const idParam = getRouterParam(event, "id");
 
-  if (!ObjectId.isValid(id)) {
+  if (!ObjectId.isValid(idParam)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
+  
+  const id = new ObjectId(idParam);
 
   // Check if the category exists and belongs to the user
   if (can(user, "delete-all-ingredients") || !can(user, "delete-template-ingredients")) {
     const result = await ModelIngredients.deleteOne(can(user, "delete-all-ingredients") ? {
       _id: id,
-      categoryId,
     } : {
       _id: id,
       userId,
-      categoryId,
     });
 
     if (result.deletedCount === 0) {
@@ -35,7 +34,6 @@ export default defineEventHandler(async (event) => {
       {
         $match: {
           _id: id,
-          categoryId,
         }
       },
       {
@@ -58,7 +56,10 @@ export default defineEventHandler(async (event) => {
       },
       {
         $match: {
-          "categories.meals.templateId": { $exists: true, $ne: null }
+          $or: [
+            { "categories.meals.templateId": { $exists: true, $ne: null } },
+            { userId }
+          ]
         }
       }
     ]);

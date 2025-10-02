@@ -21,7 +21,10 @@ export default defineEventHandler(async (event) => {
   };
 
   if (!can(user, "delete-all-meals") && can(user, "delete-template-meals")) {
-    deleteMatch.templateId = { $exists: true };
+    deleteMatch.$or = [
+      { templateId: { $exists: true, $ne: null } },
+      { userId },
+    ];
   } else if (!can(user, "delete-all-meals")) {
     deleteMatch.userId = userId;
   }

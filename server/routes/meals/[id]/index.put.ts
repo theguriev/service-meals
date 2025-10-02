@@ -30,7 +30,10 @@ export default defineEventHandler(async (event) => {
   };
 
   if (!can(user, "update-all-meals") && can(user, "update-template-meals")) {
-    updateMatch.templateId = { $exists: true };
+    updateMatch.$or = [
+      { templateId: { $exists: true, $ne: null } },
+      { userId },
+    ];
   } else if (!can(user, "update-all-meals")) {
     updateMatch.userId = userId;
   }

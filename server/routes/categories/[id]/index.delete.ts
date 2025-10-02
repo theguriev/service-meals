@@ -10,26 +10,18 @@ export default defineEventHandler(async (event) => {
 
   const _id = await getUserId(event);
   const id = getRouterParam(event, "id");
+
   if (!ObjectId.isValid(id)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
   const objectId = new ObjectId(id);
 
-
-  const mealId = getRouterParam(event, "mealId");
-  if (!ObjectId.isValid(mealId)) {
-    throw createError({ statusCode: 400, message: "Invalid meal ID" });
-  }
-  const objectMealId = new ObjectId(mealId);
-
   if (can(user, "delete-all-categories") || !can(user, "delete-template-categories")) {
     const result = await ModelCategories.deleteOne(can(user, "delete-all-categories") ? {
       _id: objectId,
-      mealId: objectMealId,
     } : {
       _id: objectId,
       userId: _id,
-      mealId: objectMealId,
     });
 
     if (result.deletedCount === 0) {
@@ -40,7 +32,6 @@ export default defineEventHandler(async (event) => {
       {
         $match: {
           _id: objectId,
-          mealId: objectMealId,
         }
       },
       {
@@ -53,7 +44,10 @@ export default defineEventHandler(async (event) => {
       },
       {
         $match: {
-          "meals.templateId": { $exists: true, $ne: null }
+          $or: [
+            { "meals.templateId": { $exists: true, $ne: null } },
+            { userId: _id }
+          ]
         }
       }
     ]);

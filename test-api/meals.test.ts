@@ -217,20 +217,20 @@ describe.sequential("Meals API", () => {
       }
       let testCategoryId: string;
       for (let i = 0; i < 5; i++) {
-        await $fetch(`/categories/${id}`, {
+        await $fetch(`/categories`, {
           baseURL: process.env.API_URL,
           method: "POST",
           headers: {
             Accept: "application/json",
             Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
           },
-          body: { name: `Paginated Category ${i + 1} for ${id}` },
+          body: { name: `Paginated Category ${i + 1} for ${id}`, mealId: id },
           onResponse: ({ response }) => {
             testCategoryId = response._data.data._id;
           },
         });
         for (let j = 0; j < 2; j++) {
-          await $fetch(`/ingredients/${testCategoryId}`, {
+          await $fetch(`/ingredients`, {
             baseURL: process.env.API_URL,
             method: "POST",
             headers: {
@@ -242,6 +242,7 @@ describe.sequential("Meals API", () => {
               calories: 10 * j,
               proteins: j,
               grams: 5 * j,
+              categoryId: testCategoryId,
             },
           });
         }
@@ -396,7 +397,7 @@ describe.sequential("Meals API", () => {
           expect(response._data.message).toBe("Item deleted successfully");
         },
       });
-      await $fetch(`/categories/${id}`, {
+      await $fetch(`/meals/${id}/categories`, {
         baseURL: process.env.API_URL,
         method: "GET",
         headers: {

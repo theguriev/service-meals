@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 
 const updateSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
+  mealId: z.string().transform(objectIdTransform).optional()
 });
 
 export default defineEventHandler(async (event) => {
@@ -14,17 +15,11 @@ export default defineEventHandler(async (event) => {
 
   const userId = await getUserId(event);
   const id = getRouterParam(event, "id");
+
   if (!ObjectId.isValid(id)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
   const objectId = new ObjectId(id);
-
-
-  const mealId = new ObjectId(getRouterParam(event, "mealId"));
-  if (!ObjectId.isValid(mealId)) {
-    throw createError({ statusCode: 400, message: "Invalid meal ID" });
-  }
-  const objectMealId = new ObjectId(mealId);
 
   // Validate the request body
   const validatedBody = await zodValidateBody(event, updateSchema.parse);
@@ -32,7 +27,7 @@ export default defineEventHandler(async (event) => {
   // Update the ingredient in the database
   if (can(user, "update-all-categories") || !can(user, "update-template-categories")) {
     const updated = await ModelCategories.findOneAndUpdate(
-      can(user, "update-all-categories") ? { _id: objectId, mealId: objectMealId } : { _id: objectId, userId, mealId: objectMealId },
+      can(user, "update-all-categories") ? { _id: objectId } : { _id: objectId, userId },
       { $set: validatedBody },
       { new: true }
     );
@@ -50,7 +45,6 @@ export default defineEventHandler(async (event) => {
       {
         $match: {
           _id: objectId,
-          mealId: objectMealId,
         }
       },
       {
@@ -63,7 +57,10 @@ export default defineEventHandler(async (event) => {
       },
       {
         $match: {
-          "meals.templateId": { $exists: true, $ne: null }
+          $or: [
+            { "meals.templateId": { $exists: true, $ne: null } },
+            { userId }
+          ]
         }
       }
     ]);

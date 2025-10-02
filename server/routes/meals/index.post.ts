@@ -6,6 +6,7 @@ const validationSchema = z.object({
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
   const user = await getInitialUser(event, authorizationBase);
+  const { templateId, ...validatedBody } = await zodValidateBody(event, validationSchema.parse);
 
   if (!can(user, "create-meals") || templateId && !can(user, "create-template-meals")) {
     throw createError({
@@ -15,9 +16,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const _id = await getUserId(event);
-  const validatedBody = await zodValidateBody(event, validationSchema.parse);
   const doc = new ModelMeals({
     userId: _id,
+    templateId,
     ...validatedBody,
   });
   const saved = await doc.save();
