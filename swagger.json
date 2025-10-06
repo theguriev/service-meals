@@ -68,7 +68,7 @@
             }
           }
         },
-        "required": ["userId", "name"]
+        "required": ["_id", "userId", "name", "createdAt", "updatedAt"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -133,7 +133,7 @@
             "readOnly": true
           }
         },
-        "required": ["userId", "name"]
+        "required": ["_id", "userId", "name", "createdAt", "updatedAt"]
       },
       "CategoryInput": {
         "type": "object",
@@ -250,12 +250,15 @@
           }
         },
         "required": [
+          "_id",
           "userId",
           "categoryId",
           "name",
           "calories",
           "proteins",
-          "grams"
+          "grams",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "IngredientWithCategory": {
@@ -317,12 +320,15 @@
           }
         },
         "required": [
+          "_id",
           "userId",
           "categoryId",
           "name",
           "calories",
           "proteins",
-          "grams"
+          "grams",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "IngredientInput": {
@@ -488,7 +494,7 @@
             "readOnly": true
           }
         },
-        "required": ["userId", "ingredients"]
+        "required": ["_id", "userId", "ingredients", "createdAt", "updatedAt"]
       },
       "SetInput": {
         "type": "object",
@@ -661,7 +667,7 @@
             "readOnly": true
           }
         },
-        "required": ["userId", "ingredients"]
+        "required": ["_id", "userId", "ingredients", "createdAt", "updatedAt"]
       },
       "SetDeleteResponse": {
         "type": "object",
@@ -699,7 +705,7 @@
             "readOnly": true
           }
         },
-        "required": ["name"]
+        "required": ["_id", "name", "createdAt", "updatedAt"]
       },
       "TemplateInput": {
         "type": "object",
@@ -870,7 +876,7 @@
             "readOnly": true
           }
         },
-        "required": ["userId", "content"]
+        "required": ["_id", "userId", "content", "createdAt", "updatedAt"]
       },
       "NoteInput": {
         "type": "object",
