@@ -1705,6 +1705,63 @@
       }
     },
     "/ingredients/{id}": {
+      "get": {
+        "summary": "Retrieve a single ingredient by ID",
+        "tags": ["Ingredients"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the ingredient to retrieve",
+            "schema": {
+              "type": "string",
+              "example": "605c72ef29592b001c000002"
+            }
+          },
+          {
+            "name": "withCategory",
+            "in": "query",
+            "description": "Include related category data",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ingredient retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngredientWithCategory"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ingredient not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "summary": "Update an existing ingredient",
         "tags": ["Ingredients"],
