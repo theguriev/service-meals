@@ -68,7 +68,7 @@
             }
           }
         },
-        "required": ["userId", "name", "ingredients"]
+        "required": ["userId", "name"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -247,6 +247,73 @@
             "format": "date-time",
             "description": "Timestamp of when the ingredient was last updated",
             "readOnly": true
+          }
+        },
+        "required": [
+          "userId",
+          "categoryId",
+          "name",
+          "calories",
+          "proteins",
+          "grams"
+        ]
+      },
+      "IngredientWithCategory": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the ingredient (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000002"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifier of the user who owns the ingredient",
+            "example": "user123"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "Identifier of the category this ingredient belongs to",
+            "example": "605c72ef29592b001c000001"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the ingredient",
+            "example": "Chicken Breast"
+          },
+          "calories": {
+            "type": "number",
+            "format": "float",
+            "description": "Calories per 100g",
+            "example": 165
+          },
+          "proteins": {
+            "type": "number",
+            "format": "float",
+            "description": "Proteins per 100g",
+            "example": 31
+          },
+          "grams": {
+            "type": "number",
+            "format": "float",
+            "description": "Grams of the ingredient",
+            "example": 100
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the ingredient was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the ingredient was last updated",
+            "readOnly": true
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
           }
         },
         "required": [
@@ -511,10 +578,90 @@
       "SetResponse": {
         "type": "object",
         "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Set"
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the set (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000000",
+            "pattern": "^[0-9a-fA-F]{24}$"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifier of the user who owns the set",
+            "example": "605c72ef29592b001c000000",
+            "pattern": "^[0-9a-fA-F]{24}$"
+          },
+          "ingredients": {
+            "type": "array",
+            "description": "Array of ingredient objects in the set",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Ingredient id",
+                  "example": "605c72ef29592b001c000000",
+                  "pattern": "^[0-9a-fA-F]{24}$"
+                },
+                "value": {
+                  "type": "number",
+                  "description": "Ingredient value",
+                  "example": 10
+                },
+                "additionalInfo": {
+                  "type": "string",
+                  "description": "Additional information about the ingredient",
+                  "example": "spicy"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the ingredient",
+                  "example": "Salt"
+                },
+                "categoryId": {
+                  "type": "string",
+                  "description": "Category id of the ingredient",
+                  "example": "605c72ef29592b001c000000",
+                  "pattern": "^[0-9a-fA-F]{24}$"
+                },
+                "categoryName": {
+                  "type": "string",
+                  "description": "Category name of the ingredient",
+                  "example": "Spices"
+                },
+                "calories": {
+                  "type": "number",
+                  "description": "Calories per 100 grams of the ingredient",
+                  "example": 100
+                },
+                "proteins": {
+                  "type": "number",
+                  "description": "Proteins per 100 grams of the ingredient",
+                  "example": 10
+                },
+                "grams": {
+                  "type": "number",
+                  "description": "Total grams of the ingredient",
+                  "example": 10
+                }
+              },
+              "required": ["id", "value"]
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the set was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the set was last updated",
+            "readOnly": true
           }
-        }
+        },
+        "required": ["userId", "ingredients"]
       },
       "SetDeleteResponse": {
         "type": "object",
@@ -854,7 +1001,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Set"
+                    "$ref": "#/components/schemas/SetResponse"
                   }
                 }
               }
@@ -1163,6 +1310,16 @@
               "example": "605c72ef29592b001c000001",
               "pattern": "^[0-9a-fA-F]{24}$"
             }
+          },
+          {
+            "name": "withIngredients",
+            "in": "query",
+            "required": false,
+            "description": "Include ingredients in the response",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
           }
         ],
         "responses": {
@@ -1339,6 +1496,26 @@
               "type": "integer",
               "default": 10
             }
+          },
+          {
+            "name": "all",
+            "in": "query",
+            "description": "Whether to include all ingredients or only those for the authenticated user",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "withCategories",
+            "in": "query",
+            "description": "Whether to include categories for each ingredient",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
           }
         ],
         "responses": {
@@ -1349,7 +1526,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Ingredient"
+                    "$ref": "#/components/schemas/IngredientWithCategory"
                   }
                 }
               }

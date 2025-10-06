@@ -274,8 +274,7 @@ describe.sequential("Sets API", () => {
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
-          expect(response._data.data).toBeDefined();
-          expect(response._data.data._id).toBe(id);
+          expect(response._data._id).toBe(id);
         },
       });
     });

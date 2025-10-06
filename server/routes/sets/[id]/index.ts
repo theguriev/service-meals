@@ -8,13 +8,86 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: "Invalid set ID" });
   }
 
-  const set = await ModelSets.findOne({ _id: id, userId });
+  const set = (await ModelSets.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(id),
+        userId,
+      }
+    },
+    {
+      $unwind: {
+        path: "$ingredients",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: "ingredients",
+        let: { id: "$ingredients.id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$$id", { $toString: "$_id" }]
+              }
+            }
+          },
+          {
+            $lookup: {
+              from: "categories",
+              localField: "categoryId",
+              foreignField: "_id",
+              pipeline: [
+                {
+                  $limit: 1
+                }
+              ],
+              as: "categoryDetails"
+            }
+          },
+          {
+            $limit: 1
+          }
+        ],
+        as: "ingredientDetails"
+      }
+    },
+    {
+      $unwind: {
+        path: "$ingredientDetails",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $group: {
+        _id: "$_id",
+        userId: { $first: "$userId" },
+        createdAt: { $first: "$createdAt" },
+        updatedAt: { $first: "$updatedAt" },
+        ingredients: {
+          $push: {
+            id: "$ingredients.id",
+            value: "$ingredients.value",
+            additionalInfo: "$ingredients.additionalInfo",
+            name: "$ingredientDetails.name",
+            categoryId: "$ingredientDetails.categoryId",
+            categoryName: { $first: "$ingredientDetails.categoryDetails.name" },
+            calories: "$ingredientDetails.calories",
+            proteins: "$ingredientDetails.proteins",
+            grams: "$ingredientDetails.grams"
+          }
+        }
+      }
+    },
+    {
+      $limit: 1
+    }
+  ]))[0];
 
   if (!set) {
     throw createError({ statusCode: 404, message: "Set not found" });
   }
 
-  return {
-    data: set,
-  };
+  return set;
 });

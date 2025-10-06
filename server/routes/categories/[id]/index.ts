@@ -1,8 +1,14 @@
 import { ObjectId } from "mongodb";
 import { PipelineStage } from "mongoose";
+import { z } from "zod";
+
+const querySchema = z.object({
+  withIngredients: z.coerce.boolean().default(false)
+});
 
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
+  const { withIngredients } = await zodValidateData(getQuery(event), querySchema.parse);
   const userId = await getUserId(event);
   const id = getRouterParam(event, "id");
   const user = await getInitialUser(event, authorizationBase);
@@ -33,7 +39,7 @@ export default defineEventHandler(async (event) => {
 
   const category = (await ModelCategories.aggregate([
     { $match: categoryMatch },
-    ingredientsLookup,
+    ...(withIngredients ? [ingredientsLookup] : []),
   ]).limit(1))[0];
   if (!category) {
     throw createError({
