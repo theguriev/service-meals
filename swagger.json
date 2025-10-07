@@ -70,6 +70,54 @@
         },
         "required": ["_id", "userId", "name", "createdAt", "updatedAt"]
       },
+      "CategoryWithObviousIngredients": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the category (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000001",
+            "pattern": "^[0-9a-fA-F]{24}$"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifier of the user who owns the category",
+            "example": "605c72ef29592b001c000001",
+            "pattern": "^[0-9a-fA-F]{24}$"
+          },
+          "templateId": {
+            "type": "string",
+            "description": "Identifier of the template this category belongs to",
+            "example": "605c72ef29592b001c000000",
+            "pattern": "^[0-9a-fA-F]{24}$"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the category",
+            "example": "Breakfast"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the category was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the category was last updated",
+            "readOnly": true
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ingredient"
+            }
+          }
+        },
+        "required": ["_id", "userId", "name", "createdAt", "updatedAt", "ingredients"]
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -691,6 +739,42 @@
             "type": "string",
             "description": "Name of the template",
             "example": "Daily Meal Template"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the template was created",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the template was last updated",
+            "readOnly": true
+          }
+        },
+        "required": ["_id", "name", "createdAt", "updatedAt"]
+      },
+      "TemplateWithData": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the template (MongoDB ObjectId)",
+            "readOnly": true,
+            "example": "605c72ef29592b001c000000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the template",
+            "readOnly": true,
+            "example": "Daily Meal Template"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryWithObviousIngredients"
+            }
           },
           "createdAt": {
             "type": "string",
@@ -2047,7 +2131,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Template"
+                  "$ref": "#/components/schemas/TemplateWithData"
                 }
               }
             }
