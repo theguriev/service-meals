@@ -789,7 +789,7 @@
             "readOnly": true
           }
         },
-        "required": ["_id", "name", "createdAt", "updatedAt"]
+        "required": ["_id", "name", "createdAt", "updatedAt", "categories"]
       },
       "TemplateInput": {
         "type": "object",
