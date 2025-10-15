@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
 
   const categoryLookup: PipelineStage = {
     $lookup: {
-      from: "categories",
+      from: ModelCategories.modelName,
       localField: "categoryId",
       foreignField: "_id",
       as: "categories",

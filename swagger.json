@@ -2108,6 +2108,34 @@
         }
       }
     },
+    "/templates/default": {
+      "get": {
+        "summary": "Get the default template",
+        "tags": ["Templates"],
+        "responses": {
+          "200": {
+            "description": "The requested template",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateWithData"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/templates/{id}": {
       "get": {
         "summary": "Get a specific template by ID",

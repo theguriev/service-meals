@@ -1,5 +1,6 @@
 import { writeFile } from "fs/promises";
 import { join } from "path";
+import { defaultTemplateName } from "~~/constants";
 
 interface MigrationHelperOptions {
   templateName: string;
@@ -16,25 +17,26 @@ export default defineTask({
     try {
       const options = payload as unknown as MigrationHelperOptions;
 
-      if (!options.templateName) {
-        throw new Error("Template name is required in payload");
-      }
-
-      console.log(
-        `🚀 Creating migration for template: ${options.templateName}`
-      );
-
       // Генерируем имя миграции из имени шаблона если не указано
       const migrationName =
         options.migrationName ||
-        options.templateName
-          .toLowerCase()
+        options.templateName?.toLowerCase()
           .replace(/[^a-zа-я0-9]/g, "-")
           .replace(/-+/g, "-")
           .replace(/^-|-$/g, "");
 
+      const templateName = migrationName === "default" ? defaultTemplateName : options.templateName;
+
+      if (!templateName) {
+        throw new Error("Template name is required in payload");
+      }
+
+      console.log(
+        `🚀 Creating migration for template: ${templateName}`
+      );
+
       const description =
-        options.description || `Migration for ${options.templateName} template`;
+        options.description || `Migration for ${templateName} template`;
 
       // Получаем текущую дату для timestamp
       const timestamp = new Date()
@@ -74,10 +76,10 @@ export default defineTask({
   },
   run: async ({ payload, context }) => {
     try {
-      console.log("🚀 Starting migration: ${options.templateName}");
+      console.log("🚀 Starting migration: ${templateName}");
 
       // Проверяем, существует ли шаблон с таким именем
-      const existingTemplate = await ModelTemplate.findOne({ name: "${options.templateName}" });
+      const existingTemplate = await ModelTemplate.findOne({ name: "${templateName}" });
       if (existingTemplate) {
         console.log(\`⏭️  Template "\${existingTemplate.name}" already exists, skipping...\`);
         return {
@@ -130,7 +132,7 @@ export default defineTask({
             name: ingredientData.name,
             calories: ingredientData.calories,
             proteins: ingredientData.proteins,
-            grams: ingredientData.grams,
+            grams: ingredientData.grams ?? 0,
           });
           await ingredient.save();
           totalIngredients++;
@@ -186,7 +188,7 @@ export default defineTask({
           filename,
           migrationPath,
           migrationName,
-          templateName: options.templateName,
+          templateName,
           taskName: `db:migrate-${migrationName}`,
         },
       };

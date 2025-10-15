@@ -1,3 +1,5 @@
+import { defaultTemplateName } from "~~/constants";
+
 const querySchema = z.object({
   offset: z.number().int().default(0),
   limit: z.number().int().default(10),
@@ -20,5 +22,7 @@ export default defineEventHandler(async (event) => {
     },
     querySchema.parse
   );
-  return ModelTemplate.find().limit(convertedLimit).skip(convertedOffset);
+  return ModelTemplate.find({
+    name: { $ne: defaultTemplateName }
+  }).limit(convertedLimit).skip(convertedOffset);
 });

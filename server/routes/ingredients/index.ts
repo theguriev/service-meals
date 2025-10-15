@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
     ...(all ? [] : [{ $match: { userId } }]),
     {
       $lookup: {
-        from: "categories",
+        from: ModelCategories.modelName,
         localField: "categoryId",
         foreignField: "_id",
         as: "categories",

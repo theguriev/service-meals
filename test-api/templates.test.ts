@@ -1,3 +1,5 @@
+import { defaultTemplateName } from "../constants";
+
 let templateId: string;
 describe.sequential("Templates API", () => {
   describe("POST /templates", async () => {
@@ -54,6 +56,24 @@ describe.sequential("Templates API", () => {
           expect(Array.isArray(response._data)).toBe(true);
           expect(response._data[0]).toHaveProperty("_id");
           expect(response._data[0]).toHaveProperty("name");
+        },
+      });
+    });
+  });
+
+  describe("GET /templates/default", () => {
+    it("should return the default template (200)", async () => {
+      await $fetch("/templates/default", {
+        method: "GET",
+        baseURL: process.env.API_URL,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response._data).toHaveProperty("_id");
+          expect(response._data).toHaveProperty("name", defaultTemplateName);
+          expect(response._data).toHaveProperty("categories");
         },
       });
     });

@@ -25,13 +25,13 @@ export default defineEventHandler(async (event) => {
       { $match: { _id: new ObjectId(templateId) } },
       {
         $lookup: {
-          from: "categories",
+          from: ModelCategories.modelName,
           localField: "_id",
           foreignField: "templateId",
           pipeline: [
             {
               $lookup: {
-                from: "ingredients",
+                from: ModelIngredients.modelName,
                 localField: "_id",
                 foreignField: "categoryId",
                 as: "ingredients",

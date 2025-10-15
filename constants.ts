@@ -13,3 +13,5 @@ export const adminId = "6808bcfb77143eceb802c5a7";
 export const regularId = "6808bcfb77143eceb802c5a8";
 
 export const templateUserId = "template";
+
+export const defaultTemplateName = "default-template-2fhgm7uJ6tdJa99KMur7QGHB1IARYQRJ"

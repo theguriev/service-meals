@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { defaultTemplateName } from "~~/constants";
 
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
@@ -22,6 +23,10 @@ export default defineEventHandler(async (event) => {
         statusCode: 404,
         statusMessage: "Template not found",
       });
+    }
+
+    if (templateExists.name === defaultTemplateName) {
+      throw createError({ statusCode: 400, message: "Cannot delete default template" });
     }
 
     let deletedIngredients = { acknowledged: false, deletedCount: 0 };
