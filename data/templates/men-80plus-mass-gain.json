@@ -1,6 +1,6 @@
 {
   "name": "Мужчини 80+ кг набір маси",
-  "description": "Шаблон харчування для чоловіків 80+ кг для набору маси. Калорійність раціону: 3350 ккал з максимальним вмістом білків, жирів та вуглеводів",
+  "description": "Шаблон харчування для чоловіків 80+ кг для набору маси. Калорійність раціону: 3900 ккал (Б 185 г, Ж 190 г, В 415 г)",
   "meals": [
     {
       "name": "1️⃣ прийом їжі",
@@ -125,6 +125,12 @@
               "calories": 700,
               "proteins": 10,
               "grams": 140
+            },
+            {
+              "name": "Фрукти",
+              "calories": 700,
+              "proteins": 10,
+              "grams": 140
             }
           ]
         }
@@ -203,49 +209,49 @@
         {
           "name": "д",
           "description": "Тваринні білки",
-          "targetCalories": 195,
+          "targetCalories": 250,
           "ingredients": [
             {
               "name": "Телятина",
-              "calories": 195,
-              "proteins": 36,
-              "grams": 180
+              "calories": 250,
+              "proteins": 43,
+              "grams": 220
             },
             {
               "name": "Печінка",
-              "calories": 195,
-              "proteins": 29,
-              "grams": 180
+              "calories": 250,
+              "proteins": 34,
+              "grams": 220
             },
             {
               "name": "Куряче або індиче філе",
-              "calories": 195,
-              "proteins": 40,
-              "grams": 185
+              "calories": 250,
+              "proteins": 48,
+              "grams": 230
             },
             {
               "name": "Риба (до 5% жиру)",
-              "calories": 195,
-              "proteins": 36,
-              "grams": 180
+              "calories": 250,
+              "proteins": 43,
+              "grams": 230
             },
             {
               "name": "Риба (від 5% жиру)",
-              "calories": 195,
-              "proteins": 29,
-              "grams": 130
+              "calories": 250,
+              "proteins": 33,
+              "grams": 165
             },
             {
               "name": "4 яйця",
-              "calories": 195,
+              "calories": 250,
               "proteins": 24,
               "grams": 200
             },
             {
               "name": "Морепродукти",
-              "calories": 195,
-              "proteins": 38,
-              "grams": 215
+              "calories": 250,
+              "proteins": 48,
+              "grams": 255
             }
           ]
         },
@@ -478,91 +484,91 @@
         {
           "name": "ї",
           "description": "Тваринні білки",
-          "targetCalories": 195,
+          "targetCalories": 250,
           "ingredients": [
             {
               "name": "Телятина",
-              "calories": 195,
-              "proteins": 36,
-              "grams": 180
+              "calories": 250,
+              "proteins": 43,
+              "grams": 220
             },
             {
               "name": "Печінка",
-              "calories": 195,
-              "proteins": 29,
-              "grams": 180
+              "calories": 250,
+              "proteins": 34,
+              "grams": 220
             },
             {
               "name": "Куряче або індиче філе",
-              "calories": 195,
-              "proteins": 40,
-              "grams": 185
+              "calories": 250,
+              "proteins": 48,
+              "grams": 230
             },
             {
               "name": "Риба (до 5% жиру)",
-              "calories": 195,
-              "proteins": 36,
-              "grams": 180
+              "calories": 250,
+              "proteins": 43,
+              "grams": 230
             },
             {
               "name": "Риба (від 5% жиру)",
-              "calories": 195,
-              "proteins": 29,
-              "grams": 130
+              "calories": 250,
+              "proteins": 33,
+              "grams": 165
             },
             {
               "name": "4 яйця",
-              "calories": 195,
+              "calories": 250,
               "proteins": 24,
               "grams": 200
             },
             {
               "name": "Морепродукти",
-              "calories": 195,
-              "proteins": 38,
-              "grams": 215
+              "calories": 250,
+              "proteins": 48,
+              "grams": 255
             },
             {
               "name": "Свинина (вирізка)",
-              "calories": 195,
-              "proteins": 28,
-              "grams": 130
+              "calories": 250,
+              "proteins": 33,
+              "grams": 160
             },
             {
               "name": "Ребра",
-              "calories": 195,
-              "proteins": 15,
-              "grams": 75
+              "calories": 250,
+              "proteins": 18,
+              "grams": 95
             },
             {
               "name": "Курячі стегна",
-              "calories": 195,
-              "proteins": 21,
-              "grams": 110
+              "calories": 250,
+              "proteins": 25,
+              "grams": 135
             },
             {
               "name": "Курячі гомілки",
-              "calories": 195,
-              "proteins": 22,
-              "grams": 115
+              "calories": 250,
+              "proteins": 25,
+              "grams": 140
             },
             {
               "name": "Язик",
-              "calories": 195,
-              "proteins": 18,
-              "grams": 110
+              "calories": 250,
+              "proteins": 20,
+              "grams": 135
             },
             {
               "name": "Кролятина",
-              "calories": 195,
-              "proteins": 23,
-              "grams": 110
+              "calories": 250,
+              "proteins": 28,
+              "grams": 140
             },
             {
               "name": "Яловичина (вирізка)",
-              "calories": 195,
-              "proteins": 36,
-              "grams": 180
+              "calories": 250,
+              "proteins": 43,
+              "grams": 220
             }
           ]
         },
