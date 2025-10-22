@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const doc = new ModelIngredients({
-    userId,
+    userId: category.templateId ? user._id : userId,
     categoryId,
     ...validatedBody,
   });
