@@ -11,49 +11,49 @@
           "name": "Картопля",
           "calories": 77,
           "proteins": 2,
-          "grams": 440
+          "grams": 220
         },
         {
           "name": "Кукурудза свіжа",
           "calories": 86,
           "proteins": 3.3,
-          "grams": 440
+          "grams": 220
         },
         {
           "name": "Пластівці",
           "calories": 350,
           "proteins": 14.3,
-          "grams": 130
+          "grams": 70
         },
         {
           "name": "Булгур",
           "calories": 342,
           "proteins": 7,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Гречка",
           "calories": 313,
           "proteins": 7,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Рис (не шліфований)",
           "calories": 330,
           "proteins": 7.5,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Будь-яка крупа",
           "calories": 330,
           "proteins": 10,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Цільнозернове борошно",
           "calories": 320,
           "proteins": 11,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Хлібці",
@@ -71,7 +71,7 @@
           "name": "Макарони т.с.",
           "calories": 340,
           "proteins": 12,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Лаваш",
@@ -116,13 +116,13 @@
           "name": "Картопля",
           "calories": 77,
           "proteins": 2,
-          "grams": 440
+          "grams": 220
         },
         {
           "name": "Кукурудза свіжа",
           "calories": 86,
           "proteins": 3.3,
-          "grams": 440
+          "grams": 220
         },
         {
           "name": "Пластівці",
@@ -134,31 +134,31 @@
           "name": "Булгур",
           "calories": 342,
           "proteins": 7,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Гречка",
           "calories": 313,
           "proteins": 7,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Рис (не шліфований)",
           "calories": 330,
           "proteins": 7.5,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Будь-яка крупа",
           "calories": 330,
           "proteins": 10,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Цільнозернове борошно",
           "calories": 320,
           "proteins": 11,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Хлібці",
@@ -176,7 +176,7 @@
           "name": "Макарони т.с.",
           "calories": 340,
           "proteins": 12,
-          "grams": 140
+          "grams": 70
         },
         {
           "name": "Лаваш",
