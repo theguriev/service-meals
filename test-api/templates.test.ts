@@ -1,3 +1,5 @@
+import { defaultTemplateName } from "../constants";
+
 let templateId: string;
 describe.sequential("Templates API", () => {
   describe("POST /templates", async () => {
@@ -59,27 +61,31 @@ describe.sequential("Templates API", () => {
     });
   });
 
-  describe("GET /templates/:id", () => {
-    it("should return a template by id (200)", async () => {
-      let mealId = "";
-      await $fetch("/meals", {
-        method: "POST",
+  describe("GET /templates/default", () => {
+    it("should return the default template (200)", async () => {
+      await $fetch("/templates/default", {
+        method: "GET",
         baseURL: process.env.API_URL,
-        body: { name: "Test Meal for Template", templateId },
         headers: {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
         onResponse: ({ response }) => {
-          mealId = response._data.data._id;
+          expect(response._data).toHaveProperty("_id");
+          expect(response._data).toHaveProperty("name", defaultTemplateName);
+          expect(response._data).toHaveProperty("categories");
         },
       });
+    });
+  });
 
+  describe("GET /templates/:id", () => {
+    it("should return a template by id (200)", async () => {
       let categoryId = "";
       await $fetch(`/categories`, {
         method: "POST",
         baseURL: process.env.API_URL,
-        body: { name: "Test Category", mealId },
+        body: { name: "Test Category", templateId },
         headers: {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
@@ -121,17 +127,14 @@ describe.sequential("Templates API", () => {
           expect(response._data).toHaveProperty("_id");
           expect(response._data).toHaveProperty("name");
           expect(response._data._id).toBe(templateId);
-          expect(Array.isArray(response._data.meals)).toBe(true);
-          expect(response._data.meals.length === 1).toBe(true);
-          expect(response._data.meals[0]).toHaveProperty("_id");
-          expect(Array.isArray(response._data.meals[0].categories)).toBe(true);
-          expect(response._data.meals[0].categories.length === 1).toBe(true);
-          expect(response._data.meals[0].categories[0]).toHaveProperty("_id");
+          expect(Array.isArray(response._data.categories)).toBe(true);
+          expect(response._data.categories.length === 1).toBe(true);
+          expect(response._data.categories[0]).toHaveProperty("_id");
           expect(
-            Array.isArray(response._data.meals[0].categories[0].ingredients)
+            Array.isArray(response._data.categories[0].ingredients)
           ).toBe(true);
           expect(
-            response._data.meals[0].categories[0].ingredients.length === 1
+            response._data.categories[0].ingredients.length === 1
           ).toBe(true);
         },
       });
@@ -256,17 +259,16 @@ describe.sequential("Templates API", () => {
           expect(response._data.data).toHaveProperty("userId");
           expect(response._data.data.userId).toBe(targetUserId);
           expect(response._data.data.templateId).toBe(templateId);
-          expect(response._data.data.applied).toHaveProperty("meals");
           expect(response._data.data.applied).toHaveProperty("categories");
           expect(response._data.data.applied).toHaveProperty("ingredients");
-          expect(response._data.data.applied.meals).toBeGreaterThan(0);
-          expect(Array.isArray(response._data.data.createdMeals)).toBe(true);
-          expect(response._data.data.createdMeals.length).toBe(
-            response._data.data.applied.meals
+          expect(response._data.data.applied.categories).toBeGreaterThan(0);
+          expect(Array.isArray(response._data.data.createdCategories)).toBe(true);
+          expect(response._data.data.createdCategories.length).toBe(
+            response._data.data.applied.categories
           );
-          response._data.data.createdMeals.forEach((meal) => {
-            expect(meal.userId).toBe(targetUserId);
-            expect(meal.templateId).toBe(null);
+          response._data.data.createdCategories.forEach((category) => {
+            expect(category.userId).toBe(targetUserId);
+            expect(category.templateId).toBe(null);
           });
           expect(response._data.data.summary).toHaveProperty("templateName");
           expect(response._data.data.summary).toHaveProperty("appliedAt");
@@ -343,7 +345,6 @@ describe.sequential("Templates API", () => {
   describe("DELETE /templates/:id", () => {
     it("should delete template and all related data (200)", async () => {
       let testTemplateId = "";
-      let testMealId = "";
       let testCategoryId = "";
       let testIngredientId = "";
 
@@ -360,26 +361,10 @@ describe.sequential("Templates API", () => {
         },
       });
 
-      await $fetch("/meals", {
-        method: "POST",
-        baseURL: process.env.API_URL,
-        body: {
-          name: "Test Meal for Cascade Delete",
-          templateId: testTemplateId,
-        },
-        headers: {
-          Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
-        },
-        onResponse: ({ response }) => {
-          testMealId = response._data.data._id;
-        },
-      });
-
       await $fetch(`/categories`, {
         method: "POST",
         baseURL: process.env.API_URL,
-        body: { name: "Test Category for Cascade Delete", mealId: testMealId },
+        body: { name: "Test Category for Cascade Delete", templateId: testTemplateId },
         headers: {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
@@ -429,10 +414,6 @@ describe.sequential("Templates API", () => {
           );
           expect(response._data.deletedTemplates.deletedCount).toBe(1);
 
-          expect(response._data.deletedMeals).toHaveProperty("acknowledged");
-          expect(response._data.deletedMeals).toHaveProperty("deletedCount");
-          expect(response._data.deletedMeals.deletedCount).toBe(1);
-
           expect(response._data.deletedCategories).toHaveProperty(
             "acknowledged"
           );
@@ -464,7 +445,7 @@ describe.sequential("Templates API", () => {
         },
       });
 
-      await $fetch(`/meals/${testMealId}`, {
+      await $fetch(`/categories/${testCategoryId}`, {
         method: "GET",
         baseURL: process.env.API_URL,
         ignoreResponseError: true,
@@ -507,7 +488,6 @@ describe.sequential("Templates API", () => {
           );
 
           expect(response._data.deletedTemplates.deletedCount).toBe(1);
-          expect(response._data.deletedMeals.deletedCount).toBe(0);
           expect(response._data.deletedCategories.deletedCount).toBe(0);
           expect(response._data.deletedIngredients.deletedCount).toBe(0);
         },

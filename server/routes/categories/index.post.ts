@@ -1,39 +1,24 @@
 const validationSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  mealId: z.string().transform(objectIdTransform)
+  templateId: z.string().transform(objectIdTransform).optional(),
 });
 
 export default defineEventHandler(async (event) => {
-  const _id = await getUserId(event);
-  const { mealId, ...validatedBody } = await zodValidateBody(event, validationSchema.parse);
   const { authorizationBase } = useRuntimeConfig();
   const user = await getInitialUser(event, authorizationBase);
+  const { templateId, ...validatedBody } = await zodValidateBody(event, validationSchema.parse);
 
-  if (!can(user, "create-meals")) {
+  if (!can(user, "create-categories") || templateId && !can(user, "create-template-categories")) {
     throw createError({
       statusCode: 403,
       statusMessage: "Forbidden",
     });
   }
 
-  const meal = await ModelMeals.findById(mealId);
-  if (!meal) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Meal not found",
-    });
-  }
-
-  if (meal.templateId && !can(user, "create-template-categories")) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: "Forbidden",
-    });
-  }
-  
+  const _id = await getUserId(event);
   const doc = new ModelCategories({
-    userId: _id,
-    mealId,
+    userId: templateId ? user._id : _id,
+    templateId,
     ...validatedBody,
   });
   const saved = await doc.save();

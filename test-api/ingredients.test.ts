@@ -4,27 +4,8 @@ let testCategoryId: string; // Will be created during tests
 describe.sequential("Ingredients API", () => {
   // Setup: Create a category to be used for ingredient tests
   beforeAll(async () => {
-    let mealIdForCategory: string;
-    const newMeal = {
-      name: "Test Meal for Ingredients",
-    };
-    await $fetch(`/meals`, {
-      baseURL: process.env.API_URL,
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
-      },
-      body: newMeal,
-      onResponse: ({ response }) => {
-        expect(response.status).toBe(200);
-        mealIdForCategory = response._data.data._id; // Save created mealId
-      },
-    });
-
     const newCategory = {
       name: "Test Category for Ingredients",
-      mealId: mealIdForCategory,
     };
     await $fetch(`/categories`, {
       baseURL: process.env.API_URL,
@@ -231,6 +212,77 @@ describe.sequential("Ingredients API", () => {
     });
   });
 
+  describe("GET /ingredients/{id}", () => {
+    it("should retrieve a single ingredient by ID without category", async () => {
+      await $fetch(`/ingredients/${ingredientId}`, {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data).toHaveProperty("_id", ingredientId);
+          expect(response._data.category).toBeUndefined();
+        },
+      });
+    });
+
+    it("should retrieve a single ingredient by ID with category", async () => {
+      await $fetch(`/ingredients/${ingredientId}`, {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        query: {
+          withCategory: true,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data).toHaveProperty("_id", ingredientId);
+          expect(response._data).toHaveProperty("category");
+          expect(response._data.category).toHaveProperty("_id", testCategoryId);
+        },
+      });
+    });
+
+    it("should return validation error with invalid id", async () => {
+      await $fetch(`/ingredients/invalidId`, {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        query: {
+          withCategory: true,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+
+    it("should not found non existent id", async () => {
+      await $fetch(`/ingredients/000000000000000000000000`, {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(404);
+        },
+      });
+    });
+  });
+
   describe("PUT /ingredients/{id}", () => {
     it("should update an existing ingredient", async () => {
       const updatedIngredientData = {
@@ -331,11 +383,8 @@ describe.sequential("Ingredients API", () => {
   // Cleanup: Delete the category created for tests
   afterAll(async () => {
     if (testCategoryId) {
-      // Assuming a mealId is required for category deletion, similar to creation.
-      // This might need adjustment based on your actual API for deleting categories.
-      const mealIdForCategoryDeletion = "mealForCategory123"; // Same as used in beforeAll
       await $fetch(
-        `/categories/${mealIdForCategoryDeletion}/${testCategoryId}`,
+        `/categories/${testCategoryId}`,
         {
           baseURL: process.env.API_URL,
           method: "DELETE",

@@ -1,6 +1,7 @@
+import { existsSync } from "fs";
 import { readFile, readdir } from "fs/promises";
 import { join } from "path";
-import { existsSync } from "fs";
+import { defaultTemplateName } from "~~/constants";
 
 interface ValidationResult {
   filename: string;
@@ -8,7 +9,6 @@ interface ValidationResult {
   errors: string[];
   warnings: string[];
   stats?: {
-    mealsCount: number;
     categoriesCount: number;
     ingredientsCount: number;
   };
@@ -27,7 +27,16 @@ export default defineTask({
 
       if (!existsSync(templatesDir)) {
         console.log("❌ Templates directory does not exist: data/templates");
-        return { result: { error: "Templates directory not found" } };
+        return {
+          result: {
+            error: "Templates directory not found",
+            files: [],
+            totalFiles: 0,
+            validFiles: 0,
+            invalidFiles: 0,
+            allValid: true,
+          },
+        };
       }
 
       // Читаем все JSON файлы
@@ -38,6 +47,7 @@ export default defineTask({
         console.log("⚠️  No JSON template files found in data/templates");
         return {
           result: {
+            error: undefined,
             files: [],
             totalFiles: 0,
             validFiles: 0,
@@ -64,7 +74,7 @@ export default defineTask({
           console.log(`✅ ${filename} - Valid`);
           if (result.stats) {
             console.log(
-              `   📊 ${result.stats.mealsCount} meals, ${result.stats.categoriesCount} categories, ${result.stats.ingredientsCount} ingredients`
+              `   📊 ${result.stats.categoriesCount} categories, ${result.stats.ingredientsCount} ingredients`,
             );
           }
         } else {
@@ -75,7 +85,7 @@ export default defineTask({
 
         if (result.warnings.length > 0) {
           result.warnings.forEach((warning) =>
-            console.log(`   ⚠️  ${warning}`)
+            console.log(`   ⚠️  ${warning}`),
           );
         }
       }
@@ -91,7 +101,7 @@ export default defineTask({
 
       if (totalInvalid > 0) {
         console.log(
-          "\n⚠️  Please fix invalid templates before running migrations"
+          "\n⚠️  Please fix invalid templates before running migrations",
         );
       } else {
         console.log("\n🎉 All templates are valid! Ready for migration.");
@@ -99,6 +109,7 @@ export default defineTask({
 
       return {
         result: {
+          error: undefined,
           files: results,
           totalFiles: jsonFiles.length,
           validFiles: totalValid,
@@ -114,7 +125,7 @@ export default defineTask({
 });
 
 async function validateTemplateFile(
-  filename: string
+  filename: string,
 ): Promise<ValidationResult> {
   const result: ValidationResult = {
     filename,
@@ -136,113 +147,81 @@ async function validateTemplateFile(
       return result;
     }
 
+    const templateName = filename === "default.json" ? defaultTemplateName : templateData.name;
+
     // Валидируем основную структуру
-    if (!templateData.name || typeof templateData.name !== "string") {
+    if (!templateName || typeof templateName !== "string") {
       result.errors.push('Missing or invalid "name" field');
     }
 
-    if (!templateData.meals || !Array.isArray(templateData.meals)) {
-      result.errors.push('Missing or invalid "meals" field (must be array)');
-      return result;
+    if (templateName === defaultTemplateName && filename !== "default.json") {
+      result.errors.push('Cannot use default template name for non-default template');
     }
 
-    if (templateData.meals.length === 0) {
-      result.errors.push("Template must have at least one meal");
-    }
-
-    // Валидируем meals
-    let totalCategories = 0;
+    const totalCategories = templateData.categories.length;
     let totalIngredients = 0;
 
-    templateData.meals.forEach((meal: any, mealIndex: number) => {
-      if (!meal.name || typeof meal.name !== "string") {
+    // Валидируем categories
+    templateData.categories.forEach((category: any, categoryIndex: number) => {
+      if (!category.name || typeof category.name !== "string") {
         result.errors.push(
-          `Meal ${mealIndex + 1}: Missing or invalid "name" field`
+          `Category ${categoryIndex + 1}: Missing or invalid "name" field`,
         );
       }
 
-      if (!meal.categories || !Array.isArray(meal.categories)) {
+      if (!category.ingredients || !Array.isArray(category.ingredients)) {
         result.errors.push(
-          `Meal ${
-            mealIndex + 1
-          }: Missing or invalid "categories" field (must be array)`
+          `Category "${category.name}": Missing or invalid "ingredients" field (must be array)`,
         );
         return;
       }
 
-      if (meal.categories.length === 0) {
-        result.warnings.push(`Meal "${meal.name}" has no categories`);
+      if (category.ingredients.length === 0) {
+        result.warnings.push(`Category "${category.name}" has no ingredients`);
       }
 
-      // Валидируем categories
-      meal.categories.forEach((category: any, categoryIndex: number) => {
-        totalCategories++;
+      // Валидируем ingredients
+      category.ingredients.forEach(
+        (ingredient: any, ingredientIndex: number) => {
+          totalIngredients++;
 
-        if (!category.name || typeof category.name !== "string") {
-          result.errors.push(
-            `Meal "${meal.name}", Category ${
-              categoryIndex + 1
-            }: Missing or invalid "name" field`
-          );
-        }
-
-        if (!category.ingredients || !Array.isArray(category.ingredients)) {
-          result.errors.push(
-            `Meal "${meal.name}", Category "${category.name}": Missing or invalid "ingredients" field (must be array)`
-          );
-          return;
-        }
-
-        if (category.ingredients.length === 0) {
-          result.warnings.push(
-            `Category "${category.name}" in meal "${meal.name}" has no ingredients`
-          );
-        }
-
-        // Валидируем ingredients
-        category.ingredients.forEach(
-          (ingredient: any, ingredientIndex: number) => {
-            totalIngredients++;
-
-            if (!ingredient.name || typeof ingredient.name !== "string") {
-              result.errors.push(
-                `Meal "${meal.name}", Category "${category.name}", Ingredient ${
-                  ingredientIndex + 1
-                }: Missing or invalid "name" field`
-              );
-            }
-
-            if (
-              typeof ingredient.calories !== "number" ||
-              ingredient.calories < 0
-            ) {
-              result.errors.push(
-                `Ingredient "${ingredient.name}": Invalid "calories" field (must be positive number)`
-              );
-            }
-
-            if (
-              typeof ingredient.proteins !== "number" ||
-              ingredient.proteins < 0
-            ) {
-              result.errors.push(
-                `Ingredient "${ingredient.name}": Invalid "proteins" field (must be positive number)`
-              );
-            }
-
-            if (typeof ingredient.grams !== "number" || ingredient.grams <= 0) {
-              result.errors.push(
-                `Ingredient "${ingredient.name}": Invalid "grams" field (must be positive number)`
-              );
-            }
+          if (!ingredient.name || typeof ingredient.name !== "string") {
+            result.errors.push(
+              `Category "${category.name}", Ingredient ${
+                ingredientIndex + 1
+              }: Missing or invalid "name" field`,
+            );
           }
-        );
-      });
+
+          if (
+            typeof ingredient.calories !== "number" ||
+            ingredient.calories < 0
+          ) {
+            result.errors.push(
+              `Ingredient "${ingredient.name}": Invalid "calories" field (must be positive number)`,
+            );
+          }
+
+          if (
+            typeof ingredient.proteins !== "number" ||
+            ingredient.proteins < 0
+          ) {
+            result.errors.push(
+              `Ingredient "${ingredient.name}": Invalid "proteins" field (must be positive number)`,
+            );
+          }
+
+          if (filename !== "default.json" && (typeof ingredient.grams !== "number" || ingredient.grams <= 0)) {
+            result.errors.push(
+              `Ingredient "${ingredient.name}": Invalid "grams" field (must be positive number)`,
+            );
+          }
+        },
+      );
     });
 
     // Добавляем статистику
     result.stats = {
-      mealsCount: templateData.meals.length,
       categoriesCount: totalCategories,
       ingredientsCount: totalIngredients,
     };

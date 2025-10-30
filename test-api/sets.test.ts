@@ -90,7 +90,7 @@ describe.sequential("Sets API", () => {
         ingredients: [
           { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
           { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
-          { id: ingredientsTestData[2]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[2]._id.toString(), value: 1.5 },
         ],
       };
 
@@ -274,8 +274,7 @@ describe.sequential("Sets API", () => {
         },
         onResponse: ({ response }) => {
           expect(response.status).toBe(200);
-          expect(response._data.data).toBeDefined();
-          expect(response._data.data._id).toBe(id);
+          expect(response._data._id).toBe(id);
         },
       });
     });
@@ -431,7 +430,7 @@ describe.sequential("Sets API", () => {
         ingredients: [
           { id: ingredientsTestData[0]._id.toString(), value: 0.5 },
           { id: ingredientsTestData[1]._id.toString(), value: 0.5 },
-          { id: ingredientsTestData[2]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[2]._id.toString(), value: 1.5 },
         ],
       };
 

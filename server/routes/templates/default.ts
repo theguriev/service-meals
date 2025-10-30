@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { defaultTemplateName, templateUserId } from "~~/constants";
 
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
@@ -6,14 +6,9 @@ export default defineEventHandler(async (event) => {
   if (!can(user, "get-all-templates")) {
     throw createError({ statusCode: 403, message: "Forbidden" });
   }
-  const id = getRouterParam(event, "id");
-
-  if (!ObjectId.isValid(id)) {
-    throw createError({ statusCode: 400, message: "Invalid item ID" });
-  }
 
   const populated = await ModelTemplate.aggregate([
-    { $match: { _id: new ObjectId(id) } },
+    { $match: { name: defaultTemplateName } },
     {
       $lookup: {
         from: ModelCategories.modelName,
@@ -35,10 +30,14 @@ export default defineEventHandler(async (event) => {
   ]);
 
   if (!populated || populated.length === 0) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Item not found",
+    const newTemplate = await ModelTemplate.create({
+      name: defaultTemplateName,
+      userId: templateUserId,
     });
+    return {
+      ...newTemplate.toObject(),
+      categories: [],
+    };
   }
 
   return populated[0];

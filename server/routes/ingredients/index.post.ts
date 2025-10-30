@@ -29,15 +29,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const meal = await ModelMeals.findById(category.mealId);
-  if (!meal) {
-    throw createError({
-      statusCode: 404,
-      message: "Meal not found",
-    });
-  }
-
-  if (meal.templateId && !can(user, "create-template-ingredients")) {
+  if (category.templateId && !can(user, "create-template-ingredients")) {
     throw createError({
       statusCode: 403,
       message: "Access denied",
@@ -45,7 +37,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const doc = new ModelIngredients({
-    userId,
+    userId: category.templateId ? user._id : userId,
     categoryId,
     ...validatedBody,
   });

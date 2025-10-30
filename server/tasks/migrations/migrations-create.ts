@@ -1,5 +1,6 @@
-import { readFile, writeFile } from "fs/promises";
+import { writeFile } from "fs/promises";
 import { join } from "path";
+import { defaultTemplateName } from "~~/constants";
 
 interface MigrationHelperOptions {
   templateName: string;
@@ -16,25 +17,26 @@ export default defineTask({
     try {
       const options = payload as unknown as MigrationHelperOptions;
 
-      if (!options.templateName) {
-        throw new Error("Template name is required in payload");
-      }
-
-      console.log(
-        `🚀 Creating migration for template: ${options.templateName}`
-      );
-
       // Генерируем имя миграции из имени шаблона если не указано
       const migrationName =
         options.migrationName ||
-        options.templateName
-          .toLowerCase()
+        options.templateName?.toLowerCase()
           .replace(/[^a-zа-я0-9]/g, "-")
           .replace(/-+/g, "-")
           .replace(/^-|-$/g, "");
 
+      const templateName = migrationName === "default" ? defaultTemplateName : options.templateName;
+
+      if (!templateName) {
+        throw new Error("Template name is required in payload");
+      }
+
+      console.log(
+        `🚀 Creating migration for template: ${templateName}`
+      );
+
       const description =
-        options.description || `Migration for ${options.templateName} template`;
+        options.description || `Migration for ${templateName} template`;
 
       // Получаем текущую дату для timestamp
       const timestamp = new Date()
@@ -61,15 +63,10 @@ interface TemplateCategory {
   ingredients: TemplateIngredient[];
 }
 
-interface TemplateMeal {
-  name: string;
-  categories: TemplateCategory[];
-}
-
 interface TemplateData {
   name: string;
   description?: string;
-  meals: TemplateMeal[];
+  categories: TemplateCategory[];
 }
 
 export default defineTask({
@@ -79,10 +76,10 @@ export default defineTask({
   },
   run: async ({ payload, context }) => {
     try {
-      console.log("🚀 Starting migration: ${options.templateName}");
+      console.log("🚀 Starting migration: ${templateName}");
 
       // Проверяем, существует ли шаблон с таким именем
-      const existingTemplate = await ModelTemplate.findOne({ name: "${options.templateName}" });
+      const existingTemplate = await ModelTemplate.findOne({ name: "${templateName}" });
       if (existingTemplate) {
         console.log(\`⏭️  Template "\${existingTemplate.name}" already exists, skipping...\`);
         return {
@@ -112,54 +109,41 @@ export default defineTask({
       const savedTemplate = await template.save();
       console.log(\`✅ Created template: \${savedTemplate.name} (\${savedTemplate._id})\`);
 
-      // 2. Создаем meals, categories и ingredients
-      let totalMeals = 0;
+      // 2. Создаем categories и ingredients
       let totalCategories = 0;
       let totalIngredients = 0;
 
-      for (const mealData of templateData.meals) {
-        // Создаем meal
-        const meal = new ModelMeals({
+      // Создаем categories
+      for (const categoryData of templateData.categories) {
+        const category = new ModelCategories({
+          name: categoryData.name,
+          description: categoryData.description,
+          targetCalories: categoryData.targetCalories,
           templateId: savedTemplate._id,
-          name: mealData.name,
         });
-        const savedMeal = await meal.save();
-        totalMeals++;
-        console.log(\`  ✅ Created meal: \${savedMeal.name} (\${savedMeal._id})\`);
+        const savedCategory = await category.save();
+        totalCategories++;
+        console.log(\`    ✅ Created category: \${savedCategory.name} (\${savedCategory._id}) - \${categoryData.description || 'No description'}\`);
 
-        // Создаем categories для meal
-        for (const categoryData of mealData.categories) {
-          const category = new ModelCategories({
-            mealId: savedMeal._id,
-            name: categoryData.name,
-            description: categoryData.description,
-            targetCalories: categoryData.targetCalories,
+        // Создаем ingredients для category
+        for (const ingredientData of categoryData.ingredients) {
+          const ingredient = new ModelIngredients({
+            categoryId: savedCategory._id,
+            name: ingredientData.name,
+            calories: ingredientData.calories,
+            proteins: ingredientData.proteins,
+            grams: ingredientData.grams ?? 0,
           });
-          const savedCategory = await category.save();
-          totalCategories++;
-          console.log(\`    ✅ Created category: \${savedCategory.name} (\${savedCategory._id}) - \${categoryData.description || 'No description'}\`);
-
-          // Создаем ingredients для category
-          for (const ingredientData of categoryData.ingredients) {
-            const ingredient = new ModelIngredients({
-              categoryId: savedCategory._id,
-              name: ingredientData.name,
-              calories: ingredientData.calories,
-              proteins: ingredientData.proteins,
-              grams: ingredientData.grams,
-            });
-            await ingredient.save();
-            totalIngredients++;
-          }
-          
-          console.log(\`      🥗 Created \${categoryData.ingredients.length} ingredients for category "\${categoryData.name}"\`);
+          await ingredient.save();
+          totalIngredients++;
         }
+
+        console.log(\`      🥗 Created \${categoryData.ingredients.length} ingredients for category "\${categoryData.name}"\`);
       }
 
       console.log(\`\`);
       console.log(\`✅ Migration completed successfully!\`);
       console.log(\`📊 Statistics:\`);
-      console.log(\`   🍽️  Meals created: \${totalMeals}\`);
       console.log(\`   📂 Categories created: \${totalCategories}\`);
       console.log(\`   🥗 Ingredients created: \${totalIngredients}\`);
 
@@ -167,7 +151,6 @@ export default defineTask({
         result: {
           templateId: savedTemplate._id,
           templateName: savedTemplate.name,
-          mealsCreated: totalMeals,
           categoriesCreated: totalCategories,
           ingredientsCreated: totalIngredients,
           created: true
@@ -205,7 +188,7 @@ export default defineTask({
           filename,
           migrationPath,
           migrationName,
-          templateName: options.templateName,
+          templateName,
           taskName: `db:migrate-${migrationName}`,
         },
       };

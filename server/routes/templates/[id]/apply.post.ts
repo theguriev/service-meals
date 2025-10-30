@@ -25,96 +25,20 @@ export default defineEventHandler(async (event) => {
       { $match: { _id: new ObjectId(templateId) } },
       {
         $lookup: {
-          from: "meals",
+          from: ModelCategories.modelName,
           localField: "_id",
           foreignField: "templateId",
-          as: "meals",
-        },
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "meals._id",
-          foreignField: "mealId",
+          pipeline: [
+            {
+              $lookup: {
+                from: ModelIngredients.modelName,
+                localField: "_id",
+                foreignField: "categoryId",
+                as: "ingredients",
+              },
+            },
+          ],
           as: "categories",
-        },
-      },
-      {
-        $lookup: {
-          from: "ingredients",
-          localField: "categories._id",
-          foreignField: "categoryId",
-          as: "ingredients",
-        },
-      },
-      {
-        $addFields: {
-          meals: {
-            $map: {
-              input: "$meals",
-              as: "meal",
-              in: {
-                $mergeObjects: [
-                  "$$meal",
-                  {
-                    categories: {
-                      $filter: {
-                        input: "$categories",
-                        cond: { $eq: ["$$this.mealId", "$$meal._id"] },
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
-      },
-      {
-        $addFields: {
-          meals: {
-            $map: {
-              input: "$meals",
-              as: "meal",
-              in: {
-                $mergeObjects: [
-                  "$$meal",
-                  {
-                    categories: {
-                      $map: {
-                        input: "$$meal.categories",
-                        as: "category",
-                        in: {
-                          $mergeObjects: [
-                            "$$category",
-                            {
-                              ingredients: {
-                                $filter: {
-                                  input: "$ingredients",
-                                  cond: {
-                                    $eq: [
-                                      "$$this.categoryId",
-                                      "$$category._id",
-                                    ],
-                                  },
-                                },
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          categories: 0,
-          ingredients: 0,
         },
       },
     ]);
@@ -127,40 +51,29 @@ export default defineEventHandler(async (event) => {
     }
 
     const template = templateData[0];
-    const createdMeals = [];
     const createdCategories = [];
     const createdIngredients = [];
 
-    for (const meal of template.meals) {
-      const newMeal = new ModelMeals({
+    for (const category of template.categories) {
+      const newCategory = new ModelCategories({
         userId,
-        name: meal.name,
+        name: category.name,
         templateId: null,
       });
-      const savedMeal = await newMeal.save();
-      createdMeals.push(savedMeal);
+      const savedCategory = await newCategory.save();
+      createdCategories.push(savedCategory);
 
-      for (const category of meal.categories) {
-        const newCategory = new ModelCategories({
+      for (const ingredient of category.ingredients) {
+        const newIngredient = new ModelIngredients({
           userId,
-          mealId: savedMeal._id,
-          name: category.name,
+          categoryId: savedCategory._id,
+          name: ingredient.name,
+          calories: ingredient.calories,
+          proteins: ingredient.proteins,
+          grams: ingredient.grams,
         });
-        const savedCategory = await newCategory.save();
-        createdCategories.push(savedCategory);
-
-        for (const ingredient of category.ingredients) {
-          const newIngredient = new ModelIngredients({
-            userId,
-            categoryId: savedCategory._id,
-            name: ingredient.name,
-            calories: ingredient.calories,
-            proteins: ingredient.proteins,
-            grams: ingredient.grams,
-          });
-          const savedIngredient = await newIngredient.save();
-          createdIngredients.push(savedIngredient);
-        }
+        const savedIngredient = await newIngredient.save();
+        createdIngredients.push(savedIngredient);
       }
     }
 
@@ -170,11 +83,10 @@ export default defineEventHandler(async (event) => {
         templateId,
         userId,
         applied: {
-          meals: createdMeals.length,
           categories: createdCategories.length,
           ingredients: createdIngredients.length,
         },
-        createdMeals,
+        createdCategories,
         summary: {
           templateName: template.name,
           appliedAt: new Date().toISOString(),

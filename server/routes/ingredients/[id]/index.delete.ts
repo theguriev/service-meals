@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   if (!ObjectId.isValid(idParam)) {
     throw createError({ statusCode: 400, message: "Invalid item ID" });
   }
-  
+
   const id = new ObjectId(idParam);
 
   // Check if the category exists and belongs to the user
@@ -38,26 +38,16 @@ export default defineEventHandler(async (event) => {
       },
       {
         $lookup: {
-          from: "categories",
+          from: ModelCategories.modelName,
           localField: "categoryId",
           foreignField: "_id",
-          pipeline: [
-            {
-              $lookup: {
-                from: "meals",
-                localField: "mealId",
-                foreignField: "_id",
-                as: "meals"
-              }
-            }
-          ],
           as: "categories"
         }
       },
       {
         $match: {
           $or: [
-            { "categories.meals.templateId": { $exists: true, $ne: null } },
+            { "categories.templateId": { $exists: true, $ne: null } },
             { userId }
           ]
         }

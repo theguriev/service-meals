@@ -89,26 +89,16 @@ export default defineEventHandler(async (event) => {
       },
       {
         $lookup: {
-          from: "categories",
+          from: ModelCategories.modelName,
           localField: "categoryId",
           foreignField: "_id",
-          pipeline: [
-            {
-              $lookup: {
-                from: "meals",
-                localField: "mealId",
-                foreignField: "_id",
-                as: "meals",
-              },
-            },
-          ],
           as: "categories",
         },
       },
       {
         $match: {
           $or: [
-            { "categories.meals.templateId": { $exists: true, $ne: null } },
+            { "categories.templateId": { $exists: true, $ne: null } },
             { userId },
           ],
         },

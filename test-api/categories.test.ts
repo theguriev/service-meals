@@ -1,30 +1,9 @@
 let categoryId: string;
-let testMealId: string; // Static mealId for testing purposes
 
 describe.sequential("Categories API", () => {
-  // Setup: Create a meal to be used for category tests
-  beforeAll(async () => {
-    const newMeal = {
-      name: "Test Meal for Ingredients",
-    };
-    await $fetch(`/meals`, {
-      baseURL: process.env.API_URL,
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
-      },
-      body: newMeal,
-      onResponse: ({ response }) => {
-        expect(response.status).toBe(200);
-        testMealId = response._data.data._id; // Save created mealId
-      },
-    });
-  });
-
   describe("POST /categories", () => {
-    it("should create a new category for a meal", async () => {
-      const newCategory = { name: "Category A", mealId: testMealId };
+    it("should create a new category", async () => {
+      const newCategory = { name: "Category A" };
       await $fetch(`/categories`, {
         baseURL: process.env.API_URL,
         method: "POST",
@@ -37,7 +16,6 @@ describe.sequential("Categories API", () => {
           expect(response.status).toBe(200);
           expect(response._data.message).toBe("Item added successfully");
           expect(response._data.data).toMatchObject(newCategory);
-          expect(response._data.data.mealId).toBe(testMealId);
           categoryId = response._data.data._id; // Save categoryId for later tests
         },
       });
@@ -52,7 +30,6 @@ describe.sequential("Categories API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
-        body: { mealId: testMealId },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);
         },
@@ -68,91 +45,11 @@ describe.sequential("Categories API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
         },
-        body: { name: "Category for POST test", mealId: testMealId },
+        body: { name: "Category for POST test" },
         onResponse: ({ response }) => {
           expect(response.status).toBe(403);
         },
       });
-    });
-  });
-
-  describe("GET /meals/{mealId}/categories", () => {
-    it("should retrieve a list of categories for a specific meal", async () => {
-      // Create a category first to ensure there's data for the mealId
-      await $fetch(`/categories`, {
-        baseURL: process.env.API_URL,
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
-        },
-        body: { name: "Category for GET test", mealId: testMealId },
-      });
-
-      await $fetch(`/meals/${testMealId}/categories`, {
-        baseURL: process.env.API_URL,
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
-        },
-        onResponse: ({ response }) => {
-          expect(response.status).toBe(200);
-          expect(Array.isArray(response._data)).toBe(true);
-          // Check if at least one category returned has the correct mealId
-          const categoryForMeal = response._data.find(
-            (cat) => cat.mealId === testMealId
-          );
-          expect(categoryForMeal).toBeDefined();
-          // Check for ingredients array
-          expect(categoryForMeal).toHaveProperty("ingredients");
-          expect(Array.isArray(categoryForMeal.ingredients)).toBe(true);
-        },
-      });
-    });
-
-    it("should retrieve categories with pagination (offset and limit)", async () => {
-      const limit = 2;
-      const offset = 1;
-      // Create a few categories for pagination testing under testMealId
-      for (let i = 0; i < 5; i++) {
-        await $fetch(`/meals/${testMealId}/categories`, {
-          baseURL: process.env.API_URL,
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
-          },
-          body: { name: `Paginated Category ${i + 1} for ${testMealId}` },
-        });
-      }
-
-      await $fetch(
-        `/meals/${testMealId}/categories`,
-        {
-          baseURL: process.env.API_URL,
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
-          },
-          query: {
-            offset,
-            limit,
-          },
-          onResponse: ({ response }) => {
-            expect(response.status).toBe(200);
-            expect(Array.isArray(response._data)).toBe(true);
-            expect(response._data.length).toBeLessThanOrEqual(limit);
-            // Check for ingredients array in paginated results
-            if (response._data.length > 0) {
-              const firstCategory = response._data[0];
-              expect(firstCategory).toHaveProperty("ingredients");
-              expect(Array.isArray(firstCategory.ingredients)).toBe(true);
-            }
-          },
-        }
-      );
     });
   });
 
@@ -174,9 +71,56 @@ describe.sequential("Categories API", () => {
     });
   });
 
+  describe("GET /categories/{id}", () => {
+    it("should retrieve a single category by ID", async () => {
+      await $fetch(`/categories/${categoryId}`, {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data._id).toBe(categoryId);
+        },
+      });
+    });
+
+    it("should return 400 on invalid ID format", async () => {
+      await $fetch(`/categories/invalid-id`, {
+        baseURL: process.env.API_URL,
+        method: "GET",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    });
+
+    it("should return 404 on non-existent ID", async () => {
+      await $fetch(`/categories/000000000000000000000000`, {
+        baseURL: process.env.API_URL,
+        ignoreResponseError: true,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
+        },
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(404);
+        },
+      });
+    });
+  });
+
   describe("PUT /categories/{id}", () => {
     it("should update an existing category", async () => {
-      const updatedCategoryData = { name: "Updated Category Name", mealId: testMealId };
+      const updatedCategoryData = { name: "Updated Category Name" };
       await $fetch(`/categories/${categoryId}`, {
         baseURL: process.env.API_URL,
         method: "PUT",
@@ -203,7 +147,7 @@ describe.sequential("Categories API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
-        body: { name: "Update Non Existent", mealId: testMealId },
+        body: { name: "Update Non Existent" },
         onResponse: ({ response }) => {
           expect(response.status).toBe(404);
           expect(response._data.message).toBe("Item not found");
@@ -221,7 +165,7 @@ describe.sequential("Categories API", () => {
           Accept: "application/json",
           Cookie: `accessToken=${process.env.VALID_ADMIN_ACCESS_TOKEN};`,
         },
-        body: { name: "Update Invalid Id", mealId: testMealId },
+        body: { name: "Update Invalid Id" },
         onResponse: ({ response }) => {
           expect(response.status).toBe(400);
           expect(response._data.message).toBe("Invalid item ID");

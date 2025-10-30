@@ -1,22 +1,26 @@
+import { InferSchemaType, RootFilterQuery } from "mongoose";
+
 const querySchema = z.object({
-  offset: z.number().int().default(0),
-  limit: z.number().int().default(10),
+  offset: z.coerce.number().int().default(0),
+  limit: z.coerce.number().int().default(10),
+  all: z.coerce.boolean().default(false),
+  showInTemplate: z.coerce.boolean().default(false),
 });
 
 export default defineEventHandler(async (event) => {
-  const { offset = 0, limit = 10 } = getQuery(event);
-  const convertedOffset = Number(offset);
-  const convertedLimit = Number(limit);
+  const { authorizationBase } = useRuntimeConfig();
+  const { offset, limit, all, showInTemplate } = await zodValidateData(getQuery(event), querySchema.parse);
   const userId = await getUserId(event);
+  const user = await getInitialUser(event, authorizationBase);
 
-  await zodValidateData(
-    {
-      offset: convertedOffset,
-      limit: convertedLimit,
-    },
-    querySchema.parse
-  );
-  return ModelCategories.find({ userId })
-    .limit(convertedLimit)
-    .skip(convertedOffset);
+  if (all && !can(user, "get-all-categories"))
+    throw createError({ statusCode: 403, statusMessage: "Forbidden" });
+
+  const match: RootFilterQuery<InferSchemaType<typeof schemaCategories>> = !showInTemplate ? {
+    templateId: { $not: { $exists: true, $ne: null } }
+  } : { };
+
+  return ModelCategories.find(all ? match : { ...match, userId })
+    .limit(limit)
+    .skip(offset);
 });
