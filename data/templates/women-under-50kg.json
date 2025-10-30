@@ -64,50 +64,7 @@
       ]
     },
     {
-      "name": "б",
-      "description": "Молочні продукти",
-      "targetCalories": 100,
-      "ingredients": [
-        {
-          "name": "Сир кисломолочний нежирний (0,2% жиру)",
-          "calories": 80,
-          "proteins": 18,
-          "grams": 140
-        },
-        {
-          "name": "Сири м'які, тверді, плавлені",
-          "calories": 350,
-          "proteins": 20,
-          "grams": 33
-        },
-        {
-          "name": "Сметана 15%",
-          "calories": 350,
-          "proteins": 20,
-          "grams": 58
-        },
-        {
-          "name": "Кефір 1%",
-          "calories": 37,
-          "proteins": 3,
-          "grams": 270
-        },
-        {
-          "name": "Несолодкий йогурт 1% жиру",
-          "calories": 40,
-          "proteins": 4,
-          "grams": 250
-        },
-        {
-          "name": "Молоко 1%",
-          "calories": 36.4,
-          "proteins": 3.3,
-          "grams": 275
-        }
-      ]
-    },
-    {
-      "name": "в",
+      "name": "ж",
       "description": "Вільний вибір",
       "targetCalories": 375,
       "ingredients": [
@@ -120,7 +77,7 @@
       ]
     },
     {
-      "name": "г",
+      "name": "б",
       "description": "Тваринні білки",
       "targetCalories": 360,
       "ingredients": [
@@ -169,7 +126,7 @@
       ]
     },
     {
-      "name": "д",
+      "name": "в",
       "description": "Овочі",
       "targetCalories": 120,
       "ingredients": [
@@ -188,7 +145,7 @@
       ]
     },
     {
-      "name": "е",
+      "name": "г",
       "description": "Жири",
       "targetCalories": 110,
       "ingredients": [
@@ -243,7 +200,7 @@
       ]
     },
     {
-      "name": "є",
+      "name": "д",
       "description": "Молочні продукти",
       "targetCalories": 165,
       "ingredients": [
@@ -286,7 +243,7 @@
       ]
     },
     {
-      "name": "ж",
+      "name": "е",
       "description": "Фрукти та ягоди",
       "targetCalories": 150,
       "ingredients": [
@@ -299,7 +256,7 @@
       ]
     },
     {
-      "name": "з",
+      "name": "є",
       "description": "Горіхи та насіння",
       "targetCalories": 55,
       "ingredients": [
