@@ -3,13 +3,14 @@ const querySchema = z.object({
   limit: z.coerce.number().int().default(10),
   withCategories: z.coerce.boolean().default(false),
   all: z.coerce.boolean().default(false),
+  showInTemplate: z.coerce.boolean().default(false),
 });
 
 export default defineEventHandler(async (event) => {
   const { authorizationBase } = useRuntimeConfig();
   const userId = await getUserId(event);
   const user = await getInitialUser(event, authorizationBase);
-  const { all, offset, limit, withCategories } = await zodValidateData(getQuery(event), querySchema.parse);
+  const { all, offset, limit, withCategories, showInTemplate } = await zodValidateData(getQuery(event), querySchema.parse);
 
   if (all && !can(user, "get-all-ingredients")) {
     throw createError({ statusCode: 403, statusMessage: "Forbidden" });
@@ -25,7 +26,7 @@ export default defineEventHandler(async (event) => {
     ...(all ? [] : [{ $match: { userId } }]),
     {
       $lookup: {
-        from: "categories",
+        from: ModelCategories.modelName,
         localField: "categoryId",
         foreignField: "_id",
         as: "categories",
@@ -46,6 +47,14 @@ export default defineEventHandler(async (event) => {
     },
     {
       $unset: ["categories"]
-    }
+    },
+    ...(!showInTemplate
+      ? [{
+        $match: {
+          "category.templateId": { $not: { $exists: true, $ne: null } }
+        }
+      }]
+      : []
+    ),
   ])
 });

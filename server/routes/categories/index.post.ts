@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
   const _id = await getUserId(event);
   const doc = new ModelCategories({
-    userId: _id,
+    userId: templateId ? user._id : _id,
     templateId,
     ...validatedBody,
   });

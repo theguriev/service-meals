@@ -1,6 +1,7 @@
 import { existsSync } from "fs";
 import { readFile, readdir } from "fs/promises";
 import { join } from "path";
+import { defaultTemplateName } from "~~/constants";
 
 interface ValidationResult {
   filename: string;
@@ -146,9 +147,15 @@ async function validateTemplateFile(
       return result;
     }
 
+    const templateName = filename === "default.json" ? defaultTemplateName : templateData.name;
+
     // Валидируем основную структуру
-    if (!templateData.name || typeof templateData.name !== "string") {
+    if (!templateName || typeof templateName !== "string") {
       result.errors.push('Missing or invalid "name" field');
+    }
+
+    if (templateName === defaultTemplateName && filename !== "default.json") {
+      result.errors.push('Cannot use default template name for non-default template');
     }
 
     const totalCategories = templateData.categories.length;
@@ -204,7 +211,7 @@ async function validateTemplateFile(
             );
           }
 
-          if (typeof ingredient.grams !== "number" || ingredient.grams <= 0) {
+          if (filename !== "default.json" && (typeof ingredient.grams !== "number" || ingredient.grams <= 0)) {
             result.errors.push(
               `Ingredient "${ingredient.name}": Invalid "grams" field (must be positive number)`,
             );

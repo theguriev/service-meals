@@ -1,6 +1,6 @@
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-import { templateUserId } from "~~/constants";
+import { defaultTemplateName, templateUserId } from "~~/constants";
 
 interface TemplateIngredient {
   name: string;
@@ -29,19 +29,20 @@ async function importSingleTemplate(filename: string) {
   const filePath = join(process.cwd(), "data", "templates", filename);
   const fileContent = await readFile(filePath, "utf-8");
   const templateData: TemplateData = JSON.parse(fileContent);
+  const templateName = filename === "default.json" ? defaultTemplateName : templateData.name;
 
-  console.log(`📋 Template: ${templateData.name}`);
+  console.log(`📋 Template: ${templateName}`);
   if (templateData.description) {
     console.log(`📝 Description: ${templateData.description}`);
   }
 
   // Проверяем, не существует ли уже такой шаблон
   const existingTemplate = await ModelTemplate.findOne({
-    name: templateData.name,
+    name: templateName,
   });
   if (existingTemplate) {
     console.log(
-      `⚠️  Template "${templateData.name}" already exists. Skipping...`,
+      `⚠️  Template "${templateName}" already exists. Skipping...`,
     );
     return {
       success: true,
@@ -54,7 +55,7 @@ async function importSingleTemplate(filename: string) {
 
   // 1. Создаем основной template
   const template = new ModelTemplate({
-    name: templateData.name,
+    name: templateName,
   });
   const savedTemplate = await template.save();
   console.log(
@@ -87,7 +88,7 @@ async function importSingleTemplate(filename: string) {
         name: ingredientData.name,
         calories: ingredientData.calories,
         proteins: ingredientData.proteins,
-        grams: ingredientData.grams,
+        grams: ingredientData.grams ?? 0,
         userId: templateUserId,
       });
       const savedIngredient = await ingredient.save();

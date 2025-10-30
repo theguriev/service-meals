@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { defaultTemplateName } from "~~/constants";
 
 const updateSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
@@ -18,6 +19,10 @@ export default defineEventHandler(async (event) => {
 
   // Validate the request body
   const validatedBody = await zodValidateBody(event, updateSchema.parse);
+
+  if (validatedBody.name === defaultTemplateName) {
+    throw createError({ statusCode: 400, message: "Cannot use default template name" });
+  }
 
   // Update the ingredient in the database
   const updated = await ModelTemplate.findOneAndUpdate(

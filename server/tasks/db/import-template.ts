@@ -1,5 +1,6 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
+import { defaultTemplateName } from "~~/constants";
 
 interface TemplateIngredient {
   name: string;
@@ -40,19 +41,20 @@ export default defineTask({
       const filePath = join(process.cwd(), "data", "templates", filename);
       const fileContent = await readFile(filePath, "utf-8");
       const templateData: TemplateData = JSON.parse(fileContent);
+      const templateName = filename === "default.json" ? defaultTemplateName : templateData.name;
 
-      console.log(`📋 Template: ${templateData.name}`);
+      console.log(`📋 Template: ${templateName}`);
       if (templateData.description) {
         console.log(`📝 Description: ${templateData.description}`);
       }
 
       // Проверяем, не существует ли уже такой шаблон
       const existingTemplate = await ModelTemplate.findOne({
-        name: templateData.name,
+        name: templateName,
       });
       if (existingTemplate) {
         console.log(
-          `⚠️  Template "${templateData.name}" already exists. Skipping...`,
+          `⚠️  Template "${templateName}" already exists. Skipping...`,
         );
         return {
           result: "Template already exists",
@@ -64,7 +66,7 @@ export default defineTask({
 
       // 1. Создаем основной template
       const template = new ModelTemplate({
-        name: templateData.name,
+        name: templateName,
       });
       const savedTemplate = await template.save();
       console.log(
@@ -96,7 +98,7 @@ export default defineTask({
             name: ingredientData.name,
             calories: ingredientData.calories,
             proteins: ingredientData.proteins,
-            grams: ingredientData.grams,
+            grams: ingredientData.grams ?? 0,
           });
           const savedIngredient = await ingredient.save();
           totalIngredients++;

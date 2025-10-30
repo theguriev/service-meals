@@ -1290,6 +1290,26 @@
               "type": "integer",
               "default": 10
             }
+          },
+          {
+            "name": "all",
+            "in": "query",
+            "description": "Whether to retrieve all categories or only those associated with the user",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "showInTemplate",
+            "in": "query",
+            "description": "Whether to show categories in the template",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
           }
         ],
         "responses": {
@@ -1601,6 +1621,16 @@
             "name": "withCategories",
             "in": "query",
             "description": "Whether to include categories for each ingredient",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "showInTemplate",
+            "in": "query",
+            "description": "Whether to include ingredients for the template",
             "required": false,
             "schema": {
               "type": "boolean",
@@ -2091,6 +2121,34 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates/default": {
+      "get": {
+        "summary": "Get the default template",
+        "tags": ["Templates"],
+        "responses": {
+          "200": {
+            "description": "The requested template",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateWithData"
                 }
               }
             }

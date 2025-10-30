@@ -1,7 +1,7 @@
 import { existsSync } from "fs";
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-import { templateUserId } from "~~/constants";
+import { defaultTemplateName, templateUserId } from "~~/constants";
 
 interface TemplateIngredient {
   name: string;
@@ -117,20 +117,21 @@ async function processTemplateFile(
   const filePath = join(process.cwd(), "data", "templates", filename);
   const fileContent = await readFile(filePath, "utf-8");
   const templateData: TemplateData = JSON.parse(fileContent);
+  const templateName = filename === "default.json" ? defaultTemplateName : templateData.name;
 
-  console.log(`  📝 Template: ${templateData.name}`);
+  console.log(`  📝 Template: ${templateName}`);
   if (templateData.description) {
     console.log(`  💭 Description: ${templateData.description}`);
   }
 
   // Проверяем, существует ли шаблон с таким именем
   const existingTemplate = await ModelTemplate.findOne({
-    name: templateData.name,
+    name: templateName,
     userId: templateUserId,
   });
   if (existingTemplate) {
     console.log(
-      `  ⏭️  Template "${templateData.name}" already exists, skipping...`,
+      `  ⏭️  Template "${templateName}" already exists, skipping...`,
     );
     stats.templatesSkipped++;
     return stats;
@@ -138,7 +139,7 @@ async function processTemplateFile(
 
   // Создаем основной template
   const template = new ModelTemplate({
-    name: templateData.name,
+    name: templateName,
     description: templateData.description,
     userId: templateUserId,
   });
@@ -173,7 +174,7 @@ async function processTemplateFile(
         name: ingredientData.name,
         calories: ingredientData.calories,
         proteins: ingredientData.proteins,
-        grams: ingredientData.grams,
+        grams: ingredientData.grams ?? 0,
         userId: templateUserId,
       });
       await ingredient.save();

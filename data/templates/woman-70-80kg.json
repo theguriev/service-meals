@@ -5,67 +5,67 @@
     {
       "name": "а",
       "description": "Вуглеводи",
-      "targetCalories": 125,
+      "targetCalories": 250,
       "ingredients": [
         {
           "name": "Бобові",
-          "calories": 125,
-          "proteins": 8,
-          "grams": 35
+          "calories": 310,
+          "proteins": 20,
+          "grams": 70
         },
         {
           "name": "Картопля",
-          "calories": 125,
+          "calories": 77,
           "proteins": 2,
-          "grams": 120
+          "grams": 240
         },
         {
           "name": "Кукурудза свіжа",
-          "calories": 125,
-          "proteins": 3,
-          "grams": 120
+          "calories": 86,
+          "proteins": 3.3,
+          "grams": 240
         },
         {
           "name": "Рис (не шліфований)",
-          "calories": 125,
-          "proteins": 3,
-          "grams": 35
+          "calories": 330,
+          "proteins": 7.5,
+          "grams": 70
         },
         {
           "name": "Будь-яка крупа",
-          "calories": 125,
-          "proteins": 3,
-          "grams": 35
+          "calories": 330,
+          "proteins": 10,
+          "grams": 70
         },
         {
           "name": "Цільнозернове борошно",
-          "calories": 125,
-          "proteins": 3,
-          "grams": 35
+          "calories": 320,
+          "proteins": 11,
+          "grams": 70
         },
         {
           "name": "Хлібці",
-          "calories": 125,
-          "proteins": 3,
-          "grams": 50
+          "calories": 320,
+          "proteins": 10,
+          "grams": 100
         },
         {
           "name": "Цільнозерновий хліб",
-          "calories": 125,
-          "proteins": 3,
-          "grams": 55
+          "calories": 250,
+          "proteins": 9,
+          "grams": 110
         },
         {
           "name": "Макарони т.с.",
-          "calories": 125,
-          "proteins": 3,
-          "grams": 35
+          "calories": 340,
+          "proteins": 12,
+          "grams": 70
         },
         {
           "name": "Лаваш",
-          "calories": 125,
-          "proteins": 3,
-          "grams": 50
+          "calories": 240,
+          "proteins": 8,
+          "grams": 100
         }
       ]
     },
@@ -76,38 +76,38 @@
       "ingredients": [
         {
           "name": "Сир кисломолочний нежирний (0,2% жиру)",
-          "calories": 115,
-          "proteins": 24,
+          "calories": 80,
+          "proteins": 18,
           "grams": 160
         },
         {
           "name": "Сири м'які, тверді, плавлені",
-          "calories": 115,
-          "proteins": 8,
+          "calories": 350,
+          "proteins": 20,
           "grams": 32
         },
         {
           "name": "Сметана 15%",
-          "calories": 115,
-          "proteins": 2,
+          "calories": 350,
+          "proteins": 20,
           "grams": 65
         },
         {
           "name": "Кефір 1%",
-          "calories": 115,
-          "proteins": 8,
+          "calories": 42.6,
+          "proteins": 3,
           "grams": 270
         },
         {
           "name": "Несолодкий йогурт 1% жиру",
-          "calories": 115,
-          "proteins": 8,
+          "calories": 46,
+          "proteins": 3.2,
           "grams": 250
         },
         {
           "name": "Молоко 1%",
-          "calories": 115,
-          "proteins": 8,
+          "calories": 40.4,
+          "proteins": 2.8,
           "grams": 285
         }
       ]
@@ -115,13 +115,13 @@
     {
       "name": "в",
       "description": "Вільний вибір",
-      "targetCalories": 500,
+      "targetCalories": 450,
       "ingredients": [
         {
           "name": "Будь-що (солодощі, снеки, ковбаса тощо)",
-          "calories": 500,
+          "calories": 450,
           "proteins": 5,
-          "grams": 100
+          "grams": 90
         }
       ]
     },
@@ -132,62 +132,62 @@
       "ingredients": [
         {
           "name": "Бобові",
-          "calories": 125,
-          "proteins": 8,
+          "calories": 310,
+          "proteins": 20,
           "grams": 35
         },
         {
           "name": "Картопля",
-          "calories": 125,
+          "calories": 77,
           "proteins": 2,
           "grams": 120
         },
         {
           "name": "Кукурудза свіжа",
-          "calories": 125,
-          "proteins": 3,
+          "calories": 86,
+          "proteins": 3.3,
           "grams": 120
         },
         {
           "name": "Рис (не шліфований)",
-          "calories": 125,
-          "proteins": 3,
+          "calories": 330,
+          "proteins": 7.5,
           "grams": 35
         },
         {
           "name": "Будь-яка крупа",
-          "calories": 125,
-          "proteins": 3,
+          "calories": 330,
+          "proteins": 10,
           "grams": 35
         },
         {
           "name": "Цільнозернове борошно",
-          "calories": 125,
-          "proteins": 3,
+          "calories": 320,
+          "proteins": 11,
           "grams": 35
         },
         {
           "name": "Хлібці",
-          "calories": 125,
-          "proteins": 3,
+          "calories": 320,
+          "proteins": 10,
           "grams": 50
         },
         {
           "name": "Цільнозерновий хліб",
-          "calories": 125,
-          "proteins": 3,
+          "calories": 250,
+          "proteins": 9,
           "grams": 55
         },
         {
           "name": "Макарони т.с.",
-          "calories": 125,
-          "proteins": 3,
+          "calories": 340,
+          "proteins": 12,
           "grams": 35
         },
         {
           "name": "Лаваш",
-          "calories": 125,
-          "proteins": 3,
+          "calories": 240,
+          "proteins": 8,
           "grams": 50
         }
       ]
@@ -195,166 +195,166 @@
     {
       "name": "д",
       "description": "Білки",
-      "targetCalories": 135,
+      "targetCalories": 430,
       "ingredients": [
         {
           "name": "Телятина",
-          "calories": 135,
-          "proteins": 25,
-          "grams": 130
+          "calories": 170,
+          "proteins": 20,
+          "grams": 340
         },
         {
           "name": "Печінка",
-          "calories": 135,
-          "proteins": 22,
-          "grams": 130
+          "calories": 130,
+          "proteins": 18,
+          "grams": 340
         },
         {
           "name": "Куряче або індиче філе",
-          "calories": 135,
-          "proteins": 28,
-          "grams": 150
+          "calories": 110,
+          "proteins": 22,
+          "grams": 390
         },
         {
           "name": "Риба (до 5% жиру)",
-          "calories": 135,
-          "proteins": 26,
-          "grams": 180
+          "calories": 110,
+          "proteins": 20,
+          "grams": 390
         },
         {
           "name": "Риба (від 5% жиру)",
-          "calories": 135,
-          "proteins": 22,
-          "grams": 120
+          "calories": 170,
+          "proteins": 18,
+          "grams": 300
         },
         {
-          "name": "2 яйця",
-          "calories": 135,
-          "proteins": 12,
-          "grams": 100
+          "name": "6 яєць",
+          "calories": 157,
+          "proteins": 12.5,
+          "grams": 300
         },
         {
           "name": "Морепродукти",
-          "calories": 135,
-          "proteins": 26,
-          "grams": 190
+          "calories": 100,
+          "proteins": 20,
+          "grams": 480
         }
       ]
     },
     {
       "name": "е",
       "description": "Овочі",
-      "targetCalories": 60,
+      "targetCalories": 120,
       "ingredients": [
         {
           "name": "Овочі (квашені також і зелень)",
-          "calories": 60,
-          "proteins": 2,
-          "grams": 300
+          "calories": 40,
+          "proteins": 1.5,
+          "grams": 600
         },
         {
           "name": "Гриби",
-          "calories": 60,
-          "proteins": 3,
-          "grams": 300
+          "calories": 30,
+          "proteins": 3.5,
+          "grams": 600
         }
       ]
     },
     {
       "name": "є",
       "description": "Жири",
-      "targetCalories": 80,
+      "targetCalories": 160,
       "ingredients": [
         {
           "name": "Будь-яка олія (рекомендуємо лляну)",
-          "calories": 80,
+          "calories": 900,
           "proteins": 0,
-          "grams": 9
+          "grams": 18
         },
         {
           "name": "Майонез",
-          "calories": 80,
-          "proteins": 0,
-          "grams": 12
+          "calories": 600,
+          "proteins": 1,
+          "grams": 24
         },
         {
           "name": "Авокадо",
-          "calories": 80,
-          "proteins": 1,
-          "grams": 45
+          "calories": 160,
+          "proteins": 2,
+          "grams": 90
         },
         {
           "name": "Оливки",
-          "calories": 80,
+          "calories": 115,
           "proteins": 1,
-          "grams": 60
+          "grams": 120
         },
         {
           "name": "Гірчиця",
-          "calories": 80,
-          "proteins": 3,
-          "grams": 22
+          "calories": 65,
+          "proteins": 5,
+          "grams": 42
         },
         {
           "name": "Кетчуп",
-          "calories": 80,
+          "calories": 100,
           "proteins": 1,
-          "grams": 33
+          "grams": 66
         },
         {
           "name": "Масло",
-          "calories": 80,
-          "proteins": 0,
-          "grams": 11
+          "calories": 720,
+          "proteins": 0.5,
+          "grams": 22
         },
         {
           "name": "Сало",
-          "calories": 80,
-          "proteins": 1,
-          "grams": 9
+          "calories": 770,
+          "proteins": 0.5,
+          "grams": 18
         }
       ]
     },
     {
       "name": "ж",
       "description": "Молочні продукти",
-      "targetCalories": 110,
+      "targetCalories": 225,
       "ingredients": [
         {
           "name": "Сир кисломолочний нежирний (0,2% жиру)",
-          "calories": 110,
-          "proteins": 20,
-          "grams": 135
+          "calories": 80,
+          "proteins": 18,
+          "grams": 295
         },
         {
           "name": "Сири м'які, тверді, плавлені",
-          "calories": 110,
-          "proteins": 7,
-          "grams": 30
+          "calories": 350,
+          "proteins": 20,
+          "grams": 62
         },
         {
           "name": "Сметана 15%",
-          "calories": 110,
-          "proteins": 2,
-          "grams": 60
+          "calories": 350,
+          "proteins": 20,
+          "grams": 125
         },
         {
           "name": "Кефір 1%",
-          "calories": 110,
-          "proteins": 8,
-          "grams": 250
+          "calories": 44,
+          "proteins": 3.2,
+          "grams": 520
         },
         {
           "name": "Несолодкий йогурт 1% жиру",
-          "calories": 110,
-          "proteins": 8,
-          "grams": 250
+          "calories": 44,
+          "proteins": 3.2,
+          "grams": 300
         },
         {
           "name": "Молоко 1%",
-          "calories": 110,
-          "proteins": 8,
-          "grams": 250
+          "calories": 44,
+          "proteins": 3.2,
+          "grams": 535
         }
       ]
     },
@@ -365,14 +365,14 @@
       "ingredients": [
         {
           "name": "Фрукти та ягоди",
-          "calories": 220,
-          "proteins": 2,
+          "calories": 50,
+          "proteins": 1,
           "grams": 300
         },
         {
           "name": "Банани, виноград, хурма",
-          "calories": 220,
-          "proteins": 3,
+          "calories": 122.2,
+          "proteins": 1.7,
           "grams": 180
         }
       ]
@@ -384,138 +384,15 @@
       "ingredients": [
         {
           "name": "Будь-які горіхи (рекомендуємо грецькі)",
-          "calories": 70,
-          "proteins": 3,
+          "calories": 600,
+          "proteins": 20,
           "grams": 10
         },
         {
           "name": "Насіння",
-          "calories": 70,
-          "proteins": 3,
+          "calories": 700,
+          "proteins": 30,
           "grams": 10
-        }
-      ]
-    },
-    {
-      "name": "і",
-      "description": "Білки",
-      "targetCalories": 135,
-      "ingredients": [
-        {
-          "name": "Телятина",
-          "calories": 135,
-          "proteins": 25,
-          "grams": 130
-        },
-        {
-          "name": "Печінка",
-          "calories": 135,
-          "proteins": 22,
-          "grams": 130
-        },
-        {
-          "name": "Куряче або індиче філе",
-          "calories": 135,
-          "proteins": 28,
-          "grams": 150
-        },
-        {
-          "name": "Риба (до 5% жиру)",
-          "calories": 135,
-          "proteins": 26,
-          "grams": 180
-        },
-        {
-          "name": "Риба (від 5% жиру)",
-          "calories": 135,
-          "proteins": 22,
-          "grams": 120
-        },
-        {
-          "name": "2 яйця",
-          "calories": 135,
-          "proteins": 12,
-          "grams": 100
-        },
-        {
-          "name": "Морепродукти",
-          "calories": 135,
-          "proteins": 26,
-          "grams": 190
-        }
-      ]
-    },
-    {
-      "name": "ї",
-      "description": "Овочі",
-      "targetCalories": 60,
-      "ingredients": [
-        {
-          "name": "Овочі (квашені також і зелень)",
-          "calories": 60,
-          "proteins": 2,
-          "grams": 300
-        },
-        {
-          "name": "Гриби",
-          "calories": 60,
-          "proteins": 3,
-          "grams": 300
-        }
-      ]
-    },
-    {
-      "name": "й",
-      "description": "Жири",
-      "targetCalories": 80,
-      "ingredients": [
-        {
-          "name": "Будь-яка олія (рекомендуємо лляну)",
-          "calories": 80,
-          "proteins": 0,
-          "grams": 9
-        },
-        {
-          "name": "Майонез",
-          "calories": 80,
-          "proteins": 0,
-          "grams": 12
-        },
-        {
-          "name": "Авокадо",
-          "calories": 80,
-          "proteins": 1,
-          "grams": 45
-        },
-        {
-          "name": "Оливки",
-          "calories": 80,
-          "proteins": 1,
-          "grams": 60
-        },
-        {
-          "name": "Гірчиця",
-          "calories": 80,
-          "proteins": 3,
-          "grams": 22
-        },
-        {
-          "name": "Кетчуп",
-          "calories": 80,
-          "proteins": 1,
-          "grams": 33
-        },
-        {
-          "name": "Масло",
-          "calories": 80,
-          "proteins": 0,
-          "grams": 11
-        },
-        {
-          "name": "Сало",
-          "calories": 80,
-          "proteins": 1,
-          "grams": 9
         }
       ]
     }

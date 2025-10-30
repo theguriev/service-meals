@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
     },
     {
       $lookup: {
-        from: "ingredients",
+        from: ModelIngredients.modelName,
         let: { id: "$ingredients.id" },
         pipeline: [
           {
@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
           },
           {
             $lookup: {
-              from: "categories",
+              from: ModelCategories.modelName,
               localField: "categoryId",
               foreignField: "_id",
               pipeline: [
