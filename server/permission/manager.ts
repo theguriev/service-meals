@@ -4,6 +4,7 @@ export default [
   "get-all-ingredients",
   "get-template-meals",
   "apply-templates",
+  "remove-templates",
   "get-all-templates",
   "create-meals",
   "create-categories",
