@@ -68,7 +68,13 @@
             }
           }
         },
-        "required": ["_id", "userId", "name", "createdAt", "updatedAt"]
+        "required": [
+          "_id",
+          "userId",
+          "name",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "CategoryWithObviousIngredients": {
         "type": "object",
@@ -116,7 +122,14 @@
             }
           }
         },
-        "required": ["_id", "userId", "name", "createdAt", "updatedAt", "ingredients"]
+        "required": [
+          "_id",
+          "userId",
+          "name",
+          "createdAt",
+          "updatedAt",
+          "ingredients"
+        ]
       },
       "ErrorResponse": {
         "type": "object",
@@ -181,7 +194,13 @@
             "readOnly": true
           }
         },
-        "required": ["_id", "userId", "name", "createdAt", "updatedAt"]
+        "required": [
+          "_id",
+          "userId",
+          "name",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "CategoryInput": {
         "type": "object",
@@ -199,7 +218,9 @@
             "pattern": "^[0-9a-fA-F]{24}$"
           }
         },
-        "required": ["name"]
+        "required": [
+          "name"
+        ]
       },
       "CategoryUpdateInput": {
         "type": "object",
@@ -416,7 +437,13 @@
             "pattern": "^[0-9a-fA-F]{24}$"
           }
         },
-        "required": ["name", "calories", "proteins", "grams", "categoryId"]
+        "required": [
+          "name",
+          "calories",
+          "proteins",
+          "grams",
+          "categoryId"
+        ]
       },
       "IngredientUpdateInput": {
         "type": "object",
@@ -488,7 +515,10 @@
             "example": 1
           }
         },
-        "required": ["acknowledged", "deletedCount"]
+        "required": [
+          "acknowledged",
+          "deletedCount"
+        ]
       },
       "Set": {
         "type": "object",
@@ -526,7 +556,10 @@
                   "example": "spicy"
                 }
               },
-              "required": ["id", "value"]
+              "required": [
+                "id",
+                "value"
+              ]
             }
           },
           "createdAt": {
@@ -542,7 +575,13 @@
             "readOnly": true
           }
         },
-        "required": ["_id", "userId", "ingredients", "createdAt", "updatedAt"]
+        "required": [
+          "_id",
+          "userId",
+          "ingredients",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "SetInput": {
         "type": "object",
@@ -569,11 +608,16 @@
                   "example": "spicy"
                 }
               },
-              "required": ["id", "value"]
+              "required": [
+                "id",
+                "value"
+              ]
             }
           }
         },
-        "required": ["ingredients"]
+        "required": [
+          "ingredients"
+        ]
       },
       "SetUpdateInput": {
         "type": "object",
@@ -600,7 +644,10 @@
                   "example": "spicy"
                 }
               },
-              "required": ["id", "value"]
+              "required": [
+                "id",
+                "value"
+              ]
             }
           }
         }
@@ -699,7 +746,10 @@
                   "example": 10
                 }
               },
-              "required": ["id", "value"]
+              "required": [
+                "id",
+                "value"
+              ]
             }
           },
           "createdAt": {
@@ -715,7 +765,13 @@
             "readOnly": true
           }
         },
-        "required": ["_id", "userId", "ingredients", "createdAt", "updatedAt"]
+        "required": [
+          "_id",
+          "userId",
+          "ingredients",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "SetDeleteResponse": {
         "type": "object",
@@ -753,7 +809,12 @@
             "readOnly": true
           }
         },
-        "required": ["_id", "name", "createdAt", "updatedAt"]
+        "required": [
+          "_id",
+          "name",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "TemplateWithData": {
         "type": "object",
@@ -789,7 +850,13 @@
             "readOnly": true
           }
         },
-        "required": ["_id", "name", "createdAt", "updatedAt", "categories"]
+        "required": [
+          "_id",
+          "name",
+          "createdAt",
+          "updatedAt",
+          "categories"
+        ]
       },
       "TemplateInput": {
         "type": "object",
@@ -801,7 +868,9 @@
             "example": "Weekly Meal Plan"
           }
         },
-        "required": ["name"]
+        "required": [
+          "name"
+        ]
       },
       "TemplateUpdateInput": {
         "type": "object",
@@ -872,7 +941,9 @@
             "example": "user123"
           }
         },
-        "required": ["userId"]
+        "required": [
+          "userId"
+        ]
       },
       "TemplateApplyResponse": {
         "type": "object",
@@ -928,6 +999,69 @@
           }
         }
       },
+      "TemplateRemoveInput": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "ID of the user to remove the applied template from",
+            "minLength": 1,
+            "example": "user123"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "TemplateRemoveResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Applied template removed successfully"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "templateId": {
+                "type": "string",
+                "description": "ID of the template that was removed",
+                "example": "605c72ef29592b001c000000"
+              },
+              "userId": {
+                "type": "string",
+                "example": "user123"
+              },
+              "removed": {
+                "type": "object",
+                "properties": {
+                  "categories": {
+                    "type": "integer",
+                    "example": 5
+                  },
+                  "ingredients": {
+                    "type": "integer",
+                    "example": 20
+                  }
+                }
+              },
+              "summary": {
+                "type": "object",
+                "properties": {
+                  "templateName": {
+                    "type": "string",
+                    "example": "Daily Meal Template"
+                  },
+                  "removedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "Note": {
         "type": "object",
         "properties": {
@@ -960,7 +1094,13 @@
             "readOnly": true
           }
         },
-        "required": ["_id", "userId", "content", "createdAt", "updatedAt"]
+        "required": [
+          "_id",
+          "userId",
+          "content",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "NoteInput": {
         "type": "object",
@@ -972,7 +1112,9 @@
             "example": "This is my note content"
           }
         },
-        "required": ["content"]
+        "required": [
+          "content"
+        ]
       },
       "NoteResponse": {
         "type": "object",
@@ -1004,7 +1146,9 @@
     "/sets": {
       "post": {
         "summary": "Create a new set",
-        "tags": ["Sets"],
+        "tags": [
+          "Sets"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1040,7 +1184,9 @@
       },
       "get": {
         "summary": "Get a list of sets",
-        "tags": ["Sets"],
+        "tags": [
+          "Sets"
+        ],
         "parameters": [
           {
             "name": "offset",
@@ -1113,7 +1259,9 @@
     "/sets/{id}": {
       "get": {
         "summary": "Get a specific set by ID",
-        "tags": ["Sets"],
+        "tags": [
+          "Sets"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1161,7 +1309,9 @@
       },
       "put": {
         "summary": "Update an existing set",
-        "tags": ["Sets"],
+        "tags": [
+          "Sets"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1219,7 +1369,9 @@
       },
       "delete": {
         "summary": "Delete a set",
-        "tags": ["Sets"],
+        "tags": [
+          "Sets"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1269,7 +1421,9 @@
     "/categories": {
       "get": {
         "summary": "Get a list of all categories",
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "parameters": [
           {
             "name": "offset",
@@ -1350,7 +1504,9 @@
       },
       "post": {
         "summary": "Create a new category",
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1408,7 +1564,9 @@
     "/categories/{id}": {
       "get": {
         "summary": "Get a category by ID",
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1457,7 +1615,9 @@
       },
       "put": {
         "summary": "Update an existing category",
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1525,7 +1685,9 @@
       },
       "delete": {
         "summary": "Delete a category and its associated ingredients",
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1585,7 +1747,9 @@
     "/ingredients": {
       "get": {
         "summary": "Get a list of all ingredients for the authenticated user",
-        "tags": ["Ingredients"],
+        "tags": [
+          "Ingredients"
+        ],
         "parameters": [
           {
             "name": "offset",
@@ -1676,7 +1840,9 @@
       },
       "post": {
         "summary": "Create a new ingredient for a specific category",
-        "tags": ["Ingredients"],
+        "tags": [
+          "Ingredients"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1744,7 +1910,9 @@
     "/categories/{id}/ingredients": {
       "get": {
         "summary": "Get a list of ingredients for a specific category",
-        "tags": ["Ingredients"],
+        "tags": [
+          "Ingredients"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1827,7 +1995,9 @@
     "/ingredients/{id}": {
       "get": {
         "summary": "Retrieve a single ingredient by ID",
-        "tags": ["Ingredients"],
+        "tags": [
+          "Ingredients"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1884,7 +2054,9 @@
       },
       "put": {
         "summary": "Update an existing ingredient",
-        "tags": ["Ingredients"],
+        "tags": [
+          "Ingredients"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1962,7 +2134,9 @@
       },
       "delete": {
         "summary": "Delete an ingredient",
-        "tags": ["Ingredients"],
+        "tags": [
+          "Ingredients"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2032,7 +2206,9 @@
     "/templates": {
       "post": {
         "summary": "Create a new template",
-        "tags": ["Templates"],
+        "tags": [
+          "Templates"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -2078,7 +2254,9 @@
       },
       "get": {
         "summary": "Get a list of templates",
-        "tags": ["Templates"],
+        "tags": [
+          "Templates"
+        ],
         "parameters": [
           {
             "name": "offset",
@@ -2141,7 +2319,9 @@
     "/templates/default": {
       "get": {
         "summary": "Get the default template",
-        "tags": ["Templates"],
+        "tags": [
+          "Templates"
+        ],
         "responses": {
           "200": {
             "description": "The requested template",
@@ -2169,7 +2349,9 @@
     "/templates/{id}": {
       "get": {
         "summary": "Get a specific template by ID",
-        "tags": ["Templates"],
+        "tags": [
+          "Templates"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2228,7 +2410,9 @@
       },
       "put": {
         "summary": "Update an existing template",
-        "tags": ["Templates"],
+        "tags": [
+          "Templates"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2298,7 +2482,9 @@
       "delete": {
         "summary": "Delete a template and all related data",
         "description": "Deletes a template and cascades deletion to all related categories, and ingredients",
-        "tags": ["Templates"],
+        "tags": [
+          "Templates"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2360,7 +2546,9 @@
       "post": {
         "summary": "Apply a template to a specific user",
         "description": "Creates a copy of all template data (categories, ingredients) and assigns it to the specified user",
-        "tags": ["Templates"],
+        "tags": [
+          "Templates"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2438,10 +2626,73 @@
         }
       }
     },
+    "/templates/remove": {
+      "delete": {
+        "summary": "Remove applied template from user",
+        "description": "Removes the template that was applied to the specified user by finding matching categories and deleting them along with their ingredients",
+        "tags": [
+          "Templates"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateRemoveInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Applied template removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateRemoveResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - remove-templates permission required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to remove applied template",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/notes": {
       "get": {
         "summary": "Retrieve notes with optional filtering",
-        "tags": ["Notes"],
+        "tags": [
+          "Notes"
+        ],
         "parameters": [
           {
             "name": "offset",
@@ -2528,7 +2779,9 @@
       },
       "post": {
         "summary": "Create a new note",
-        "tags": ["Notes"],
+        "tags": [
+          "Notes"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -2566,7 +2819,9 @@
     "/notes/{id}": {
       "get": {
         "summary": "Get a specific note",
-        "tags": ["Notes"],
+        "tags": [
+          "Notes"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2604,7 +2859,9 @@
       },
       "put": {
         "summary": "Update a note",
-        "tags": ["Notes"],
+        "tags": [
+          "Notes"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2662,7 +2919,9 @@
       },
       "delete": {
         "summary": "Delete a note",
-        "tags": ["Notes"],
+        "tags": [
+          "Notes"
+        ],
         "parameters": [
           {
             "name": "id",
