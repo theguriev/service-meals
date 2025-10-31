@@ -19,58 +19,10 @@ export default defineEventHandler(async (event) => {
     });
 
     if (userCategories.length === 0) {
-      return {
-        message: "No applied template found for user",
-        data: {
-          userId,
-          removed: {
-            categories: 0,
-            ingredients: 0,
-          },
-        },
-      };
-    }
-
-    const userCategoryNames = userCategories.map((category) => category.name);
-
-    const allTemplates = await ModelTemplate.aggregate([
-      {
-        $lookup: {
-          from: ModelCategories.modelName,
-          localField: "_id",
-          foreignField: "templateId",
-          as: "categories",
-        },
-      },
-    ]);
-
-    let matchedTemplate = null;
-    for (const template of allTemplates) {
-      const templateCategoryNames = template.categories.map(
-        (cat: { name: string }) => cat.name
-      );
-      
-      const allMatch = templateCategoryNames.every((name: string) =>
-        userCategoryNames.includes(name)
-      );
-      
-      if (allMatch && templateCategoryNames.length === userCategoryNames.length) {
-        matchedTemplate = template;
-        break;
-      }
-    }
-
-    if (!matchedTemplate) {
-      return {
-        message: "No matching template found",
-        data: {
-          userId,
-          removed: {
-            categories: 0,
-            ingredients: 0,
-          },
-        },
-      };
+      throw createError({
+        statusCode: 404,
+        statusMessage: "No applied template found for user",
+      });
     }
 
     const userCategoryIds = userCategories.map((category) => category._id);
@@ -87,16 +39,12 @@ export default defineEventHandler(async (event) => {
     return {
       message: "Applied template removed successfully",
       data: {
-        templateId: matchedTemplate._id.toString(),
         userId,
         removed: {
           categories: deletedCategories.deletedCount,
           ingredients: deletedIngredients.deletedCount,
         },
-        summary: {
-          templateName: matchedTemplate.name,
-          removedAt: new Date().toISOString(),
-        },
+        removedAt: new Date().toISOString(),
       },
     };
   } catch (error) {

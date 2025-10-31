@@ -1,6 +1,7 @@
 export default [
   ...permissionManager,
   "create-templates",
+  "remove-templates",
   "delete-templates",
   "update-templates",
   "create-template-meals",
