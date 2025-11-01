@@ -9,6 +9,7 @@ on:
       - "!service-meals/.github/workflows/docker-publish.yml"
   push:
     branches:
+      - master
       - "test/**"
       - "feature/**"
     paths:
