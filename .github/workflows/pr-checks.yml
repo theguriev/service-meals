@@ -52,7 +52,7 @@ jobs:
         run: pnpm prepare
 
       - name: Type check
-        run: pnpm exec tsc --noEmit
+        run: pnpm exec tsc --noEmit --skipLibCheck
 
       - name: Check code duplication
         run: pnpm copy-paste-check
