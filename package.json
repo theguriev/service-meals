@@ -11,7 +11,8 @@
     "migrate:validate": "nitro task run templates:validate-templates --payload \"{}\"",
     "migrate:generate": "nitro task run templates:generate-template --payload \"{\\\"name\\\":\\\"New Template\\\"}\"",
     "migrate:create": "nitro task run migrations:create-migration --payload \"{\\\"templateName\\\":\\\"Example Template\\\"}\"",
-    "migrate:clear": "nitro task run db:clear-templates --payload \"{\\\"confirm\\\":true}\""
+    "migrate:clear": "nitro task run db:clear-templates --payload \"{\\\"confirm\\\":true}\"",
+    "db:export-templates": "nitro task run db:export-templates --payload \"{}\""
   },
   "devDependencies": {
     "jscpd": "^4.0.5",
