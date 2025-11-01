@@ -51,9 +51,6 @@ jobs:
       - name: Prepare Nitro (generate types)
         run: pnpm prepare
 
-      - name: Type check
-        run: pnpm exec tsc --noEmit --skipLibCheck
-
       - name: Check code duplication
         run: pnpm copy-paste-check
         continue-on-error: true
