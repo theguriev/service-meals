@@ -7,6 +7,13 @@ on:
     paths:
       - "service-meals/**"
       - "!service-meals/.github/workflows/docker-publish.yml"
+  push:
+    branches:
+      - "test/**"
+      - "feature/**"
+    paths:
+      - "service-meals/**"
+  workflow_dispatch:
 
 jobs:
   lint-and-build:
