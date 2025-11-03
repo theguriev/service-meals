@@ -5,6 +5,7 @@ const validationSchema = z.object({
   proteins: z.number().min(0, "Proteins must be a positive number"),
   grams: z.number().min(0, "Grams must be a positive number"),
   categoryId: z.string().transform(objectIdTransform),
+  unit: z.enum(["grams", "pieces"]).default("grams")
 });
 
 export default defineEventHandler(async (event) => {

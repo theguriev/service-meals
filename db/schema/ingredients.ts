@@ -32,6 +32,11 @@ const schema = new Schema(
       required: true,
       min: 0,
     },
+    unit: {
+      type: String,
+      enum: ["grams", "pieces"],
+      default: "grams"
+    }
   },
   { timestamps: true }
 );
