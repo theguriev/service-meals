@@ -13,6 +13,7 @@ const validationSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
+  const { maxIngredientConsumption } = useRuntimeConfig();
   const userId = await getUserId(event);
   const validatedBody = await zodValidateBody(event, validationSchema.parse);
 
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if (!(await validateSet(validatedBody.ingredients))) {
+  if (!(await validateSet(validatedBody.ingredients, Number(maxIngredientConsumption)))) {
     throw createError({
       statusCode: 400,
       message: "Invalid ingredient values per category",
