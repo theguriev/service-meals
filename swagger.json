@@ -305,6 +305,11 @@
             "description": "Grams of the ingredient",
             "example": 100
           },
+          "isAlcohol": {
+            "type": "boolean",
+            "description": "Whether the ingredient is alcoholic",
+            "default": false
+          },
           "unit": {
             "type": "string",
             "description": "Unit of measurement for the ingredient",
@@ -332,6 +337,7 @@
           "calories",
           "proteins",
           "grams",
+          "isAlcohol",
           "unit",
           "createdAt",
           "updatedAt"
@@ -379,6 +385,11 @@
             "description": "Grams of the ingredient",
             "example": 100
           },
+          "isAlcohol": {
+            "type": "boolean",
+            "description": "Whether the ingredient is alcoholic",
+            "default": false
+          },
           "unit": {
             "type": "string",
             "description": "Unit of measurement for the ingredient",
@@ -409,6 +420,7 @@
           "calories",
           "proteins",
           "grams",
+          "isAlcohol",
           "unit",
           "createdAt",
           "updatedAt"
@@ -443,6 +455,11 @@
             "description": "Weight in grams",
             "minimum": 0,
             "example": 100
+          },
+          "isAlcohol": {
+            "type": "boolean",
+            "description": "Whether the ingredient is alcoholic",
+            "default": false
           },
           "unit": {
             "type": "string",
@@ -494,6 +511,11 @@
             "description": "Weight in grams (optional for update)",
             "minimum": 0,
             "example": 120
+          },
+          "isAlcohol": {
+            "type": "boolean",
+            "description": "Whether the ingredient is alcoholic",
+            "example": false
           },
           "unit": {
             "type": "string",
