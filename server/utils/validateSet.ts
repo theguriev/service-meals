@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 const validateSet = async (sets?: {
   id?: string;
   value?: number;
-}[]) => {
+}[], maxIngredientConsumption: number = 100) => {
   const ingredients = await ModelIngredients.find({
     _id: { $in: sets?.map((set) => new Types.ObjectId(set.id)) ?? [] },
   });
@@ -19,7 +19,7 @@ const validateSet = async (sets?: {
     };
   }, {});
 
-  return !Object.values(categoryValues ?? {}).some(value => value > 2);
+  return !Object.values(categoryValues ?? {}).some(value => value > maxIngredientConsumption / 100);
 };
 
 export default validateSet;
