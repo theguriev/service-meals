@@ -216,6 +216,12 @@ async function validateTemplateFile(
               `Ingredient "${ingredient.name}": Invalid "grams" field (must be positive number)`,
             );
           }
+
+          if (ingredient.unit !== undefined && ingredient.unit !== null && ingredient.unit !== "grams" && ingredient.unit !== "pieces") {
+            result.errors.push(
+              `Ingredient "${ingredient.name}": Invalid "unit" field (must be "grams" or "pieces")`,
+            );
+          }
         },
       );
     });

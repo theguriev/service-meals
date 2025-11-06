@@ -7,6 +7,7 @@ interface TemplateIngredient {
   calories: number;
   proteins: number;
   grams: number;
+  unit?: "grams" | "pieces";
 }
 
 interface TemplateCategory {
@@ -89,6 +90,7 @@ async function importSingleTemplate(filename: string) {
         calories: ingredientData.calories,
         proteins: ingredientData.proteins,
         grams: ingredientData.grams ?? 0,
+        unit: ingredientData.unit ?? "grams",
         userId: templateUserId,
       });
       const savedIngredient = await ingredient.save();

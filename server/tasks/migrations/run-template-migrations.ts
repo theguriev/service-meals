@@ -8,6 +8,7 @@ interface TemplateIngredient {
   calories: number;
   proteins: number;
   grams: number;
+  unit?: "grams" | "pieces";
 }
 
 interface TemplateCategory {
@@ -175,6 +176,7 @@ async function processTemplateFile(
         calories: ingredientData.calories,
         proteins: ingredientData.proteins,
         grams: ingredientData.grams ?? 0,
+        unit: ingredientData.unit ?? "grams",
         userId: templateUserId,
       });
       await ingredient.save();

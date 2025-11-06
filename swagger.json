@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
     "title": "Meals Service API",
     "version": "1.0.0",
@@ -305,6 +305,12 @@
             "description": "Grams of the ingredient",
             "example": 100
           },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement for the ingredient",
+            "enum": ["grams", "pieces"],
+            "default": "grams"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time",
@@ -326,6 +332,7 @@
           "calories",
           "proteins",
           "grams",
+          "unit",
           "createdAt",
           "updatedAt"
         ]
@@ -372,6 +379,12 @@
             "description": "Grams of the ingredient",
             "example": 100
           },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement for the ingredient",
+            "enum": ["grams", "pieces"],
+            "default": "grams"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time",
@@ -396,6 +409,7 @@
           "calories",
           "proteins",
           "grams",
+          "unit",
           "createdAt",
           "updatedAt"
         ]
@@ -429,6 +443,12 @@
             "description": "Weight in grams",
             "minimum": 0,
             "example": 100
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement for the ingredient",
+            "enum": ["grams", "pieces"],
+            "default": "grams"
           },
           "categoryId": {
             "type": "string",
@@ -474,6 +494,12 @@
             "description": "Weight in grams (optional for update)",
             "minimum": 0,
             "example": 120
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement for the ingredient",
+            "enum": ["grams", "pieces"],
+            "default": "grams"
           },
           "categoryId": {
             "type": "string",

@@ -7,6 +7,7 @@ interface TemplateIngredient {
   calories: number;
   proteins: number;
   grams: number;
+  unit?: "grams" | "pieces";
 }
 
 interface TemplateCategory {
@@ -99,6 +100,7 @@ export default defineTask({
             calories: ingredientData.calories,
             proteins: ingredientData.proteins,
             grams: ingredientData.grams ?? 0,
+            unit: ingredientData.unit ?? "grams",
           });
           const savedIngredient = await ingredient.save();
           totalIngredients++;
