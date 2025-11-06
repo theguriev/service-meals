@@ -67,6 +67,7 @@ export default defineEventHandler(async (event) => {
         calories: ingredient.calories,
         proteins: ingredient.proteins,
         grams: ingredient.grams,
+        unit: ingredient.unit,
       });
       await newIngredient.save();
     }
