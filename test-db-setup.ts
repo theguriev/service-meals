@@ -34,7 +34,8 @@ export const ingredientsTestData = [
     calories: 100,
     proteins: 10,
     grams: 50,
-    unit: "grams"
+    unit: "grams",
+    isAlcohol: false,
   },
   {
     _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2ca"),
@@ -44,7 +45,8 @@ export const ingredientsTestData = [
     calories: 200,
     proteins: 20,
     grams: 100,
-    unit: "grams"
+    unit: "grams",
+    isAlcohol: false,
   },
   {
     _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2cb"),
@@ -54,7 +56,8 @@ export const ingredientsTestData = [
     calories: 300,
     proteins: 30,
     grams: 150,
-    unit: "grams"
+    unit: "grams",
+    isAlcohol: false,
   },
   {
     _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2cc"),
@@ -64,7 +67,8 @@ export const ingredientsTestData = [
     calories: 400,
     proteins: 40,
     grams: 200,
-    unit: "grams"
+    unit: "grams",
+    isAlcohol: false,
   },
   {
     _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2cd"),
@@ -74,7 +78,8 @@ export const ingredientsTestData = [
     calories: 500,
     proteins: 50,
     grams: 250,
-    unit: "grams"
+    unit: "grams",
+    isAlcohol: false,
   },
   {
     _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2ce"),
@@ -84,7 +89,8 @@ export const ingredientsTestData = [
     calories: 600,
     proteins: 60,
     grams: 300,
-    unit: "grams"
+    unit: "grams",
+    isAlcohol: false,
   },
   {
     _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2cf"),
@@ -94,7 +100,19 @@ export const ingredientsTestData = [
     calories: 700,
     proteins: 70,
     grams: 350,
-    unit: "grams"
+    unit: "grams",
+    isAlcohol: false,
+  },
+  {
+    _id: new ObjectId("64f1b2c8d4f1b2c8d4f1b2d0"),
+    name: "Test Ingredient 8",
+    categoryId: categoriesTestData[2]._id,
+    userId: regularId,
+    calories: 800,
+    proteins: 80,
+    grams: 400,
+    unit: "grams",
+    isAlcohol: true,
   },
 ] satisfies Omit<
   InferSchemaType<typeof schemaIngredients> & {
