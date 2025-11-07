@@ -20,6 +20,7 @@ const validateSet = async (
         ingredients: {
           ingredient: (typeof ingredients)[number];
           value: number;
+          caloriesConsumption: number;
         }[];
       }
     >
@@ -27,18 +28,21 @@ const validateSet = async (
     const ingredient = ingredients.find((ing) => ing._id.toString() === set.id);
     if (!ingredient || !set.value) return acc;
 
-    const { categoryId, isAlcohol, calories, grams } = ingredient;
+    const { categoryId, isAlcohol, calories, grams, unit } = ingredient;
+    const perGramCaloriesConsumption = calories * grams;
+    const caloriesConsumption =
+      (unit === "pieces"
+        ? perGramCaloriesConsumption
+        : perGramCaloriesConsumption / 100) * set.value;
     const currentValue = acc[categoryId.toString()]?.value || 0;
     const currentAlcoholConsumption =
       acc[categoryId.toString()]?.alcoholConsumption || 0;
     const newIngredients = [
       ...(acc[categoryId.toString()]?.ingredients || []),
-      { ingredient, value: set.value },
+      { ingredient, value: set.value, caloriesConsumption },
     ];
 
     if (isAlcohol) {
-      const caloriesConsumption = ((calories * grams) / 100) * set.value;
-
       return {
         ...acc,
         [categoryId.toString()]: {
@@ -62,12 +66,18 @@ const validateSet = async (
   return !Object.values(categoryValues ?? {}).some(
     ({ value: categoryValue, alcoholConsumption, ingredients }) =>
       ingredients.some(
-        ({ value, ingredient: { grams, calories, isAlcohol } }) => {
+        ({
+          value,
+          caloriesConsumption,
+          ingredient: { grams, calories, isAlcohol, unit },
+        }) => {
+          const perGramCaloriesConsumption = calories * grams;
           const maxCalories =
-            ((calories * grams) / 100) *
+            (unit === "pieces"
+              ? perGramCaloriesConsumption
+              : perGramCaloriesConsumption / 100) *
             (maxIngredientConsumption / 100 -
               (isAlcohol ? 0 : categoryValue - value));
-          const caloriesConsumption = ((calories * grams) / 100) * value;
 
           return (
             Math.round(maxCalories - alcoholConsumption - caloriesConsumption) <
