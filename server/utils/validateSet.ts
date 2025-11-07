@@ -80,7 +80,7 @@ const validateSet = async (
               (isAlcohol ? 0 : categoryValue - value));
 
           return (
-            Math.round(maxCalories - alcoholConsumption - caloriesConsumption) <
+            Math.round(maxCalories - alcoholConsumption - (isAlcohol ? 0 : caloriesConsumption)) <
             0
           );
         },
