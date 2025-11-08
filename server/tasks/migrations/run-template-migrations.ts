@@ -9,6 +9,7 @@ interface TemplateIngredient {
   proteins: number;
   grams: number;
   unit?: "grams" | "pieces";
+  isAlcohol?: boolean;
 }
 
 interface TemplateCategory {
@@ -177,6 +178,7 @@ async function processTemplateFile(
         proteins: ingredientData.proteins,
         grams: ingredientData.grams ?? 0,
         unit: ingredientData.unit ?? "grams",
+        isAlcohol: ingredientData.isAlcohol ?? false,
         userId: templateUserId,
       });
       await ingredient.save();

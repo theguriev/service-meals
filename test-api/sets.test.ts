@@ -30,6 +30,32 @@ describe.sequential("Sets API", () => {
       });
     });
 
+    it("should create a new set when alcohol is selected", async () => {
+      const newSet = {
+        ingredients: [
+          { id: ingredientsTestData[6]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[7]._id.toString(), value: 0.25 },
+        ],
+      };
+      await $fetch("/sets", {
+        baseURL: process.env.API_URL,
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        body: newSet,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(200);
+          expect(response._data.message).toBe("Set added successfully");
+          expect(response._data.data.ingredients).toMatchObject(
+            newSet.ingredients
+          );
+          id = response._data.data._id;
+        },
+      });
+    });
+
     it("should return a validation error if ingredients is missing", async () => {
       await $fetch("/sets", {
         baseURL: process.env.API_URL,
@@ -108,6 +134,29 @@ describe.sequential("Sets API", () => {
         },
       });
     });
+
+    it("should return a validation error if value for same category is too big when alcohol selected", async () => {
+      const newSet = {
+        ingredients: [
+          { id: ingredientsTestData[6]._id.toString(), value: 0.5 },
+          { id: ingredientsTestData[7]._id.toString(), value: 0.4 },
+        ],
+      };
+
+      await $fetch("/sets", {
+        baseURL: process.env.API_URL,
+        method: "POST",
+        ignoreResponseError: true,
+        headers: {
+          Accept: "application/json",
+          Cookie: `accessToken=${process.env.VALID_REGULAR_ACCESS_TOKEN};`,
+        },
+        body: newSet,
+        onResponse: ({ response }) => {
+          expect(response.status).toBe(400);
+        },
+      });
+    })
   });
 
   describe("GET /sets", () => {

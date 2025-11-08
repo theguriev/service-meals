@@ -222,6 +222,12 @@ async function validateTemplateFile(
               `Ingredient "${ingredient.name}": Invalid "unit" field (must be "grams" or "pieces")`,
             );
           }
+
+          if (ingredient.isAlcohol !== undefined && ingredient.isAlcohol !== null && typeof ingredient.isAlcohol !== "boolean") {
+            result.errors.push(
+              `Ingredient "${ingredient.name}": Invalid "isAlcohol" field (must be boolean)`,
+            );
+          }
         },
       );
     });

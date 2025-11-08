@@ -36,6 +36,10 @@ const schema = new Schema(
       type: String,
       enum: ["grams", "pieces"],
       default: "grams"
+    },
+    isAlcohol: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }

@@ -7,7 +7,8 @@ const updateSchema = z.object({
   proteins: z.number().min(0).optional(),
   grams: z.number().min(0).optional(),
   categoryId: z.string().transform(objectIdTransform).optional(),
-  unit: z.enum(["grams", "pieces"]).optional()
+  unit: z.enum(["grams", "pieces"]).optional(),
+  isAlcohol: z.boolean().optional()
 });
 
 export default defineEventHandler(async (event) => {

@@ -8,6 +8,7 @@ interface TemplateIngredient {
   proteins: number;
   grams: number;
   unit?: "grams" | "pieces";
+  isAlcohol?: boolean;
 }
 
 interface TemplateCategory {
@@ -91,6 +92,7 @@ async function importSingleTemplate(filename: string) {
         proteins: ingredientData.proteins,
         grams: ingredientData.grams ?? 0,
         unit: ingredientData.unit ?? "grams",
+        isAlcohol: ingredientData.isAlcohol ?? false,
         userId: templateUserId,
       });
       const savedIngredient = await ingredient.save();

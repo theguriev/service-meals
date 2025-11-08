@@ -55,6 +55,7 @@ interface TemplateIngredient {
   proteins: number;
   grams: number;
   unit?: "grams" | "pieces";
+  isAlcohol?: boolean;
 }
 
 interface TemplateCategory {
@@ -135,6 +136,7 @@ export default defineTask({
             proteins: ingredientData.proteins,
             grams: ingredientData.grams ?? 0,
             unit: ingredientData.unit ?? "grams",
+            isAlcohol: ingredientData.isAlcohol ?? false,
           });
           await ingredient.save();
           totalIngredients++;

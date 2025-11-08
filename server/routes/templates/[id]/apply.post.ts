@@ -72,6 +72,7 @@ export default defineEventHandler(async (event) => {
           proteins: ingredient.proteins,
           grams: ingredient.grams,
           unit: ingredient.unit,
+          isAlcohol: ingredient.isAlcohol,
         });
         const savedIngredient = await newIngredient.save();
         createdIngredients.push(savedIngredient);
