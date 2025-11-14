@@ -3,73 +3,53 @@ import { join } from "path";
 import { defaultTemplateName } from "~~/constants";
 
 interface MigrationHelperOptions {
-  templateName: string;
-  migrationName?: string;
-  description?: string;
+	templateName: string;
+	migrationName?: string;
+	description?: string;
 }
 
 export default defineTask({
-  meta: {
-    name: "migrations:create",
-    description: "Create a new migration file for a template",
-  },
-  run: async ({ payload, context }) => {
-    try {
-      const options = payload as unknown as MigrationHelperOptions;
+	meta: {
+		name: "migrations:create",
+		description: "Create a new migration file for a template",
+	},
+	run: async ({ payload, context }) => {
+		try {
+			const options = payload as unknown as MigrationHelperOptions;
 
-      // Генерируем имя миграции из имени шаблона если не указано
-      const migrationName =
-        options.migrationName ||
-        options.templateName?.toLowerCase()
-          .replace(/[^a-zа-я0-9]/g, "-")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "");
+			// Генерируем имя миграции из имени шаблона если не указано
+			const migrationName =
+				options.migrationName ||
+				options.templateName
+					?.toLowerCase()
+					.replace(/[^a-zа-я0-9]/g, "-")
+					.replace(/-+/g, "-")
+					.replace(/^-|-$/g, "");
 
-      const templateName = migrationName === "default" ? defaultTemplateName : options.templateName;
+			const templateName =
+				migrationName === "default"
+					? defaultTemplateName
+					: options.templateName;
 
-      if (!templateName) {
-        throw new Error("Template name is required in payload");
-      }
+			if (!templateName) {
+				throw new Error("Template name is required in payload");
+			}
 
-      console.log(
-        `🚀 Creating migration for template: ${templateName}`
-      );
+			console.log(`🚀 Creating migration for template: ${templateName}`);
 
-      const description =
-        options.description || `Migration for ${templateName} template`;
+			const description =
+				options.description || `Migration for ${templateName} template`;
 
-      // Получаем текущую дату для timestamp
-      const timestamp = new Date()
-        .toISOString()
-        .replace(/[^0-9]/g, "")
-        .slice(0, 14);
-      const filename = `${timestamp}-${migrationName}.ts`;
+			// Получаем текущую дату для timestamp
+			const timestamp = new Date()
+				.toISOString()
+				.replace(/[^0-9]/g, "")
+				.slice(0, 14);
+			const filename = `${timestamp}-${migrationName}.ts`;
 
-      // Создаем содержимое миграции
-      const migrationContent = `import { readFile } from 'fs/promises';
+			// Создаем содержимое миграции
+			const migrationContent = `import { readFile } from 'fs/promises';
 import { join } from 'path';
-
-interface TemplateIngredient {
-  name: string;
-  calories: number;
-  proteins: number;
-  grams: number;
-  unit?: "grams" | "pieces";
-  isAlcohol?: boolean;
-}
-
-interface TemplateCategory {
-  name: string;
-  description?: string;
-  targetCalories?: number;
-  ingredients: TemplateIngredient[];
-}
-
-interface TemplateData {
-  name: string;
-  description?: string;
-  categories: TemplateCategory[];
-}
 
 export default defineTask({
   meta: {
@@ -167,38 +147,38 @@ export default defineTask({
   }
 });`;
 
-      // Сохраняем файл миграции
-      const migrationPath = join(
-        process.cwd(),
-        "server",
-        "tasks",
-        "migrations",
-        filename
-      );
-      await writeFile(migrationPath, migrationContent, "utf-8");
+			// Сохраняем файл миграции
+			const migrationPath = join(
+				process.cwd(),
+				"server",
+				"tasks",
+				"migrations",
+				filename,
+			);
+			await writeFile(migrationPath, migrationContent, "utf-8");
 
-      console.log(`✅ Migration created: ${filename}`);
-      console.log(`📁 File saved to: server/tasks/migrations/${filename}`);
-      console.log(`\n💡 Next steps:`);
-      console.log(
-        `   1. Make sure you have data/templates/${migrationName}.json with template data`
-      );
-      console.log(
-        `   2. Run the migration: npx nitro-task db:migrate-${migrationName}`
-      );
+			console.log(`✅ Migration created: ${filename}`);
+			console.log(`📁 File saved to: server/tasks/migrations/${filename}`);
+			console.log(`\n💡 Next steps:`);
+			console.log(
+				`   1. Make sure you have data/templates/${migrationName}.json with template data`,
+			);
+			console.log(
+				`   2. Run the migration: npx nitro-task db:migrate-${migrationName}`,
+			);
 
-      return {
-        result: {
-          filename,
-          migrationPath,
-          migrationName,
-          templateName,
-          taskName: `db:migrate-${migrationName}`,
-        },
-      };
-    } catch (error) {
-      console.error("❌ Migration creation failed:", error);
-      throw error;
-    }
-  },
+			return {
+				result: {
+					filename,
+					migrationPath,
+					migrationName,
+					templateName,
+					taskName: `db:migrate-${migrationName}`,
+				},
+			};
+		} catch (error) {
+			console.error("❌ Migration creation failed:", error);
+			throw error;
+		}
+	},
 });

@@ -2,198 +2,175 @@ import { readdir, readFile } from "fs/promises";
 import { join } from "path";
 import { defaultTemplateName, templateUserId } from "~~/constants";
 
-interface TemplateIngredient {
-  name: string;
-  calories: number;
-  proteins: number;
-  grams: number;
-  unit?: "grams" | "pieces";
-  isAlcohol?: boolean;
-}
-
-interface TemplateCategory {
-  name: string;
-  description?: string;
-  targetCalories?: number;
-  ingredients: TemplateIngredient[];
-}
-
-interface TemplateData {
-  name: string;
-  description?: string;
-  categories: TemplateCategory[];
-}
-
 async function importSingleTemplate(filename: string) {
-  console.log(`🔄 Importing template: ${filename}`);
+	console.log(`🔄 Importing template: ${filename}`);
 
-  // Читаем JSON файл с данными шаблона
-  const filePath = join(process.cwd(), "data", "templates", filename);
-  const fileContent = await readFile(filePath, "utf-8");
-  const templateData: TemplateData = JSON.parse(fileContent);
-  const templateName = filename === "default.json" ? defaultTemplateName : templateData.name;
+	// Читаем JSON файл с данными шаблона
+	const filePath = join(process.cwd(), "data", "templates", filename);
+	const fileContent = await readFile(filePath, "utf-8");
+	const templateData: TemplateData = JSON.parse(fileContent);
+	const templateName =
+		filename === "default.json" ? defaultTemplateName : templateData.name;
 
-  console.log(`📋 Template: ${templateName}`);
-  if (templateData.description) {
-    console.log(`📝 Description: ${templateData.description}`);
-  }
+	console.log(`📋 Template: ${templateName}`);
+	if (templateData.description) {
+		console.log(`📝 Description: ${templateData.description}`);
+	}
 
-  // Проверяем, не существует ли уже такой шаблон
-  const existingTemplate = await ModelTemplate.findOne({
-    name: templateName,
-  });
-  if (existingTemplate) {
-    console.log(
-      `⚠️  Template "${templateName}" already exists. Skipping...`,
-    );
-    return {
-      success: true,
-      skipped: true,
-      templateId: existingTemplate._id,
-      templateName: existingTemplate.name,
-      filename,
-    };
-  }
+	// Проверяем, не существует ли уже такой шаблон
+	const existingTemplate = await ModelTemplate.findOne({
+		name: templateName,
+	});
+	if (existingTemplate) {
+		console.log(`⚠️  Template "${templateName}" already exists. Skipping...`);
+		return {
+			success: true,
+			skipped: true,
+			templateId: existingTemplate._id,
+			templateName: existingTemplate.name,
+			filename,
+		};
+	}
 
-  // 1. Создаем основной template
-  const template = new ModelTemplate({
-    name: templateName,
-  });
-  const savedTemplate = await template.save();
-  console.log(
-    `✅ Created template: ${savedTemplate.name} (${savedTemplate._id})`,
-  );
+	// 1. Создаем основной template
+	const template = new ModelTemplate({
+		name: templateName,
+	});
+	const savedTemplate = await template.save();
+	console.log(
+		`✅ Created template: ${savedTemplate.name} (${savedTemplate._id})`,
+	);
 
-  // 2. Создаем categories и ingredients
-  let totalCategories = 0;
-  let totalIngredients = 0;
+	// 2. Создаем categories и ingredients
+	let totalCategories = 0;
+	let totalIngredients = 0;
 
-  // Создаем categories
-  for (const categoryData of templateData.categories) {
-    const category = new ModelCategories({
-      name: categoryData.name,
-      userId: templateUserId,
-      templateId: savedTemplate._id,
-    });
-    const savedCategory = await category.save();
-    totalCategories++;
-    console.log(
-      `    ✅ Created category: ${savedCategory.name} (${
-        savedCategory._id
-      }) - ${categoryData.description || "No description"}`,
-    );
+	// Создаем categories
+	for (const categoryData of templateData.categories) {
+		const category = new ModelCategories({
+			name: categoryData.name,
+			userId: templateUserId,
+			templateId: savedTemplate._id,
+		});
+		const savedCategory = await category.save();
+		totalCategories++;
+		console.log(
+			`    ✅ Created category: ${savedCategory.name} (${
+				savedCategory._id
+			}) - ${categoryData.description || "No description"}`,
+		);
 
-    // Создаем ingredients для category
-    for (const ingredientData of categoryData.ingredients) {
-      const ingredient = new ModelIngredients({
-        categoryId: savedCategory._id,
-        name: ingredientData.name,
-        calories: ingredientData.calories,
-        proteins: ingredientData.proteins,
-        grams: ingredientData.grams ?? 0,
-        unit: ingredientData.unit ?? "grams",
-        isAlcohol: ingredientData.isAlcohol ?? false,
-        userId: templateUserId,
-      });
-      const savedIngredient = await ingredient.save();
-      totalIngredients++;
-      console.log(
-        `      ✅ Created ingredient: ${savedIngredient.name} (${savedIngredient._id})`,
-      );
-    }
-  }
+		// Создаем ingredients для category
+		for (const ingredientData of categoryData.ingredients) {
+			const ingredient = new ModelIngredients({
+				categoryId: savedCategory._id,
+				name: ingredientData.name,
+				calories: ingredientData.calories,
+				proteins: ingredientData.proteins,
+				grams: ingredientData.grams ?? 0,
+				unit: ingredientData.unit ?? "grams",
+				isAlcohol: ingredientData.isAlcohol ?? false,
+				userId: templateUserId,
+			});
+			const savedIngredient = await ingredient.save();
+			totalIngredients++;
+			console.log(
+				`      ✅ Created ingredient: ${savedIngredient.name} (${savedIngredient._id})`,
+			);
+		}
+	}
 
-  return {
-    success: true,
-    skipped: false,
-    templateId: savedTemplate._id,
-    templateName: savedTemplate.name,
-    filename,
-    stats: {
-      categories: totalCategories,
-      ingredients: totalIngredients,
-    },
-  };
+	return {
+		success: true,
+		skipped: false,
+		templateId: savedTemplate._id,
+		templateName: savedTemplate.name,
+		filename,
+		stats: {
+			categories: totalCategories,
+			ingredients: totalIngredients,
+		},
+	};
 }
 
 export default defineTask({
-  meta: {
-    name: "db:import-all-templates",
-    description: "Import all templates from data/templates directory",
-  },
-  run: async ({ payload, context }) => {
-    try {
-      console.log("🚀 Starting import of all templates...");
+	meta: {
+		name: "db:import-all-templates",
+		description: "Import all templates from data/templates directory",
+	},
+	run: async ({ payload, context }) => {
+		try {
+			console.log("🚀 Starting import of all templates...");
 
-      // Получаем список всех JSON файлов в папке templates
-      const templatesDir = join(process.cwd(), "data", "templates");
-      const files = await readdir(templatesDir);
-      const jsonFiles = files.filter((file) => file.endsWith(".json"));
+			// Получаем список всех JSON файлов в папке templates
+			const templatesDir = join(process.cwd(), "data", "templates");
+			const files = await readdir(templatesDir);
+			const jsonFiles = files.filter((file) => file.endsWith(".json"));
 
-      console.log(`📁 Found ${jsonFiles.length} template files:`);
-      jsonFiles.forEach((file, index) => {
-        console.log(`   ${index + 1}. ${file}`);
-      });
+			console.log(`📁 Found ${jsonFiles.length} template files:`);
+			jsonFiles.forEach((file, index) => {
+				console.log(`   ${index + 1}. ${file}`);
+			});
 
-      if (jsonFiles.length === 0) {
-        console.log("⚠️  No template files found");
-        return {
-          result: "No template files found",
-          importedTemplates: [],
-        };
-      }
+			if (jsonFiles.length === 0) {
+				console.log("⚠️  No template files found");
+				return {
+					result: "No template files found",
+					importedTemplates: [],
+				};
+			}
 
-      const importResults = [];
-      let successCount = 0;
-      let skippedCount = 0;
-      let errorCount = 0;
+			const importResults = [];
+			let successCount = 0;
+			let skippedCount = 0;
+			let errorCount = 0;
 
-      // Импортируем каждый шаблон
-      for (const filename of jsonFiles) {
-        try {
-          const result = await importSingleTemplate(filename);
+			// Импортируем каждый шаблон
+			for (const filename of jsonFiles) {
+				try {
+					const result = await importSingleTemplate(filename);
 
-          if (result.skipped) {
-            skippedCount++;
-            console.log(`⏭️  Skipped: ${filename}`);
-          } else {
-            successCount++;
-            console.log(`✅ Imported: ${filename}`);
-          }
+					if (result.skipped) {
+						skippedCount++;
+						console.log(`⏭️  Skipped: ${filename}`);
+					} else {
+						successCount++;
+						console.log(`✅ Imported: ${filename}`);
+					}
 
-          importResults.push(result);
-        } catch (error) {
-          errorCount++;
-          console.error(`❌ Failed to import ${filename}:`, error);
+					importResults.push(result);
+				} catch (error) {
+					errorCount++;
+					console.error(`❌ Failed to import ${filename}:`, error);
 
-          importResults.push({
-            filename,
-            success: false,
-            error: error.message,
-          });
-        }
-      }
+					importResults.push({
+						filename,
+						success: false,
+						error: error.message,
+					});
+				}
+			}
 
-      console.log("\n🎉 Batch import completed!");
-      console.log(`📊 Summary:`);
-      console.log(`   - Total files: ${jsonFiles.length}`);
-      console.log(`   - Successfully imported: ${successCount}`);
-      console.log(`   - Skipped (already exist): ${skippedCount}`);
-      console.log(`   - Errors: ${errorCount}`);
+			console.log("\n🎉 Batch import completed!");
+			console.log(`📊 Summary:`);
+			console.log(`   - Total files: ${jsonFiles.length}`);
+			console.log(`   - Successfully imported: ${successCount}`);
+			console.log(`   - Skipped (already exist): ${skippedCount}`);
+			console.log(`   - Errors: ${errorCount}`);
 
-      return {
-        result: "Batch import completed",
-        summary: {
-          totalFiles: jsonFiles.length,
-          successCount,
-          skippedCount,
-          errorCount,
-        },
-        importedTemplates: importResults,
-      };
-    } catch (error) {
-      console.error("❌ Batch import failed:", error);
-      throw error;
-    }
-  },
+			return {
+				result: "Batch import completed",
+				summary: {
+					totalFiles: jsonFiles.length,
+					successCount,
+					skippedCount,
+					errorCount,
+				},
+				importedTemplates: importResults,
+			};
+		} catch (error) {
+			console.error("❌ Batch import failed:", error);
+			throw error;
+		}
+	},
 });
