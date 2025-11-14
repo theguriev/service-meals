@@ -1,230 +1,230 @@
 {
-  "name": "Веган 60-70 кг",
-  "description": "Веганський шаблон для жінок 60-70 кг. Калорійність раціону: ~1700 ккал (Б 115, Ж 43, В 175)",
-  "categories": [
-    {
-      "name": "а",
-      "description": "Вуглеводи",
-      "targetCalories": 240,
-      "ingredients": [
-        {
-          "name": "Картопля",
-          "calories": 77,
-          "proteins": 2,
-          "grams": 220
-        },
-        {
-          "name": "Кукурудза свіжа",
-          "calories": 86,
-          "proteins": 3.3,
-          "grams": 220
-        },
-        {
-          "name": "Пластівці",
-          "calories": 363.6,
-          "proteins": 9.1,
-          "grams": 66
-        },
-        {
-          "name": "Булгур",
-          "calories": 342,
-          "proteins": 7,
-          "grams": 66
-        },
-        {
-          "name": "Гречка",
-          "calories": 313,
-          "proteins": 7,
-          "grams": 66
-        },
-        {
-          "name": "Рис (нешліфований)",
-          "calories": 330,
-          "proteins": 7.5,
-          "grams": 66
-        },
-        {
-          "name": "Будь-яка крупа",
-          "calories": 330,
-          "proteins": 10,
-          "grams": 66
-        },
-        {
-          "name": "Цільнозернове борошно",
-          "calories": 320,
-          "proteins": 11,
-          "grams": 66
-        },
-        {
-          "name": "Хлібці",
-          "calories": 320,
-          "proteins": 10,
-          "grams": 94
-        },
-        {
-          "name": "Цільнозерновий хліб",
-          "calories": 250,
-          "proteins": 9,
-          "grams": 104
-        },
-        {
-          "name": "Макарони т.с.",
-          "calories": 340,
-          "proteins": 12,
-          "grams": 66
-        },
-        {
-          "name": "Лаваш",
-          "calories": 240,
-          "proteins": 8,
-          "grams": 94
-        }
-      ]
-    },
-    {
-      "name": "б",
-      "description": "Рослинні білки",
-      "targetCalories": 390,
-      "ingredients": [
-        {
-          "name": "Бобові",
-          "calories": 310,
-          "proteins": 20,
-          "grams": 114
-        },
-        {
-          "name": "Сир тофу",
-          "calories": 76.7,
-          "proteins": 8.7,
-          "grams": 450
-        },
-        {
-          "name": "Соєве м'ясо",
-          "calories": 287.5,
-          "proteins": 42.5,
-          "grams": 120
-        },
-        {
-          "name": "Соєвий протеїн (білковий порошок)",
-          "calories": 348.5,
-          "proteins": 81.8,
-          "grams": 99
-        }
-      ]
-    },
-    {
-      "name": "в",
-      "description": "Овочі",
-      "targetCalories": 120,
-      "ingredients": [
-        {
-          "name": "Овочі (квашені також і зелень)",
-          "calories": 40,
-          "proteins": 1.5,
-          "grams": 600
-        },
-        {
-          "name": "Гриби",
-          "calories": 30,
-          "proteins": 3.5,
-          "grams": 600
-        }
-      ]
-    },
-    {
-      "name": "г",
-      "description": "Жири",
-      "targetCalories": 150,
-      "ingredients": [
-        {
-          "name": "Будь-яка олія (рекомендуємо лляну)",
-          "calories": 900,
-          "proteins": 0,
-          "grams": 16
-        },
-        {
-          "name": "Авокадо",
-          "calories": 160,
-          "proteins": 2,
-          "grams": 86
-        },
-        {
-          "name": "Оливки",
-          "calories": 115,
-          "proteins": 1,
-          "grams": 114
-        },
-        {
-          "name": "Гірчиця",
-          "calories": 65,
-          "proteins": 5,
-          "grams": 42
-        }
-      ]
-    },
-    {
-      "name": "д",
-      "description": "Рослинне молоко",
-      "targetCalories": 50,
-      "ingredients": [
-        {
-          "name": "Рослинне молоко",
-          "calories": 65,
-          "proteins": 2,
-          "grams": 100
-        }
-      ]
-    },
-    {
-      "name": "е",
-      "description": "Фрукти та ягоди",
-      "targetCalories": 200,
-      "ingredients": [
-        {
-          "name": "Фрукти та ягоди",
-          "calories": 50,
-          "proteins": 1,
-          "grams": 270
-        },
-        {
-          "name": "Банани, виноград, хурма, манго",
-          "calories": 218.8,
-          "proteins": 2.5,
-          "grams": 80
-        }
-      ]
-    },
-    {
-      "name": "є",
-      "description": "Горіхи та насіння",
-      "targetCalories": 70,
-      "ingredients": [
-        {
-          "name": "Будь-які горіхи (рекомендуємо грецькі)",
-          "calories": 600,
-          "proteins": 20,
-          "grams": 12
-        },
-        {
-          "name": "Насіння",
-          "calories": 583.3,
-          "proteins": 25,
-          "grams": 12
-        }
-      ]
-    },
-    {
-      "name": "ж",
-      "description": "Вільний вибір",
-      "targetCalories": 475,
-      "ingredients": [
-        {
-          "name": "Будь-що (солодощі, снеки, ковбаса тощо) / фрукти / банани",
-          "calories": 450,
-          "proteins": 5,
-          "grams": 95
-        }
-      ]
-    }
-  ]
+	"name": "Веган 60-70 кг",
+	"description": "Веганський шаблон для жінок 60-70 кг. Калорійність раціону: ~1700 ккал (Б 115, Ж 43, В 175)",
+	"categories": [
+		{
+			"name": "а",
+			"description": "Вуглеводи",
+			"targetCalories": 240,
+			"ingredients": [
+				{
+					"name": "Картопля",
+					"calories": 77,
+					"proteins": 2,
+					"grams": 220
+				},
+				{
+					"name": "Кукурудза свіжа",
+					"calories": 86,
+					"proteins": 3.3,
+					"grams": 220
+				},
+				{
+					"name": "Пластівці",
+					"calories": 363.6,
+					"proteins": 9.1,
+					"grams": 66
+				},
+				{
+					"name": "Булгур",
+					"calories": 342,
+					"proteins": 7,
+					"grams": 66
+				},
+				{
+					"name": "Гречка",
+					"calories": 313,
+					"proteins": 7,
+					"grams": 66
+				},
+				{
+					"name": "Рис (нешліфований)",
+					"calories": 330,
+					"proteins": 7.5,
+					"grams": 66
+				},
+				{
+					"name": "Будь-яка крупа",
+					"calories": 330,
+					"proteins": 10,
+					"grams": 66
+				},
+				{
+					"name": "Цільнозернове борошно",
+					"calories": 320,
+					"proteins": 11,
+					"grams": 66
+				},
+				{
+					"name": "Хлібці",
+					"calories": 320,
+					"proteins": 10,
+					"grams": 94
+				},
+				{
+					"name": "Цільнозерновий хліб",
+					"calories": 250,
+					"proteins": 9,
+					"grams": 104
+				},
+				{
+					"name": "Макарони т.с.",
+					"calories": 340,
+					"proteins": 12,
+					"grams": 66
+				},
+				{
+					"name": "Лаваш",
+					"calories": 240,
+					"proteins": 8,
+					"grams": 94
+				}
+			]
+		},
+		{
+			"name": "б",
+			"description": "Рослинні білки",
+			"targetCalories": 390,
+			"ingredients": [
+				{
+					"name": "Бобові",
+					"calories": 310,
+					"proteins": 20,
+					"grams": 114
+				},
+				{
+					"name": "Сир тофу",
+					"calories": 76.7,
+					"proteins": 8.7,
+					"grams": 450
+				},
+				{
+					"name": "Соєве м'ясо",
+					"calories": 287.5,
+					"proteins": 42.5,
+					"grams": 120
+				},
+				{
+					"name": "Соєвий протеїн (білковий порошок)",
+					"calories": 348.5,
+					"proteins": 81.8,
+					"grams": 99
+				}
+			]
+		},
+		{
+			"name": "в",
+			"description": "Овочі",
+			"targetCalories": 120,
+			"ingredients": [
+				{
+					"name": "Овочі (квашені також і зелень)",
+					"calories": 40,
+					"proteins": 1.5,
+					"grams": 600
+				},
+				{
+					"name": "Гриби",
+					"calories": 30,
+					"proteins": 3.5,
+					"grams": 600
+				}
+			]
+		},
+		{
+			"name": "г",
+			"description": "Жири",
+			"targetCalories": 150,
+			"ingredients": [
+				{
+					"name": "Будь-яка олія (рекомендуємо лляну)",
+					"calories": 900,
+					"proteins": 0,
+					"grams": 16
+				},
+				{
+					"name": "Авокадо",
+					"calories": 160,
+					"proteins": 2,
+					"grams": 86
+				},
+				{
+					"name": "Оливки",
+					"calories": 115,
+					"proteins": 1,
+					"grams": 114
+				},
+				{
+					"name": "Гірчиця",
+					"calories": 65,
+					"proteins": 5,
+					"grams": 42
+				}
+			]
+		},
+		{
+			"name": "д",
+			"description": "Рослинне молоко",
+			"targetCalories": 50,
+			"ingredients": [
+				{
+					"name": "Рослинне молоко",
+					"calories": 65,
+					"proteins": 2,
+					"grams": 100
+				}
+			]
+		},
+		{
+			"name": "е",
+			"description": "Фрукти та ягоди",
+			"targetCalories": 200,
+			"ingredients": [
+				{
+					"name": "Фрукти та ягоди",
+					"calories": 50,
+					"proteins": 1,
+					"grams": 270
+				},
+				{
+					"name": "Банани, виноград, хурма, манго",
+					"calories": 218.8,
+					"proteins": 2.5,
+					"grams": 80
+				}
+			]
+		},
+		{
+			"name": "є",
+			"description": "Горіхи та насіння",
+			"targetCalories": 70,
+			"ingredients": [
+				{
+					"name": "Будь-які горіхи (рекомендуємо грецькі)",
+					"calories": 600,
+					"proteins": 20,
+					"grams": 12
+				},
+				{
+					"name": "Насіння",
+					"calories": 583.3,
+					"proteins": 25,
+					"grams": 12
+				}
+			]
+		},
+		{
+			"name": "ж",
+			"description": "Вільний вибір",
+			"targetCalories": 475,
+			"ingredients": [
+				{
+					"name": "Будь-що (солодощі, снеки, ковбаса тощо) / фрукти / банани",
+					"calories": 450,
+					"proteins": 5,
+					"grams": 95
+				}
+			]
+		}
+	]
 }
