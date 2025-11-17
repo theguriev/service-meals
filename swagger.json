@@ -1,3010 +1,2878 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Meals Service API",
-    "version": "1.0.0",
-    "description": "API for managing meals."
-  },
-  "servers": [
-    {
-      "url": "/api",
-      "description": "Main API server"
-    }
-  ],
-  "components": {
-    "schemas": {
-      "SuccessMessage": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Operation successful"
-          }
-        }
-      },
-      "CategoryWithIngredients": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the category (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000001",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Identifier of the user who owns the category",
-            "example": "605c72ef29592b001c000001",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "templateId": {
-            "type": "string",
-            "description": "Identifier of the template this category belongs to",
-            "example": "605c72ef29592b001c000000",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the category",
-            "example": "Breakfast"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the category was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the category was last updated",
-            "readOnly": true
-          },
-          "ingredients": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Ingredient"
-            }
-          }
-        },
-        "required": [
-          "_id",
-          "userId",
-          "name",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "CategoryWithObviousIngredients": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the category (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000001",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Identifier of the user who owns the category",
-            "example": "605c72ef29592b001c000001",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "templateId": {
-            "type": "string",
-            "description": "Identifier of the template this category belongs to",
-            "example": "605c72ef29592b001c000000",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the category",
-            "example": "Breakfast"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the category was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the category was last updated",
-            "readOnly": true
-          },
-          "ingredients": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Ingredient"
-            }
-          }
-        },
-        "required": [
-          "_id",
-          "userId",
-          "name",
-          "createdAt",
-          "updatedAt",
-          "ingredients"
-        ]
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Error message detailing what went wrong",
-            "example": "Invalid input"
-          },
-          "statusCode": {
-            "type": "integer",
-            "description": "HTTP status code",
-            "example": 400
-          },
-          "statusMessage": {
-            "type": "string",
-            "description": "HTTP status message",
-            "example": "Bad Request"
-          },
-          "data": {
-            "type": "object",
-            "description": "Additional error data, often contains validation issues"
-          }
-        }
-      },
-      "Category": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the category (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000001"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Identifier of the user who owns the category",
-            "example": "605c72ef29592b001c000001",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "templateId": {
-            "type": "string",
-            "description": "Identifier of the template this category belongs to",
-            "example": "605c72ef29592b001c000000",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the category",
-            "example": "Breakfast"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the category was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the category was last updated",
-            "readOnly": true
-          }
-        },
-        "required": [
-          "_id",
-          "userId",
-          "name",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "CategoryInput": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the category",
-            "minLength": 1,
-            "example": "Lunch"
-          },
-          "templateId": {
-            "type": "string",
-            "description": "Identifier of the template this category belongs to",
-            "example": "605c72ef29592b001c000000",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          }
-        },
-        "required": [
-          "name"
-        ]
-      },
-      "CategoryUpdateInput": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the category (optional for update)",
-            "minLength": 1,
-            "example": "Quick Lunch"
-          },
-          "templateId": {
-            "type": "string",
-            "description": "Identifier of the template this category belongs to (optional for update)",
-            "example": "605c72ef29592b001c000000",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          }
-        }
-      },
-      "CategoryCreationResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Item added successfully"
-          },
-          "data": {
-            "$ref": "#/components/schemas/Category"
-          }
-        }
-      },
-      "CategoryUpdateResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Item updated successfully"
-          },
-          "category": {
-            "$ref": "#/components/schemas/Category"
-          }
-        }
-      },
-      "Ingredient": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the ingredient (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000002"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Identifier of the user who owns the ingredient",
-            "example": "user123"
-          },
-          "categoryId": {
-            "type": "string",
-            "description": "Identifier of the category this ingredient belongs to",
-            "example": "605c72ef29592b001c000001"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the ingredient",
-            "example": "Chicken Breast"
-          },
-          "calories": {
-            "type": "number",
-            "format": "float",
-            "description": "Calories per 100g",
-            "example": 165
-          },
-          "proteins": {
-            "type": "number",
-            "format": "float",
-            "description": "Proteins per 100g",
-            "example": 31
-          },
-          "grams": {
-            "type": "number",
-            "format": "float",
-            "description": "Grams of the ingredient",
-            "example": 100
-          },
-          "isAlcohol": {
-            "type": "boolean",
-            "description": "Whether the ingredient is alcoholic",
-            "default": false
-          },
-          "unit": {
-            "type": "string",
-            "description": "Unit of measurement for the ingredient",
-            "enum": ["grams", "pieces"],
-            "default": "grams"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the ingredient was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the ingredient was last updated",
-            "readOnly": true
-          }
-        },
-        "required": [
-          "_id",
-          "userId",
-          "categoryId",
-          "name",
-          "calories",
-          "proteins",
-          "grams",
-          "isAlcohol",
-          "unit",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "IngredientWithCategory": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the ingredient (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000002"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Identifier of the user who owns the ingredient",
-            "example": "user123"
-          },
-          "categoryId": {
-            "type": "string",
-            "description": "Identifier of the category this ingredient belongs to",
-            "example": "605c72ef29592b001c000001"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the ingredient",
-            "example": "Chicken Breast"
-          },
-          "calories": {
-            "type": "number",
-            "format": "float",
-            "description": "Calories per 100g",
-            "example": 165
-          },
-          "proteins": {
-            "type": "number",
-            "format": "float",
-            "description": "Proteins per 100g",
-            "example": 31
-          },
-          "grams": {
-            "type": "number",
-            "format": "float",
-            "description": "Grams of the ingredient",
-            "example": 100
-          },
-          "isAlcohol": {
-            "type": "boolean",
-            "description": "Whether the ingredient is alcoholic",
-            "default": false
-          },
-          "unit": {
-            "type": "string",
-            "description": "Unit of measurement for the ingredient",
-            "enum": ["grams", "pieces"],
-            "default": "grams"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the ingredient was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the ingredient was last updated",
-            "readOnly": true
-          },
-          "category": {
-            "$ref": "#/components/schemas/Category"
-          }
-        },
-        "required": [
-          "_id",
-          "userId",
-          "categoryId",
-          "name",
-          "calories",
-          "proteins",
-          "grams",
-          "isAlcohol",
-          "unit",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "IngredientInput": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the ingredient",
-            "minLength": 1,
-            "example": "Raw Salmon"
-          },
-          "calories": {
-            "type": "number",
-            "format": "float",
-            "description": "Calories per 100 grams",
-            "minimum": 0,
-            "example": 208
-          },
-          "proteins": {
-            "type": "number",
-            "format": "float",
-            "description": "Proteins per 100 grams",
-            "minimum": 0,
-            "example": 20
-          },
-          "grams": {
-            "type": "number",
-            "format": "float",
-            "description": "Weight in grams",
-            "minimum": 0,
-            "example": 100
-          },
-          "isAlcohol": {
-            "type": "boolean",
-            "description": "Whether the ingredient is alcoholic",
-            "default": false
-          },
-          "unit": {
-            "type": "string",
-            "description": "Unit of measurement for the ingredient",
-            "enum": ["grams", "pieces"],
-            "default": "grams"
-          },
-          "categoryId": {
-            "type": "string",
-            "description": "Identifier of the category this ingredient belongs to",
-            "example": "605c72ef29592b001c000000",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          }
-        },
-        "required": [
-          "name",
-          "calories",
-          "proteins",
-          "grams",
-          "categoryId"
-        ]
-      },
-      "IngredientUpdateInput": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the ingredient (optional for update)",
-            "minLength": 1,
-            "example": "Cooked Salmon"
-          },
-          "calories": {
-            "type": "number",
-            "format": "float",
-            "description": "Calories per 100 grams (optional for update)",
-            "minimum": 0,
-            "example": 220
-          },
-          "proteins": {
-            "type": "number",
-            "format": "float",
-            "description": "Proteins per 100 grams (optional for update)",
-            "minimum": 0,
-            "example": 22
-          },
-          "grams": {
-            "type": "number",
-            "format": "float",
-            "description": "Weight in grams (optional for update)",
-            "minimum": 0,
-            "example": 120
-          },
-          "isAlcohol": {
-            "type": "boolean",
-            "description": "Whether the ingredient is alcoholic",
-            "example": false
-          },
-          "unit": {
-            "type": "string",
-            "description": "Unit of measurement for the ingredient",
-            "enum": ["grams", "pieces"],
-            "default": "grams"
-          },
-          "categoryId": {
-            "type": "string",
-            "description": "Identifier of the category this ingredient belongs to (optional for update)",
-            "example": "605c72ef29592b001c000000",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          }
-        }
-      },
-      "IngredientCreationResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Item added successfully"
-          },
-          "data": {
-            "$ref": "#/components/schemas/Ingredient"
-          }
-        }
-      },
-      "IngredientUpdateResponse": {
-        "type": "object",
-        "properties": {
-          "ingredient": {
-            "$ref": "#/components/schemas/Ingredient"
-          }
-        }
-      },
-      "MongoDeleteResult": {
-        "type": "object",
-        "properties": {
-          "acknowledged": {
-            "type": "boolean",
-            "example": true
-          },
-          "deletedCount": {
-            "type": "integer",
-            "example": 1
-          }
-        },
-        "required": [
-          "acknowledged",
-          "deletedCount"
-        ]
-      },
-      "Set": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the set (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000000"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Identifier of the user who owns the set",
-            "example": "user123"
-          },
-          "ingredients": {
-            "type": "array",
-            "description": "Array of ingredient objects in the set",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "description": "Ingredient id",
-                  "example": "ingr1"
-                },
-                "value": {
-                  "type": "number",
-                  "description": "Ingredient value",
-                  "example": 10
-                },
-                "additionalInfo": {
-                  "type": "string",
-                  "description": "Additional information about the ingredient",
-                  "example": "spicy"
-                }
-              },
-              "required": [
-                "id",
-                "value"
-              ]
-            }
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the set was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the set was last updated",
-            "readOnly": true
-          }
-        },
-        "required": [
-          "_id",
-          "userId",
-          "ingredients",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "SetInput": {
-        "type": "object",
-        "properties": {
-          "ingredients": {
-            "type": "array",
-            "description": "Array of ingredient objects in the set",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "description": "Ingredient id",
-                  "example": "ingr1"
-                },
-                "value": {
-                  "type": "number",
-                  "description": "Ingredient value",
-                  "example": 10
-                },
-                "additionalInfo": {
-                  "type": "string",
-                  "description": "Additional information about the ingredient",
-                  "example": "spicy"
-                }
-              },
-              "required": [
-                "id",
-                "value"
-              ]
-            }
-          }
-        },
-        "required": [
-          "ingredients"
-        ]
-      },
-      "SetUpdateInput": {
-        "type": "object",
-        "properties": {
-          "ingredients": {
-            "type": "array",
-            "description": "Array of ingredient objects in the set (optional for update)",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "description": "Ingredient id",
-                  "example": "ingr1"
-                },
-                "value": {
-                  "type": "number",
-                  "description": "Ingredient value",
-                  "example": 10
-                },
-                "additionalInfo": {
-                  "type": "string",
-                  "description": "Additional information about the ingredient",
-                  "example": "spicy"
-                }
-              },
-              "required": [
-                "id",
-                "value"
-              ]
-            }
-          }
-        }
-      },
-      "SetCreationResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Set added successfully"
-          },
-          "data": {
-            "$ref": "#/components/schemas/Set"
-          }
-        }
-      },
-      "SetUpdateResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Set updated successfully"
-          },
-          "data": {
-            "$ref": "#/components/schemas/Set"
-          }
-        }
-      },
-      "SetResponse": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the set (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000000",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Identifier of the user who owns the set",
-            "example": "605c72ef29592b001c000000",
-            "pattern": "^[0-9a-fA-F]{24}$"
-          },
-          "ingredients": {
-            "type": "array",
-            "description": "Array of ingredient objects in the set",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "description": "Ingredient id",
-                  "example": "605c72ef29592b001c000000",
-                  "pattern": "^[0-9a-fA-F]{24}$"
-                },
-                "value": {
-                  "type": "number",
-                  "description": "Ingredient value",
-                  "example": 10
-                },
-                "additionalInfo": {
-                  "type": "string",
-                  "description": "Additional information about the ingredient",
-                  "example": "spicy"
-                },
-                "name": {
-                  "type": "string",
-                  "description": "Name of the ingredient",
-                  "example": "Salt"
-                },
-                "categoryId": {
-                  "type": "string",
-                  "description": "Category id of the ingredient",
-                  "example": "605c72ef29592b001c000000",
-                  "pattern": "^[0-9a-fA-F]{24}$"
-                },
-                "categoryName": {
-                  "type": "string",
-                  "description": "Category name of the ingredient",
-                  "example": "Spices"
-                },
-                "calories": {
-                  "type": "number",
-                  "description": "Calories per 100 grams of the ingredient",
-                  "example": 100
-                },
-                "proteins": {
-                  "type": "number",
-                  "description": "Proteins per 100 grams of the ingredient",
-                  "example": 10
-                },
-                "grams": {
-                  "type": "number",
-                  "description": "Total grams of the ingredient",
-                  "example": 10
-                }
-              },
-              "required": [
-                "id",
-                "value"
-              ]
-            }
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the set was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the set was last updated",
-            "readOnly": true
-          }
-        },
-        "required": [
-          "_id",
-          "userId",
-          "ingredients",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "SetDeleteResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Set deleted successfully"
-          }
-        }
-      },
-      "Template": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the template (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000000"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the template",
-            "example": "Daily Meal Template"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the template was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the template was last updated",
-            "readOnly": true
-          }
-        },
-        "required": [
-          "_id",
-          "name",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "TemplateWithData": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the template (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000000"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the template",
-            "readOnly": true,
-            "example": "Daily Meal Template"
-          },
-          "categories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CategoryWithObviousIngredients"
-            }
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the template was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the template was last updated",
-            "readOnly": true
-          }
-        },
-        "required": [
-          "_id",
-          "name",
-          "createdAt",
-          "updatedAt",
-          "categories"
-        ]
-      },
-      "TemplateInput": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the template",
-            "minLength": 1,
-            "example": "Weekly Meal Plan"
-          }
-        },
-        "required": [
-          "name"
-        ]
-      },
-      "TemplateUpdateInput": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the template (optional for update)",
-            "minLength": 1,
-            "example": "Updated Weekly Meal Plan"
-          }
-        }
-      },
-      "TemplateCreationResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Item added successfully"
-          },
-          "data": {
-            "$ref": "#/components/schemas/Template"
-          }
-        }
-      },
-      "TemplateUpdateResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Item updated successfully"
-          },
-          "data": {
-            "$ref": "#/components/schemas/Template"
-          }
-        }
-      },
-      "TemplateDeleteResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Template and all related data deleted successfully"
-          },
-          "deletedTemplates": {
-            "$ref": "#/components/schemas/MongoDeleteResult"
-          },
-          "deletedCategories": {
-            "$ref": "#/components/schemas/MongoDeleteResult"
-          },
-          "deletedIngredients": {
-            "$ref": "#/components/schemas/MongoDeleteResult"
-          }
-        },
-        "required": [
-          "message",
-          "deletedTemplates",
-          "deletedCategories",
-          "deletedIngredients"
-        ]
-      },
-      "TemplateApplyInput": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "description": "ID of the user to apply the template to",
-            "minLength": 1,
-            "example": "user123"
-          }
-        },
-        "required": [
-          "userId"
-        ]
-      },
-      "TemplateApplyResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Template applied successfully"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "templateId": {
-                "type": "string",
-                "example": "605c72ef29592b001c000000"
-              },
-              "userId": {
-                "type": "string",
-                "example": "user123"
-              },
-              "applied": {
-                "type": "object",
-                "properties": {
-                  "categories": {
-                    "type": "integer",
-                    "example": 4
-                  },
-                  "ingredients": {
-                    "type": "integer",
-                    "example": 12
-                  }
-                }
-              },
-              "createdCategories": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Category"
-                }
-              },
-              "summary": {
-                "type": "object",
-                "properties": {
-                  "templateName": {
-                    "type": "string",
-                    "example": "Daily Meal Template"
-                  },
-                  "appliedAt": {
-                    "type": "string",
-                    "format": "date-time"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "TemplateRemoveInput": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "description": "ID of the user to remove the applied template from",
-            "minLength": 1,
-            "example": "user123"
-          }
-        },
-        "required": [
-          "userId"
-        ]
-      },
-      "TemplateRemoveResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Applied template removed successfully"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "templateId": {
-                "type": "string",
-                "description": "ID of the template that was removed",
-                "example": "605c72ef29592b001c000000"
-              },
-              "userId": {
-                "type": "string",
-                "example": "user123"
-              },
-              "removed": {
-                "type": "object",
-                "properties": {
-                  "categories": {
-                    "type": "integer",
-                    "example": 5
-                  },
-                  "ingredients": {
-                    "type": "integer",
-                    "example": 20
-                  }
-                }
-              },
-              "summary": {
-                "type": "object",
-                "properties": {
-                  "templateName": {
-                    "type": "string",
-                    "example": "Daily Meal Template"
-                  },
-                  "removedAt": {
-                    "type": "string",
-                    "format": "date-time"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "Note": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Unique identifier for the note (MongoDB ObjectId)",
-            "readOnly": true,
-            "example": "605c72ef29592b001c000000"
-          },
-          "userId": {
-            "type": "string",
-            "description": "Identifier of the user who owns the note",
-            "example": "user123"
-          },
-          "content": {
-            "type": "string",
-            "description": "Content of the note",
-            "example": "This is my note content"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the note was created",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp of when the note was last updated",
-            "readOnly": true
-          }
-        },
-        "required": [
-          "_id",
-          "userId",
-          "content",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "NoteInput": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "description": "Content of the note",
-            "minLength": 1,
-            "example": "This is my note content"
-          }
-        },
-        "required": [
-          "content"
-        ]
-      },
-      "NoteResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Note added successfully"
-          },
-          "data": {
-            "$ref": "#/components/schemas/Note"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "cookieAuth": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "accessToken"
-      }
-    }
-  },
-  "security": [
-    {
-      "cookieAuth": []
-    }
-  ],
-  "paths": {
-    "/sets": {
-      "post": {
-        "summary": "Create a new set",
-        "tags": [
-          "Sets"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Set created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SetCreationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error or invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "Get a list of sets",
-        "tags": [
-          "Sets"
-        ],
-        "parameters": [
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Number of sets to skip for pagination",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Maximum number of sets to return",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "startDate",
-            "in": "query",
-            "description": "Filter sets created after this date (ISO 8601 format)",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          {
-            "name": "endDate",
-            "in": "query",
-            "description": "Filter sets created before this date (ISO 8601 format)",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of sets retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SetResponse"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error or invalid query parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sets/{id}": {
-      "get": {
-        "summary": "Get a specific set by ID",
-        "tags": [
-          "Sets"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the set to retrieve",
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Set retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SetResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid set ID format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Set not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update an existing set",
-        "tags": [
-          "Sets"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the set to update",
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetUpdateInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Set updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SetUpdateResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid set ID format or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Set not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a set",
-        "tags": [
-          "Sets"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the set to delete",
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Set deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SetDeleteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid set ID format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Set not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/categories": {
-      "get": {
-        "summary": "Get a list of all categories",
-        "tags": [
-          "Categories"
-        ],
-        "parameters": [
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Number of categories to skip for pagination",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Maximum number of categories to return",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "all",
-            "in": "query",
-            "description": "Whether to retrieve all categories or only those associated with the user",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
-          },
-          {
-            "name": "showInTemplate",
-            "in": "query",
-            "description": "Whether to show categories in the template",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of all categories",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Category"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid query parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a new category",
-        "tags": [
-          "Categories"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CategoryInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Category created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryCreationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error or invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Category not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/categories/{id}": {
-      "get": {
-        "summary": "Get a category by ID",
-        "tags": [
-          "Categories"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the category to retrieve",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000001",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            }
-          },
-          {
-            "name": "withIngredients",
-            "in": "query",
-            "required": false,
-            "description": "Include ingredients in the response",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Category retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryWithIngredients"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Category not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update an existing category",
-        "tags": [
-          "Categories"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the category to update",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000001"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CategoryUpdateInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Category updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryUpdateResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "User is not authorized to update this category",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Category not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a category and its associated ingredients",
-        "tags": [
-          "Categories"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the category to delete",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000001"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Category deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessMessage"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "User is not authorized to delete this category",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Category not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ingredients": {
-      "get": {
-        "summary": "Get a list of all ingredients for the authenticated user",
-        "tags": [
-          "Ingredients"
-        ],
-        "parameters": [
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Number of ingredients to skip for pagination",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Maximum number of ingredients to return",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "all",
-            "in": "query",
-            "description": "Whether to include all ingredients or only those for the authenticated user",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
-          },
-          {
-            "name": "withCategories",
-            "in": "query",
-            "description": "Whether to include categories for each ingredient",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
-          },
-          {
-            "name": "showInTemplate",
-            "in": "query",
-            "description": "Whether to include ingredients for the template",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of ingredients for the user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/IngredientWithCategory"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid query parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a new ingredient for a specific category",
-        "tags": [
-          "Ingredients"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IngredientInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Ingredient created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IngredientCreationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error, invalid input, or invalid category ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "User is not authorized to create ingredient",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Category not found or access denied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/categories/{id}/ingredients": {
-      "get": {
-        "summary": "Get a list of ingredients for a specific category",
-        "tags": [
-          "Ingredients"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the category to retrieve ingredients for",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000001"
-            }
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Number of ingredients to skip for pagination",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Maximum number of ingredients to return",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of ingredients for the specified category",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Ingredient"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid category ID or query parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Category not found or access denied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ingredients/{id}": {
-      "get": {
-        "summary": "Retrieve a single ingredient by ID",
-        "tags": [
-          "Ingredients"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the ingredient to retrieve",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000002"
-            }
-          },
-          {
-            "name": "withCategory",
-            "in": "query",
-            "description": "Include related category data",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Ingredient retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IngredientWithCategory"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Ingredient not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update an existing ingredient",
-        "tags": [
-          "Ingredients"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the ingredient to update",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000002"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IngredientUpdateInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Ingredient updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IngredientUpdateResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "User is not authorized to update this ingredient",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Ingredient not found, or access denied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an ingredient",
-        "tags": [
-          "Ingredients"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the ingredient to delete",
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000002"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Ingredient deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessMessage"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "User is not authorized to delete this ingredient",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Ingredient not found, or access denied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/templates": {
-      "post": {
-        "summary": "Create a new template",
-        "tags": [
-          "Templates"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TemplateInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Template created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TemplateCreationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error or invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Admin access required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "Get a list of templates",
-        "tags": [
-          "Templates"
-        ],
-        "parameters": [
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Number of templates to skip for pagination",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Maximum number of templates to return",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of templates",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Template"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid query parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Admin access required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/templates/default": {
-      "get": {
-        "summary": "Get the default template",
-        "tags": [
-          "Templates"
-        ],
-        "responses": {
-          "200": {
-            "description": "The requested template",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TemplateWithData"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Admin access required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/templates/{id}": {
-      "get": {
-        "summary": "Get a specific template by ID",
-        "tags": [
-          "Templates"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the template to retrieve",
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$",
-              "example": "605c72ef29592b001c000000"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The requested template",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TemplateWithData"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid template ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Admin access required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Template not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update an existing template",
-        "tags": [
-          "Templates"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the template to update",
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$",
-              "example": "605c72ef29592b001c000000"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TemplateUpdateInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Template updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TemplateUpdateResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Admin access required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Template not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a template and all related data",
-        "description": "Deletes a template and cascades deletion to all related categories, and ingredients",
-        "tags": [
-          "Templates"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the template to delete",
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$",
-              "example": "605c72ef29592b001c000000"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Template and all related data deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TemplateDeleteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Admin access required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Template not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/templates/{id}/apply": {
-      "post": {
-        "summary": "Apply a template to a specific user",
-        "description": "Creates a copy of all template data (categories, ingredients) and assigns it to the specified user",
-        "tags": [
-          "Templates"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID of the template to apply",
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$",
-              "example": "605c72ef29592b001c000000"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TemplateApplyInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Template applied successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TemplateApplyResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid template ID or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - Admin access required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Template not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to apply template",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/templates/remove": {
-      "delete": {
-        "summary": "Remove applied template from user",
-        "description": "Removes the template that was applied to the specified user by finding matching categories and deleting them along with their ingredients",
-        "tags": [
-          "Templates"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TemplateRemoveInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Applied template removed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TemplateRemoveResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - remove-templates permission required",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to remove applied template",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notes": {
-      "get": {
-        "summary": "Retrieve notes with optional filtering",
-        "tags": [
-          "Notes"
-        ],
-        "parameters": [
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Number of notes to skip for pagination",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 0,
-              "default": 0,
-              "example": 0
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Maximum number of notes to return",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 10,
-              "example": 10
-            }
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "Search term to filter notes by content",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "example": "content"
-            }
-          },
-          {
-            "name": "date",
-            "in": "query",
-            "description": "Filter notes by specific date (YYYY-MM-DD format). If not provided, defaults to today",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "date",
-              "example": "2025-07-29"
-            }
-          },
-          {
-            "name": "includeAllDates",
-            "in": "query",
-            "description": "Include notes from all dates (overrides date filtering)",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false,
-              "example": false
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of notes",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Note"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid query parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a new note",
-        "tags": [
-          "Notes"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NoteInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Note created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NoteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/notes/{id}": {
-      "get": {
-        "summary": "Get a specific note",
-        "tags": [
-          "Notes"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "The unique identifier of the note",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000000"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Note details",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Note"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Note not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update a note",
-        "tags": [
-          "Notes"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "The unique identifier of the note",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000000"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NoteInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Note updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NoteResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Note not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a note",
-        "tags": [
-          "Notes"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "The unique identifier of the note",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "605c72ef29592b001c000000"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Note deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NoteResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Note not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+	"openapi": "3.1.0",
+	"info": {
+		"title": "Meals Service API",
+		"version": "1.0.0",
+		"description": "API for managing meals."
+	},
+	"servers": [
+		{
+			"url": "/api",
+			"description": "Main API server"
+		}
+	],
+	"components": {
+		"schemas": {
+			"SuccessMessage": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Operation successful"
+					}
+				}
+			},
+			"CategoryWithIngredients": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the category (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000001",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"userId": {
+						"type": "string",
+						"description": "Identifier of the user who owns the category",
+						"example": "605c72ef29592b001c000001",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"templateId": {
+						"type": "string",
+						"description": "Identifier of the template this category belongs to",
+						"example": "605c72ef29592b001c000000",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"name": {
+						"type": "string",
+						"description": "Name of the category",
+						"example": "Breakfast"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the category was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the category was last updated",
+						"readOnly": true
+					},
+					"ingredients": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Ingredient"
+						}
+					}
+				},
+				"required": ["_id", "userId", "name", "createdAt", "updatedAt"]
+			},
+			"CategoryWithObviousIngredients": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the category (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000001",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"userId": {
+						"type": "string",
+						"description": "Identifier of the user who owns the category",
+						"example": "605c72ef29592b001c000001",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"templateId": {
+						"type": "string",
+						"description": "Identifier of the template this category belongs to",
+						"example": "605c72ef29592b001c000000",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"name": {
+						"type": "string",
+						"description": "Name of the category",
+						"example": "Breakfast"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the category was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the category was last updated",
+						"readOnly": true
+					},
+					"ingredients": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Ingredient"
+						}
+					}
+				},
+				"required": [
+					"_id",
+					"userId",
+					"name",
+					"createdAt",
+					"updatedAt",
+					"ingredients"
+				]
+			},
+			"ErrorResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"description": "Error message detailing what went wrong",
+						"example": "Invalid input"
+					},
+					"statusCode": {
+						"type": "integer",
+						"description": "HTTP status code",
+						"example": 400
+					},
+					"statusMessage": {
+						"type": "string",
+						"description": "HTTP status message",
+						"example": "Bad Request"
+					},
+					"data": {
+						"type": "object",
+						"description": "Additional error data, often contains validation issues"
+					}
+				}
+			},
+			"Category": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the category (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000001"
+					},
+					"userId": {
+						"type": "string",
+						"description": "Identifier of the user who owns the category",
+						"example": "605c72ef29592b001c000001",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"templateId": {
+						"type": "string",
+						"description": "Identifier of the template this category belongs to",
+						"example": "605c72ef29592b001c000000",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"name": {
+						"type": "string",
+						"description": "Name of the category",
+						"example": "Breakfast"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the category was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the category was last updated",
+						"readOnly": true
+					}
+				},
+				"required": ["_id", "userId", "name", "createdAt", "updatedAt"]
+			},
+			"CategoryInput": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Name of the category",
+						"minLength": 1,
+						"example": "Lunch"
+					},
+					"templateId": {
+						"type": "string",
+						"description": "Identifier of the template this category belongs to",
+						"example": "605c72ef29592b001c000000",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					}
+				},
+				"required": ["name"]
+			},
+			"CategoryUpdateInput": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Name of the category (optional for update)",
+						"minLength": 1,
+						"example": "Quick Lunch"
+					},
+					"templateId": {
+						"type": "string",
+						"description": "Identifier of the template this category belongs to (optional for update)",
+						"example": "605c72ef29592b001c000000",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					}
+				}
+			},
+			"CategoryCreationResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Item added successfully"
+					},
+					"data": {
+						"$ref": "#/components/schemas/Category"
+					}
+				}
+			},
+			"CategoryUpdateResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Item updated successfully"
+					},
+					"category": {
+						"$ref": "#/components/schemas/Category"
+					}
+				}
+			},
+			"Ingredient": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the ingredient (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000002"
+					},
+					"userId": {
+						"type": "string",
+						"description": "Identifier of the user who owns the ingredient",
+						"example": "user123"
+					},
+					"categoryId": {
+						"type": "string",
+						"description": "Identifier of the category this ingredient belongs to",
+						"example": "605c72ef29592b001c000001"
+					},
+					"name": {
+						"type": "string",
+						"description": "Name of the ingredient",
+						"example": "Chicken Breast"
+					},
+					"calories": {
+						"type": "number",
+						"format": "float",
+						"description": "Calories per 100g",
+						"example": 165
+					},
+					"proteins": {
+						"type": "number",
+						"format": "float",
+						"description": "Proteins per 100g",
+						"example": 31
+					},
+					"grams": {
+						"type": "number",
+						"format": "float",
+						"description": "Grams of the ingredient",
+						"example": 100
+					},
+					"isAlcohol": {
+						"type": "boolean",
+						"description": "Whether the ingredient is alcoholic",
+						"default": false
+					},
+					"unit": {
+						"type": "string",
+						"description": "Unit of measurement for the ingredient",
+						"enum": ["grams", "pieces"],
+						"default": "grams"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the ingredient was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the ingredient was last updated",
+						"readOnly": true
+					}
+				},
+				"required": [
+					"_id",
+					"userId",
+					"categoryId",
+					"name",
+					"calories",
+					"proteins",
+					"grams",
+					"isAlcohol",
+					"unit",
+					"createdAt",
+					"updatedAt"
+				]
+			},
+			"IngredientWithCategory": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the ingredient (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000002"
+					},
+					"userId": {
+						"type": "string",
+						"description": "Identifier of the user who owns the ingredient",
+						"example": "user123"
+					},
+					"categoryId": {
+						"type": "string",
+						"description": "Identifier of the category this ingredient belongs to",
+						"example": "605c72ef29592b001c000001"
+					},
+					"name": {
+						"type": "string",
+						"description": "Name of the ingredient",
+						"example": "Chicken Breast"
+					},
+					"calories": {
+						"type": "number",
+						"format": "float",
+						"description": "Calories per 100g",
+						"example": 165
+					},
+					"proteins": {
+						"type": "number",
+						"format": "float",
+						"description": "Proteins per 100g",
+						"example": 31
+					},
+					"grams": {
+						"type": "number",
+						"format": "float",
+						"description": "Grams of the ingredient",
+						"example": 100
+					},
+					"isAlcohol": {
+						"type": "boolean",
+						"description": "Whether the ingredient is alcoholic",
+						"default": false
+					},
+					"unit": {
+						"type": "string",
+						"description": "Unit of measurement for the ingredient",
+						"enum": ["grams", "pieces"],
+						"default": "grams"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the ingredient was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the ingredient was last updated",
+						"readOnly": true
+					},
+					"category": {
+						"$ref": "#/components/schemas/Category"
+					}
+				},
+				"required": [
+					"_id",
+					"userId",
+					"categoryId",
+					"name",
+					"calories",
+					"proteins",
+					"grams",
+					"isAlcohol",
+					"unit",
+					"createdAt",
+					"updatedAt"
+				]
+			},
+			"IngredientInput": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Name of the ingredient",
+						"minLength": 1,
+						"example": "Raw Salmon"
+					},
+					"calories": {
+						"type": "number",
+						"format": "float",
+						"description": "Calories per 100 grams",
+						"minimum": 0,
+						"example": 208
+					},
+					"proteins": {
+						"type": "number",
+						"format": "float",
+						"description": "Proteins per 100 grams",
+						"minimum": 0,
+						"example": 20
+					},
+					"grams": {
+						"type": "number",
+						"format": "float",
+						"description": "Weight in grams",
+						"minimum": 0,
+						"example": 100
+					},
+					"isAlcohol": {
+						"type": "boolean",
+						"description": "Whether the ingredient is alcoholic",
+						"default": false
+					},
+					"unit": {
+						"type": "string",
+						"description": "Unit of measurement for the ingredient",
+						"enum": ["grams", "pieces"],
+						"default": "grams"
+					},
+					"categoryId": {
+						"type": "string",
+						"description": "Identifier of the category this ingredient belongs to",
+						"example": "605c72ef29592b001c000000",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					}
+				},
+				"required": ["name", "calories", "proteins", "grams", "categoryId"]
+			},
+			"IngredientUpdateInput": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Name of the ingredient (optional for update)",
+						"minLength": 1,
+						"example": "Cooked Salmon"
+					},
+					"calories": {
+						"type": "number",
+						"format": "float",
+						"description": "Calories per 100 grams (optional for update)",
+						"minimum": 0,
+						"example": 220
+					},
+					"proteins": {
+						"type": "number",
+						"format": "float",
+						"description": "Proteins per 100 grams (optional for update)",
+						"minimum": 0,
+						"example": 22
+					},
+					"grams": {
+						"type": "number",
+						"format": "float",
+						"description": "Weight in grams (optional for update)",
+						"minimum": 0,
+						"example": 120
+					},
+					"isAlcohol": {
+						"type": "boolean",
+						"description": "Whether the ingredient is alcoholic",
+						"example": false
+					},
+					"unit": {
+						"type": "string",
+						"description": "Unit of measurement for the ingredient",
+						"enum": ["grams", "pieces"],
+						"default": "grams"
+					},
+					"categoryId": {
+						"type": "string",
+						"description": "Identifier of the category this ingredient belongs to (optional for update)",
+						"example": "605c72ef29592b001c000000",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					}
+				}
+			},
+			"IngredientCreationResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Item added successfully"
+					},
+					"data": {
+						"$ref": "#/components/schemas/Ingredient"
+					}
+				}
+			},
+			"IngredientUpdateResponse": {
+				"type": "object",
+				"properties": {
+					"ingredient": {
+						"$ref": "#/components/schemas/Ingredient"
+					}
+				}
+			},
+			"MongoDeleteResult": {
+				"type": "object",
+				"properties": {
+					"acknowledged": {
+						"type": "boolean",
+						"example": true
+					},
+					"deletedCount": {
+						"type": "integer",
+						"example": 1
+					}
+				},
+				"required": ["acknowledged", "deletedCount"]
+			},
+			"Set": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the set (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000000"
+					},
+					"userId": {
+						"type": "string",
+						"description": "Identifier of the user who owns the set",
+						"example": "user123"
+					},
+					"ingredients": {
+						"type": "array",
+						"description": "Array of ingredient objects in the set",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string",
+									"description": "Ingredient id",
+									"example": "ingr1"
+								},
+								"value": {
+									"type": "number",
+									"description": "Ingredient value",
+									"example": 10
+								},
+								"additionalInfo": {
+									"type": "string",
+									"description": "Additional information about the ingredient",
+									"example": "spicy"
+								}
+							},
+							"required": ["id", "value"]
+						}
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the set was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the set was last updated",
+						"readOnly": true
+					}
+				},
+				"required": ["_id", "userId", "ingredients", "createdAt", "updatedAt"]
+			},
+			"SetInput": {
+				"type": "object",
+				"properties": {
+					"ingredients": {
+						"type": "array",
+						"description": "Array of ingredient objects in the set",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string",
+									"description": "Ingredient id",
+									"example": "ingr1"
+								},
+								"value": {
+									"type": "number",
+									"description": "Ingredient value",
+									"example": 10
+								},
+								"additionalInfo": {
+									"type": "string",
+									"description": "Additional information about the ingredient",
+									"example": "spicy"
+								}
+							},
+							"required": ["id", "value"]
+						}
+					}
+				},
+				"required": ["ingredients"]
+			},
+			"SetUpdateInput": {
+				"type": "object",
+				"properties": {
+					"ingredients": {
+						"type": "array",
+						"description": "Array of ingredient objects in the set (optional for update)",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string",
+									"description": "Ingredient id",
+									"example": "ingr1"
+								},
+								"value": {
+									"type": "number",
+									"description": "Ingredient value",
+									"example": 10
+								},
+								"additionalInfo": {
+									"type": "string",
+									"description": "Additional information about the ingredient",
+									"example": "spicy"
+								}
+							},
+							"required": ["id", "value"]
+						}
+					}
+				}
+			},
+			"SetCreationResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Set added successfully"
+					},
+					"data": {
+						"$ref": "#/components/schemas/Set"
+					}
+				}
+			},
+			"SetUpdateResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Set updated successfully"
+					},
+					"data": {
+						"$ref": "#/components/schemas/Set"
+					}
+				}
+			},
+			"SetResponse": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the set (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000000",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"userId": {
+						"type": "string",
+						"description": "Identifier of the user who owns the set",
+						"example": "605c72ef29592b001c000000",
+						"pattern": "^[0-9a-fA-F]{24}$"
+					},
+					"ingredients": {
+						"type": "array",
+						"description": "Array of ingredient objects in the set",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string",
+									"description": "Ingredient id",
+									"example": "605c72ef29592b001c000000",
+									"pattern": "^[0-9a-fA-F]{24}$"
+								},
+								"value": {
+									"type": "number",
+									"description": "Ingredient value",
+									"example": 10
+								},
+								"additionalInfo": {
+									"type": "string",
+									"description": "Additional information about the ingredient",
+									"example": "spicy"
+								},
+								"name": {
+									"type": "string",
+									"description": "Name of the ingredient",
+									"example": "Salt"
+								},
+								"categoryId": {
+									"type": "string",
+									"description": "Category id of the ingredient",
+									"example": "605c72ef29592b001c000000",
+									"pattern": "^[0-9a-fA-F]{24}$"
+								},
+								"categoryName": {
+									"type": "string",
+									"description": "Category name of the ingredient",
+									"example": "Spices"
+								},
+								"calories": {
+									"type": "number",
+									"description": "Calories per 100 grams of the ingredient",
+									"example": 100
+								},
+								"proteins": {
+									"type": "number",
+									"description": "Proteins per 100 grams of the ingredient",
+									"example": 10
+								},
+								"grams": {
+									"type": "number",
+									"description": "Total grams of the ingredient",
+									"example": 10
+								}
+							},
+							"required": ["id", "value"]
+						}
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the set was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the set was last updated",
+						"readOnly": true
+					}
+				},
+				"required": ["_id", "userId", "ingredients", "createdAt", "updatedAt"]
+			},
+			"SetDeleteResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Set deleted successfully"
+					}
+				}
+			},
+			"Template": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the template (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000000"
+					},
+					"name": {
+						"type": "string",
+						"description": "Name of the template",
+						"example": "Daily Meal Template"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the template was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the template was last updated",
+						"readOnly": true
+					}
+				},
+				"required": ["_id", "name", "createdAt", "updatedAt"]
+			},
+			"TemplateWithData": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the template (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000000"
+					},
+					"name": {
+						"type": "string",
+						"description": "Name of the template",
+						"readOnly": true,
+						"example": "Daily Meal Template"
+					},
+					"categories": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/CategoryWithObviousIngredients"
+						}
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the template was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the template was last updated",
+						"readOnly": true
+					}
+				},
+				"required": ["_id", "name", "createdAt", "updatedAt", "categories"]
+			},
+			"TemplateInput": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Name of the template",
+						"minLength": 1,
+						"example": "Weekly Meal Plan"
+					}
+				},
+				"required": ["name"]
+			},
+			"TemplateUpdateInput": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Name of the template (optional for update)",
+						"minLength": 1,
+						"example": "Updated Weekly Meal Plan"
+					}
+				}
+			},
+			"TemplateCreationResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Item added successfully"
+					},
+					"data": {
+						"$ref": "#/components/schemas/Template"
+					}
+				}
+			},
+			"TemplateUpdateResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Item updated successfully"
+					},
+					"data": {
+						"$ref": "#/components/schemas/Template"
+					}
+				}
+			},
+			"TemplateDeleteResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Template and all related data deleted successfully"
+					},
+					"deletedTemplates": {
+						"$ref": "#/components/schemas/MongoDeleteResult"
+					},
+					"deletedCategories": {
+						"$ref": "#/components/schemas/MongoDeleteResult"
+					},
+					"deletedIngredients": {
+						"$ref": "#/components/schemas/MongoDeleteResult"
+					}
+				},
+				"required": [
+					"message",
+					"deletedTemplates",
+					"deletedCategories",
+					"deletedIngredients"
+				]
+			},
+			"TemplateApplyInput": {
+				"type": "object",
+				"properties": {
+					"userId": {
+						"type": "string",
+						"description": "ID of the user to apply the template to",
+						"minLength": 1,
+						"example": "user123"
+					}
+				},
+				"required": ["userId"]
+			},
+			"TemplateApplyResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Template applied successfully"
+					},
+					"data": {
+						"type": "object",
+						"properties": {
+							"templateId": {
+								"type": "string",
+								"example": "605c72ef29592b001c000000"
+							},
+							"userId": {
+								"type": "string",
+								"example": "user123"
+							},
+							"applied": {
+								"type": "object",
+								"properties": {
+									"categories": {
+										"type": "integer",
+										"example": 4
+									},
+									"ingredients": {
+										"type": "integer",
+										"example": 12
+									}
+								}
+							},
+							"createdCategories": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Category"
+								}
+							},
+							"summary": {
+								"type": "object",
+								"properties": {
+									"templateName": {
+										"type": "string",
+										"example": "Daily Meal Template"
+									},
+									"appliedAt": {
+										"type": "string",
+										"format": "date-time"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"TemplateRemoveInput": {
+				"type": "object",
+				"properties": {
+					"userId": {
+						"type": "string",
+						"description": "ID of the user to remove the applied template from",
+						"minLength": 1,
+						"example": "user123"
+					}
+				},
+				"required": ["userId"]
+			},
+			"TemplateRemoveResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Applied template removed successfully"
+					},
+					"data": {
+						"type": "object",
+						"properties": {
+							"templateId": {
+								"type": "string",
+								"description": "ID of the template that was removed",
+								"example": "605c72ef29592b001c000000"
+							},
+							"userId": {
+								"type": "string",
+								"example": "user123"
+							},
+							"removed": {
+								"type": "object",
+								"properties": {
+									"categories": {
+										"type": "integer",
+										"example": 5
+									},
+									"ingredients": {
+										"type": "integer",
+										"example": 20
+									}
+								}
+							},
+							"summary": {
+								"type": "object",
+								"properties": {
+									"templateName": {
+										"type": "string",
+										"example": "Daily Meal Template"
+									},
+									"removedAt": {
+										"type": "string",
+										"format": "date-time"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"Note": {
+				"type": "object",
+				"properties": {
+					"_id": {
+						"type": "string",
+						"description": "Unique identifier for the note (MongoDB ObjectId)",
+						"readOnly": true,
+						"example": "605c72ef29592b001c000000"
+					},
+					"userId": {
+						"type": "string",
+						"description": "Identifier of the user who owns the note",
+						"example": "user123"
+					},
+					"content": {
+						"type": "string",
+						"description": "Content of the note",
+						"example": "This is my note content"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the note was created",
+						"readOnly": true
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Timestamp of when the note was last updated",
+						"readOnly": true
+					}
+				},
+				"required": ["_id", "userId", "content", "createdAt", "updatedAt"]
+			},
+			"NoteInput": {
+				"type": "object",
+				"properties": {
+					"content": {
+						"type": "string",
+						"description": "Content of the note",
+						"minLength": 1,
+						"example": "This is my note content"
+					}
+				},
+				"required": ["content"]
+			},
+			"NoteResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string",
+						"example": "Note added successfully"
+					},
+					"data": {
+						"$ref": "#/components/schemas/Note"
+					}
+				}
+			}
+		},
+		"securitySchemes": {
+			"cookieAuth": {
+				"type": "apiKey",
+				"in": "cookie",
+				"name": "accessToken"
+			}
+		}
+	},
+	"security": [
+		{
+			"cookieAuth": []
+		}
+	],
+	"paths": {
+		"/sets": {
+			"post": {
+				"summary": "Create a new set",
+				"tags": ["Sets"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SetInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Set created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SetCreationResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation error or invalid input",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"summary": "Get a list of sets",
+				"tags": ["Sets"],
+				"parameters": [
+					{
+						"name": "offset",
+						"in": "query",
+						"description": "Number of sets to skip for pagination",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Maximum number of sets to return",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 10
+						}
+					},
+					{
+						"name": "startDate",
+						"in": "query",
+						"description": "Filter sets created after this date (ISO 8601 format)",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						}
+					},
+					{
+						"name": "endDate",
+						"in": "query",
+						"description": "Filter sets created before this date (ISO 8601 format)",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"format": "date-time"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of sets retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/SetResponse"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation error or invalid query parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/sets/{id}": {
+			"get": {
+				"summary": "Get a specific set by ID",
+				"tags": ["Sets"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "The ID of the set to retrieve",
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{24}$"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Set retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SetResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid set ID format",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Set not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"summary": "Update an existing set",
+				"tags": ["Sets"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "The ID of the set to update",
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{24}$"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SetUpdateInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Set updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SetUpdateResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid set ID format or validation error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Set not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete a set",
+				"tags": ["Sets"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "The ID of the set to delete",
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{24}$"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Set deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SetDeleteResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid set ID format",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Set not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories": {
+			"get": {
+				"summary": "Get a list of all categories",
+				"tags": ["Categories"],
+				"parameters": [
+					{
+						"name": "offset",
+						"in": "query",
+						"description": "Number of categories to skip for pagination",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Maximum number of categories to return",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 10
+						}
+					},
+					{
+						"name": "all",
+						"in": "query",
+						"description": "Whether to retrieve all categories or only those associated with the user",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": false
+						}
+					},
+					{
+						"name": "showInTemplate",
+						"in": "query",
+						"description": "Whether to show categories in the template",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": false
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of all categories",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Category"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid query parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "Create a new category",
+				"tags": ["Categories"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CategoryInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Category created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CategoryCreationResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation error or invalid input",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Category not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/{id}": {
+			"get": {
+				"summary": "Get a category by ID",
+				"tags": ["Categories"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the category to retrieve",
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000001",
+							"pattern": "^[0-9a-fA-F]{24}$"
+						}
+					},
+					{
+						"name": "withIngredients",
+						"in": "query",
+						"required": false,
+						"description": "Include ingredients in the response",
+						"schema": {
+							"type": "boolean",
+							"example": true
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Category retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CategoryWithIngredients"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Category not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"summary": "Update an existing category",
+				"tags": ["Categories"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the category to update",
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000001"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CategoryUpdateInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Category updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CategoryUpdateResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid ID supplied or validation error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "User is not authorized to update this category",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Category not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete a category and its associated ingredients",
+				"tags": ["Categories"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the category to delete",
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000001"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Category deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessMessage"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid ID supplied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "User is not authorized to delete this category",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Category not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ingredients": {
+			"get": {
+				"summary": "Get a list of all ingredients for the authenticated user",
+				"tags": ["Ingredients"],
+				"parameters": [
+					{
+						"name": "offset",
+						"in": "query",
+						"description": "Number of ingredients to skip for pagination",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Maximum number of ingredients to return",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 10
+						}
+					},
+					{
+						"name": "all",
+						"in": "query",
+						"description": "Whether to include all ingredients or only those for the authenticated user",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": false
+						}
+					},
+					{
+						"name": "withCategories",
+						"in": "query",
+						"description": "Whether to include categories for each ingredient",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": false
+						}
+					},
+					{
+						"name": "showInTemplate",
+						"in": "query",
+						"description": "Whether to include ingredients for the template",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": false
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of ingredients for the user",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/IngredientWithCategory"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid query parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "Create a new ingredient for a specific category",
+				"tags": ["Ingredients"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IngredientInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Ingredient created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IngredientCreationResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation error, invalid input, or invalid category ID",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "User is not authorized to create ingredient",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Category not found or access denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/{id}/ingredients": {
+			"get": {
+				"summary": "Get a list of ingredients for a specific category",
+				"tags": ["Ingredients"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the category to retrieve ingredients for",
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000001"
+						}
+					},
+					{
+						"name": "offset",
+						"in": "query",
+						"description": "Number of ingredients to skip for pagination",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Maximum number of ingredients to return",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 10
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of ingredients for the specified category",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Ingredient"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid category ID or query parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Category not found or access denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ingredients/{id}": {
+			"get": {
+				"summary": "Retrieve a single ingredient by ID",
+				"tags": ["Ingredients"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the ingredient to retrieve",
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000002"
+						}
+					},
+					{
+						"name": "withCategory",
+						"in": "query",
+						"description": "Include related category data",
+						"schema": {
+							"type": "boolean",
+							"example": true
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Ingredient retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IngredientWithCategory"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Ingredient not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"summary": "Update an existing ingredient",
+				"tags": ["Ingredients"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the ingredient to update",
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000002"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IngredientUpdateInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Ingredient updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IngredientUpdateResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid ID supplied or validation error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "User is not authorized to update this ingredient",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Ingredient not found, or access denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete an ingredient",
+				"tags": ["Ingredients"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the ingredient to delete",
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000002"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Ingredient deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessMessage"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid ID supplied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "User is not authorized to delete this ingredient",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Ingredient not found, or access denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/templates": {
+			"post": {
+				"summary": "Create a new template",
+				"tags": ["Templates"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TemplateInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Template created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TemplateCreationResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation error or invalid input",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Admin access required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"summary": "Get a list of templates",
+				"tags": ["Templates"],
+				"parameters": [
+					{
+						"name": "offset",
+						"in": "query",
+						"description": "Number of templates to skip for pagination",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 0
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Maximum number of templates to return",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 10
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of templates",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Template"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid query parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Admin access required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/templates/default": {
+			"get": {
+				"summary": "Get the default template",
+				"tags": ["Templates"],
+				"responses": {
+					"200": {
+						"description": "The requested template",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TemplateWithData"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Admin access required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/templates/{id}": {
+			"get": {
+				"summary": "Get a specific template by ID",
+				"tags": ["Templates"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the template to retrieve",
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{24}$",
+							"example": "605c72ef29592b001c000000"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "The requested template",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TemplateWithData"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid template ID",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Admin access required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Template not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"summary": "Update an existing template",
+				"tags": ["Templates"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the template to update",
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{24}$",
+							"example": "605c72ef29592b001c000000"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TemplateUpdateInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Template updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TemplateUpdateResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid ID supplied or validation error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Admin access required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Template not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete a template and all related data",
+				"description": "Deletes a template and cascades deletion to all related categories, and ingredients",
+				"tags": ["Templates"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the template to delete",
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{24}$",
+							"example": "605c72ef29592b001c000000"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Template and all related data deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TemplateDeleteResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid ID supplied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Admin access required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Template not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/templates/{id}/apply": {
+			"post": {
+				"summary": "Apply a template to a specific user",
+				"description": "Creates a copy of all template data (categories, ingredients) and assigns it to the specified user",
+				"tags": ["Templates"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "ID of the template to apply",
+						"schema": {
+							"type": "string",
+							"pattern": "^[0-9a-fA-F]{24}$",
+							"example": "605c72ef29592b001c000000"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TemplateApplyInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Template applied successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TemplateApplyResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid template ID or validation error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - Admin access required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Template not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Failed to apply template",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/templates/remove": {
+			"delete": {
+				"summary": "Remove applied template from user",
+				"description": "Removes the template that was applied to the specified user by finding matching categories and deleting them along with their ingredients",
+				"tags": ["Templates"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TemplateRemoveInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Applied template removed successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TemplateRemoveResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Validation error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Forbidden - remove-templates permission required",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Failed to remove applied template",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/notes": {
+			"get": {
+				"summary": "Retrieve notes with optional filtering",
+				"tags": ["Notes"],
+				"parameters": [
+					{
+						"name": "offset",
+						"in": "query",
+						"description": "Number of notes to skip for pagination",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"minimum": 0,
+							"default": 0,
+							"example": 0
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Maximum number of notes to return",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"default": 10,
+							"example": 10
+						}
+					},
+					{
+						"name": "search",
+						"in": "query",
+						"description": "Search term to filter notes by content",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"example": "content"
+						}
+					},
+					{
+						"name": "date",
+						"in": "query",
+						"description": "Filter notes by specific date (YYYY-MM-DD format). If not provided, defaults to today",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"format": "date",
+							"example": "2025-07-29"
+						}
+					},
+					{
+						"name": "includeAllDates",
+						"in": "query",
+						"description": "Include notes from all dates (overrides date filtering)",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": false,
+							"example": false
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of notes",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Note"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid query parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "Create a new note",
+				"tags": ["Notes"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NoteInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Note created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NoteResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/notes/{id}": {
+			"get": {
+				"summary": "Get a specific note",
+				"tags": ["Notes"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "The unique identifier of the note",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000000"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Note details",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Note"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Note not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"summary": "Update a note",
+				"tags": ["Notes"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "The unique identifier of the note",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000000"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NoteInput"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Note updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NoteResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Note not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Delete a note",
+				"tags": ["Notes"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "The unique identifier of the note",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"example": "605c72ef29592b001c000000"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Note deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/NoteResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Note not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
