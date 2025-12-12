@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import objectIdTransform from "~/utils/objectIdTransform";
 
 const updateSchema = z.object({
 	ingredients: z
@@ -10,6 +11,9 @@ const updateSchema = z.object({
 			}),
 		)
 		.optional(),
+	recipeId: z.string().transform(objectIdTransform).optional(),
+	source: z.enum(["manual", "recipe"]).optional(),
+	recipePortions: z.number().min(0).optional(),
 });
 
 export default defineEventHandler(async (event) => {

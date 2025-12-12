@@ -1,4 +1,5 @@
 import validateSet from "~/utils/validateSet";
+import objectIdTransform from "~/utils/objectIdTransform";
 
 const validationSchema = z.object({
 	ingredients: z
@@ -10,6 +11,9 @@ const validationSchema = z.object({
 			}),
 		)
 		.min(1, "At least one ingredient is required"),
+	recipeId: z.string().transform(objectIdTransform).optional(),
+	source: z.enum(["manual", "recipe"]).optional(),
+	recipePortions: z.number().min(0).optional(),
 });
 
 export default defineEventHandler(async (event) => {

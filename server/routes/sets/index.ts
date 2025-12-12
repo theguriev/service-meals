@@ -79,6 +79,9 @@ export default defineEventHandler(async (event) => {
 				userId: { $first: "$userId" },
 				createdAt: { $first: "$createdAt" },
 				updatedAt: { $first: "$updatedAt" },
+				recipeId: { $first: "$recipeId" },
+				source: { $first: "$source" },
+				recipePortions: { $first: "$recipePortions" },
 				ingredients: {
 					$push: {
 						id: "$ingredients.id",

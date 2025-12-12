@@ -14,6 +14,21 @@ const schema = new Schema(
 				additionalInfo: { type: String, required: false },
 			},
 		],
+		recipeId: {
+			type: Schema.Types.ObjectId,
+			required: false,
+			ref: "recipes-v2",
+		},
+		source: {
+			type: String,
+			enum: ["manual", "recipe"],
+			default: "manual",
+		},
+		recipePortions: {
+			type: Number,
+			required: false,
+			min: 0,
+		},
 	},
 	{ timestamps: true },
 );
